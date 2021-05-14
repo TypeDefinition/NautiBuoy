@@ -72,6 +72,7 @@ SECTION "Entry Point", ROM0[$0100]
     The reason for the jump is that while the entry point is $100, the header of the game spans from $0104 to $014F.
     So there's only 4 bytes in which we can run any code before the header. So we use these 4 bytes to jump to after the header. */
 EntryPoint: ; This is where execution begins.
+    di ; Disable interrupts until we have finish setting up our game.
     jp Start ; Leave this tiny space.
 
 ; $0104 - $014F: Header
@@ -87,14 +88,14 @@ SECTION "Header", ROM0[$0104]
 
     ; $0134 - $013E: Game Title
     /*  Title of the game in UPPER CASE ASCII. Originally the title was 16 bytes.
-        When the CGB was released, it was reduced to 15 bytes, and some months later they had the fantastic idea to reduce it to 11 characters only.
+        When the CGB was released, it was reduced to 15 bytes, and some months later they had the fantastic idea to reduce it to 11 bytes only.
         The remaining bytes were later on used to represent other things. */
     db "LAPIS" ; A title of length n.
     ds 6 ; The ds instruction is used to pad the remaining 11-n bytes with zero.
 
     ; $013F - $0142: Manufacturer Code
     /*  In older cartridges this area was part of the title.
-        In newer cartridges this area contains an 4 character uppercase manufacturer code. Purpose and Deeper Meaning unknown. 
+        In newer cartridges this area contains an 4 character uppercase manufacturer code. Purpose and Deeper Meaning unknown.
         Lots of emulators will display this as part of the title, which is undesirable, so here it’s just filled with 0 values. */
     ds 4
 
@@ -212,6 +213,9 @@ SECTION "Header", ROM0[$0104]
 
 SECTION "Game Code", ROM0
 Start:
+.init
+    ld sp, $E000 ; Initialise our stack pointer to the end of the work RAM.
+    ei ; Enable Interrupts
     ; Turn off the LCD
 .waitVBlank
     ld a, [rLY]
@@ -242,23 +246,22 @@ Start:
     and a ; Check if the byte we just copied is zero
     jr nz, .copyString ; Continue if it's not
 
-    
-        ; Init display registers
-        ld a, %11100100
-        ld [rBGP], a
-    
-        xor a ; ld a, 0
-        ld [rSCY], a
-        ld [rSCX], a
-    
-        ; Shut sound down
-        ld [rNR52], a
-    
-        ; Turn screen on, display background
-        ld a, %10000001
-        ld [rLCDC], a
+    ; Init display registers
+    ld a, %11100100
+    ld [rBGP], a
 
-            ; Lock up
+    xor a ; ld a, 0
+    ld [rSCY], a
+    ld [rSCX], a
+    
+    ; Shut sound down
+    ld [rNR52], a
+    
+    ; Turn screen on, display background
+    ld a, %10000001
+    ld [rLCDC], a
+
+; Lock up
 .lockup
     jr .lockup
 
