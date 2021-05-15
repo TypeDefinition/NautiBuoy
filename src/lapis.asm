@@ -268,11 +268,6 @@ Start:
 .lockup
     jr .lockup
 
-SECTION "Font", ROM0
-FontTiles:
-INCBIN "./src/font.chr" ; INCBIN copies the file contents directly into the ROM 
-FontTilesEnd:
-
 SECTION "Hello World String", ROM0
 HelloWorldStr:
     db "Hello World!", 0
