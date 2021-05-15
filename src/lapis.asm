@@ -218,48 +218,51 @@ Start:
     ei ; Enable Interrupts
     ; Turn off the LCD
 .waitVBlank
-    ld a, [rLY]
-    cp 144 ; Check if the LCD is past VBlank
-    jr c, .waitVBlank
+    ld a, [rLY] ; rLY is address $FF44, we getting the LCDC Y-Coordinate here to see the current state of the LCDC drawing
+    cp 144 ; Check if the LCD is past VBlank, values between 144 - 153 is VBlank period
+    jr c, .waitVBlank ; We need wait for Vblank before we can turn off the LCD
 
     xor a ; ld a, 0 ; We only need to reset a value with bit 7 reset, but 0 does the job
-    ld [rLCDC], a ; We will have to write to LCDC again later, so it's not a bother, really.
+    ld [rLCDC], a ; We do this to the LCDC cause we want to turn off the control operation by making bit 7 0, but the rest for now dont matter
+    ; We will have to write to LCDC again later, so it's not a bother, really.
 
-    ld hl, $9000
+    ;once the LCD is turned off, we can access VRAM, so copy the font to VRAM
+    ld hl, $9000 ; pattern 0 lies at $9000, tilemap data address, set from the LCDC bits
     ld de, FontTiles
     ld bc, FontTilesEnd - FontTiles
 .copyFont
+    ; copy all the font tiles into the tilemap data table
     ld a, [de] ; Grab 1 byte from the source
-    ld [hli], a ; Place it at the destination, incrementing hl
+    ld [hli], a ; Place it at the destination, incrementing hl, hli is just increment hl
     inc de ; Move to next byte
     dec bc ; Decrement count
     ld a, b ; Check if count is 0, since `dec bc` doesn't update flags
-    or c
-    jr nz, .copyFont
+    or c ; if b and c are 0, when u or them it'll give 0 also
+    jr nz, .copyFont ; check if not zero
 
-    ld hl, $9800 ; This will print the string at the top-left corner of the screen
+    ld hl, $9800 ; This will print the string at the top-left corner of the screen, 9800 is the window tilemap display select
     ld de, HelloWorldStr
-.copyString
+.copyString ; write to tilemap
     ld a, [de]
     ld [hli], a
     inc de
     and a ; Check if the byte we just copied is zero
     jr nz, .copyString ; Continue if it's not
 
-    ; Init display registers
-    ld a, %11100100
-    ld [rBGP], a
+    ; Init display registersm and turn on display
+    ld a, %11100100 ; setting the color palette
+    ld [rBGP], a ; render it out
 
     xor a ; ld a, 0
-    ld [rSCY], a
+    ld [rSCY], a ; make the screen for scroll X and Y start at 0
     ld [rSCX], a
     
     ; Shut sound down
     ld [rNR52], a
     
     ; Turn screen on, display background
-    ld a, %10000001
-    ld [rLCDC], a
+    ld a, %10000001 ; we want to set back LCDC bit 7 to 1
+    ld [rLCDC], a ; turn on the screen
 
 ; Lock up
 .lockup
@@ -267,7 +270,7 @@ Start:
 
 SECTION "Font", ROM0
 FontTiles:
-INCBIN "./src/font.chr"
+INCBIN "./src/font.chr" ; INCBIN copies the file contents directly into the ROM 
 FontTilesEnd:
 
 SECTION "Hello World String", ROM0
