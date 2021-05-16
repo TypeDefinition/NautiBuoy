@@ -246,8 +246,10 @@ Start:
     ld a, [de]
     ld [hli], a
     inc de
-    and a ; Check if the byte we just copied is zero
-    jr nz, .copyString ; Continue if it's not
+    /* and a ; Check if the byte we just copied is zero
+    jr nz, .copyString ; Continue if it's not */
+    cp $FF ; Check if the byte we just copied is 0xFF
+    jr c, .copyString ; Continue if it's not */
 
     ; Init display registersm and turn on display
     ld a, %11100100 ; setting the color palette
@@ -270,4 +272,8 @@ Start:
 
 SECTION "Hello World String", ROM0
 HelloWorldStr:
-    db "Hello World!", 0
+    db "Angie is awesome!"
+    ds 15
+    db "Next line."
+    ds 22
+    db $01, $01, $01, $01, $FF
