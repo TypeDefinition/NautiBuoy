@@ -216,6 +216,9 @@ Start:
 .init
     ld sp, $E000 ; Initialise our stack pointer to the end of the work RAM.
     ei ; Enable Interrupts
+
+    call CopyDMARoutine ; init the copy of the DMA handler func from RAM to HRAM
+
     ; Turn off the LCD
 .waitVBlank
     ld a, [rLY] ; rLY is address $FF44, we getting the LCDC Y-Coordinate here to see the current state of the LCDC drawing
