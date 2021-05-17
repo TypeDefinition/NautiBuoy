@@ -230,9 +230,15 @@ Start:
     ; We will have to write to LCDC again later, so it's not a bother, really.
 
     ;once the LCD is turned off, we can access VRAM, so copy the font to VRAM
-    ld hl, $9000 ; pattern 0 lies at $9000, tilemap data address, set from the LCDC bits
+    ld hl, _VRAM9000 ; pattern 0 lies at $9000, tilemap data address, set from the LCDC bits
     ld de, FontTiles
     ld bc, FontTilesEnd - FontTiles
+    call MemCopy ; copy tiles to VRAM
+
+    ; Init sprites
+    ld hl, _VRAM8000
+    ld de, TESTSPRITE
+    ld bc, TESTSPRITE.end - TESTSPRITE
     call MemCopy ; copy tiles to VRAM
 
     ld hl, _SCRN0 ; This will print the string at the top-left corner of the screen, 9800 is the window tilemap display select

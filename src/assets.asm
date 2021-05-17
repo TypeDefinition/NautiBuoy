@@ -6,7 +6,7 @@ FontTilesEnd::
 
 TESTSPRITE::
     INCBIN "./src/2bppFormat/TestSprite.png.2bpp"
-.end
+.end::
 
 HelloWorldStr::
     db "Angie is awesome!"
