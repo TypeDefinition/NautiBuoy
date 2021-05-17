@@ -216,6 +216,9 @@ Start:
 .init
     ld sp, $E000 ; Initialise our stack pointer to the end of the work RAM.
     ei ; Enable Interrupts
+
+    call CopyDMARoutine ; init the copy of the DMA handler func from RAM to HRAM
+
     ; Turn off the LCD
 .waitVBlank
     ld a, [rLY] ; rLY is address $FF44, we getting the LCDC Y-Coordinate here to see the current state of the LCDC drawing
@@ -230,26 +233,13 @@ Start:
     ld hl, $9000 ; pattern 0 lies at $9000, tilemap data address, set from the LCDC bits
     ld de, FontTiles
     ld bc, FontTilesEnd - FontTiles
-.copyFont
-    ; copy all the font tiles into the tilemap data table
-    ld a, [de] ; Grab 1 byte from the source
-    ld [hli], a ; Place it at the destination, incrementing hl, hli is just increment hl
-    inc de ; Move to next byte
-    dec bc ; Decrement count
-    ld a, b ; Check if count is 0, since `dec bc` doesn't update flags
-    or c ; if b and c are 0, when u or them it'll give 0 also
-    jr nz, .copyFont ; check if not zero
+    call MemCopy ; copy tiles to VRAM
 
-    ld hl, $9800 ; This will print the string at the top-left corner of the screen, 9800 is the window tilemap display select
+    ld hl, _SCRN0 ; This will print the string at the top-left corner of the screen, 9800 is the window tilemap display select
     ld de, HelloWorldStr
-.copyString ; write to tilemap
-    ld a, [de]
-    ld [hli], a
-    inc de
-    /* and a ; Check if the byte we just copied is zero
-    jr nz, .copyString ; Continue if it's not */
-    cp $FF ; Check if the byte we just copied is 0xFF
-    jr c, .copyString ; Continue if it's not */
+
+    call CopyToTileMap ; set up tilemap
+
 
     ; Init display registersm and turn on display
     ld a, %11100100 ; setting the color palette
@@ -270,10 +260,33 @@ Start:
 .lockup
     jr .lockup
 
-SECTION "Hello World String", ROM0
-HelloWorldStr:
-    db "Angie is awesome!"
-    ds 15
-    db "Next line."
-    ds 22
-    db $01, $01, $01, $01, $FF
+
+/* Copy data to memory */
+MemCopy:
+    ; de - Source address
+    ; bc - number of bytes to fill
+    ; hl - destination address
+
+    ld a, [de] ; Grab 1 byte from the source
+    ld [hli], a ; Place it at the destination, incrementing hl, hli is just increment hl
+    inc de ; Move to next byte
+    dec bc ; Decrement count
+    ld a, b ; Check if count is 0, since `dec bc` doesn't update flags
+    or c ; if b and c are 0, when u or them it'll give 0 also
+    jr nz, MemCopy ; check if not zero
+    
+    ret
+
+
+/* write to tilemap */
+CopyToTileMap:
+    ; de - Source address
+    ; hl - destination address
+
+    ld a, [de]
+    ld [hli], a
+    inc de
+    cp $FF ; Check if the byte we just copied is 0xFF
+    jr c, CopyToTileMap ; Continue if it's not, c will be set if 0xFF is bigger
+    
+    ret
