@@ -6,12 +6,25 @@ INCLUDE "./src/hardware.inc"
 
 ; $0000 - $003F: Restart Commands (RST)
 /*  Restart Commands, or "rst" commands, jumps to an address and execute code until encountering a return command.
+    RST is more like call, it will put the prev instruction address in the stack
     They are only capable of going to a few preset addresses.
     Those addresses are $0000, $0008, $0010, $0018, $0020, $0028, $0030 and $0038. */
 SECTION "RST $0000", ROM0[$0000]
     ret
 
 SECTION "RST $0008", ROM0[$0008]
+/*  Initialise data in memory to a certain value
+    For small data sets, up to size 256
+
+    a - value to init to
+    b - size
+    hl - destination address
+*/
+Memset_Small::
+    ld [hli], a
+    dec b
+    jr nz, Memset_Small
+    
     ret
 
 SECTION "RST $0010", ROM0[$0010]
@@ -229,6 +242,8 @@ Start:
     ld [rLCDC], a ; We do this to the LCDC cause we want to turn off the control operation by making bit 7 0, but the rest for now dont matter
     ; We will have to write to LCDC again later, so it's not a bother, really.
 
+    call ResetOAM
+
     ;once the LCD is turned off, we can access VRAM, so copy the font to VRAM
     ld hl, _VRAM9000 ; pattern 0 lies at $9000, tilemap data address, set from the LCDC bits
     ld de, FontTiles
@@ -247,6 +262,17 @@ Start:
     call CopyToTileMap ; set up tilemap
 
 
+        ; temp code
+    ld hl, wShadowOAM
+    ld a, 90
+    ld [hli], a ; set x coor
+    ld a, 100
+    ld [hli], a ;set y coord
+    ld a, 0
+    ld [hl], a
+
+    call hOAMDMA ; transfer sprite data to OAM
+
     ; Init display registersm and turn on display
     ld a, %11100100 ; setting the color palette
     ld [rBGP], a ; render it out
@@ -259,7 +285,7 @@ Start:
     ld [rNR52], a
     
     ; Turn screen on, display background
-    ld a, %10000001 ; we want to set back LCDC bit 7 to 1
+    ld a, %10000011 ; we want to set back LCDC bit 7 to 1
     ld [rLCDC], a ; turn on the screen
 
 ; Lock up

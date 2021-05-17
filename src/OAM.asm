@@ -15,9 +15,9 @@ INCLUDE "./src/hardware.inc"
 ; If Align[8] causes problem, change to a fix address instead
 SECTION "Shadow OAM Vars", WRAM0, ALIGN[8] 
 
-wShadowOAM:
+wShadowOAM::
     ds 4 * 40 ; This is the buffer we'll write sprite data to, reserve 4*40 bytes for it
-
+.end
 
 /* Move codes from RAM to HRAM */
 SECTION "OAM DMA routine", ROM0
@@ -48,6 +48,22 @@ DMARoutine:
 DMARoutineEnd:
 
 
+SECTION "Clear OAM", ROM0
+/* Reset OAM and shadow OAM values, Use during VBLANK */
+ResetOAM::
+    xor a ; Make a to 0
+    ld b, wShadowOAM.end - wShadowOAM ; size
+    ld hl, _OAMRAM ; destination address is OAM
+    rst Memset_Small ; Here uses rst instead
+
+/* Clean up shadowOAM data, can be used anytime, best to use when needing to reinitialise OAM values */
+ResetShawdowOAM::
+    xor a
+    ld b, wShadowOAM.end - wShadowOAM
+    ld hl, wShadowOAM
+    jp Memset_Small
+
+
 SECTION "OAM DMA", HRAM
 /*  This func contains the DMA transfer to transfer shadow OAM data to actual OAM
     Call this func to update OAM
@@ -57,4 +73,5 @@ hOAMDMA::
     ds DMARoutineEnd - DMARoutine ; Reserve space to copy the routine to
 
 
-;SECTION "Clear OAM", ROM0
+
+
