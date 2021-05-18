@@ -30,7 +30,7 @@ ENDM
     For small data sets, up to size 256.
     \1 - Destination Address
     \2 - Value
-    \3 - Number of Bytes */
+    \3 - Number of Bytes (MUST BE 1 OR MORE!) */
 MACRO MEMSET_SMALL
     ld hl, \1
     ld a, \2

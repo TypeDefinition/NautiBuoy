@@ -10,7 +10,7 @@ SECTION "RST $0000", ROM0[$0000]
 /*  Initialise data in memory to a certain value.
     For small data sets, up to size 256.
     a - Value to init to
-    b - Number of bytes
+    b - Number of bytes (MUST BE 1 OR MORE)
     hl - Destination address */
 SECTION "RST $0008", ROM0[$0008]
 MemSetSmall::
