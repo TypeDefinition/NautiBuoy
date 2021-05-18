@@ -1,1 +1,0 @@
-wine64 ./bgb/bgb64.exe ./bin/lapis.gb
