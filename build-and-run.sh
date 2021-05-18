@@ -2,7 +2,7 @@
 # Seperate filename & path inside "find"'s' "-exec" option: https://unix.stackexchange.com/questions/178217/separate-filename-and-path-inside-find-commands-exec-option
 mkdir -p ./bin
 mkdir -p ./bin-int
-mkdir -p tile_data
+mkdir -p ./tile_data
 
 find ./assets/ -type f -name '*.png' -exec sh -c 'rgbgfx -o ./tile_data/$(basename "{}" .png).2bpp $0' {} \;
 find ./src/ -type f -name '*.asm' -exec sh -c 'rgbasm -o ./bin-int/$(basename "{}" .asm).o $0' {} \;
