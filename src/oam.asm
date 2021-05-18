@@ -53,6 +53,7 @@ SECTION "Clear OAM", ROM0
 /* Reset OAM and shadow OAM values, Use during VBLANK */
 ResetOAM::
     MEMSET_SMALL _OAMRAM, 0, wShadowOAM.end - wShadowOAM
+    ret
 /* Clean up shadowOAM data, can be used anytime, best to use when needing to reinitialise OAM values */
 ResetShawdowOAM::
     MEMSET_SMALL wShadowOAM, 0, wShadowOAM.end - wShadowOAM

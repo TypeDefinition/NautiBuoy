@@ -4,7 +4,7 @@ INCLUDE "./src/util.inc"
 SECTION "Initialisation", ROM0
 Initialise::
     ld sp, $E000 ; Initialise our stack pointer to the end of the work RAM.
-    ei ; Enable interrupts.
+    di ; disable interrupts.
 
     call CopyDMARoutine ; init the copy of the DMA handler func from RAM to HRAM
 
@@ -26,6 +26,7 @@ Initialise::
     ld [rLCDC], a
 
     call ResetOAM
+    call ResetShawdowOAM
 
     ; Copy background tile data into VRAM.
     SET_ROMX_BANK 2 ; Our tile data is in Bank 2, so we load that into ROMX.
@@ -61,6 +62,6 @@ Initialise::
     ld a, %10000011 ; we want to set back LCDC bit 7 to 1
     ld [rLCDC], a ; turn on the screen
 
-; Lock up
-.lockup
-    jr .lockup
+    ei ; enable intrupts
+
+    jp MainGameLoop ; Go to main game loop

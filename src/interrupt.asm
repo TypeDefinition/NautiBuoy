@@ -14,8 +14,13 @@ INCLUDE "./src/hardware.inc"
     If there is an interrupt, the CPU will call the instruction at certain predetermined memory addresses.
     So if there is an Timer interrupt, the CPU would essentially do "call $0050". */
 SECTION "VBlank Interrupt", ROM0[$0040]
-VBlankInterrupt::
-    reti
+    ; push the current variables, in the event it was running some instructions halfway that need them
+    push af
+    push bc
+    push de
+    push hl
+
+    jp VBlankHandler ; jump to VBlankHandler
 
 SECTION "STAT Interrupt", ROM0[$0048]
 STATInterrupt::
