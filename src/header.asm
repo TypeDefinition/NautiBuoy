@@ -6,44 +6,8 @@ INCLUDE "./src/hardware.inc"
 
 ; $0000 - $003F: Restart Commands (RST)
 /*  Restart Commands, or "rst" commands, jumps to an address and execute code until encountering a return command.
-    RST is more like call, it will put the prev instruction address in the stack
     They are only capable of going to a few preset addresses.
     Those addresses are $0000, $0008, $0010, $0018, $0020, $0028, $0030 and $0038. */
-SECTION "RST $0000", ROM0[$0000]
-    ret
-
-SECTION "RST $0008", ROM0[$0008]
-/*  Initialise data in memory to a certain value
-    For small data sets, up to size 256
-
-    a - value to init to
-    b - size
-    hl - destination address
-*/
-Memset_Small::
-    ld [hli], a
-    dec b
-    jr nz, Memset_Small
-    
-    ret
-
-SECTION "RST $0010", ROM0[$0010]
-    ret
-
-SECTION "RST $0018", ROM0[$0018]
-    ret
-
-SECTION "RST $0020", ROM0[$0020]
-    ret
-
-SECTION "RST $0028", ROM0[$0028]
-    ret
-
-SECTION "RST $0030", ROM0[$0030]
-    ret
-
-SECTION "RST $0038", ROM0[$0038]
-    ret
 
 ; $0040 - $0067: Interrupts
 /*  Interrupts are used to call a given function when certain conditions are met.
@@ -58,25 +22,6 @@ SECTION "RST $0038", ROM0[$0038]
     Before every instruction, the CPU checks if an interrupt needs to be handled.
     If there is an interrupt, the CPU will call the instruction at certain predetermined memory addresses.
     So if there is an Timer interrupt, the CPU would essentially do "call $0050". */
-SECTION "VBlank Interrupt", ROM0[$0040]
-VBlankInterrupt:
-    reti
-
-SECTION "STAT Interrupt", ROM0[$0048]
-STATInterrupt:
-    reti
-
-SECTION "Timer Interrupt", ROM0[$0050]
-TimerInterrupt:
-    reti
-
-SECTION "Serial Interrupt", ROM0[$0058]
-SerialInterrupt:
-    reti
-
-SECTION "Joypad Interrupt", ROM0[$0060]
-JoypadInterrupt:
-    reti
 
 ; $0100 - $0103: Entry Point
 SECTION "Entry Point", ROM0[$0100]
@@ -84,9 +29,8 @@ SECTION "Entry Point", ROM0[$0100]
     Usually this 4 byte area contains a NOP instruction, followed by an instruction to jump to $0150. But not always.
     The reason for the jump is that while the entry point is $100, the header of the game spans from $0104 to $014F.
     So there's only 4 bytes in which we can run any code before the header. So we use these 4 bytes to jump to after the header. */
-EntryPoint: ; This is where execution begins.
-    di ; Disable interrupts until we have finish setting up our game.
-    jp Start ; Leave this tiny space.
+    di ; Disable interrupts until we have finish initialisation.
+    jp Initialise ; Leave this tiny space.
 
 ; $0104 - $014F: Header
 SECTION "Header", ROM0[$0104]
@@ -166,7 +110,7 @@ SECTION "Header", ROM0[$0104]
         $FD = BANDAI TAMA5
         $FE = HuC3
         $FF = HuC1+RAM+BATTERY */
-    db $00
+    db $19
 
     ; $0148: ROM Size
     /* Specifies the ROM Size of the cartridge. Typically calculated as "32KB shl N".
@@ -223,102 +167,3 @@ SECTION "Header", ROM0[$0104]
         Produced by adding all bytes of the cartridge (except for the two checksum bytes).
         The Game Boy doesn't verify this checksum. */
     dw $0000
-
-SECTION "Game Code", ROM0
-Start:
-.init
-    ld sp, $E000 ; Initialise our stack pointer to the end of the work RAM.
-    ei ; Enable Interrupts
-
-    call CopyDMARoutine ; init the copy of the DMA handler func from RAM to HRAM
-
-    ; Turn off the LCD
-.waitVBlank
-    ld a, [rLY] ; rLY is address $FF44, we getting the LCDC Y-Coordinate here to see the current state of the LCDC drawing
-    cp 144 ; Check if the LCD is past VBlank, values between 144 - 153 is VBlank period
-    jr c, .waitVBlank ; We need wait for Vblank before we can turn off the LCD
-
-    xor a ; ld a, 0 ; We only need to reset a value with bit 7 reset, but 0 does the job
-    ld [rLCDC], a ; We do this to the LCDC cause we want to turn off the control operation by making bit 7 0, but the rest for now dont matter
-    ; We will have to write to LCDC again later, so it's not a bother, really.
-
-    call ResetOAM
-
-    ;once the LCD is turned off, we can access VRAM, so copy the font to VRAM
-    ld hl, _VRAM9000 ; pattern 0 lies at $9000, tilemap data address, set from the LCDC bits
-    ld de, FontTiles
-    ld bc, FontTilesEnd - FontTiles
-    call MemCopy ; copy tiles to VRAM
-
-    ; Init sprites
-    ld hl, _VRAM8000
-    ld de, TESTSPRITE
-    ld bc, TESTSPRITE.end - TESTSPRITE
-    call MemCopy ; copy tiles to VRAM
-
-    ld hl, _SCRN0 ; This will print the string at the top-left corner of the screen, 9800 is the window tilemap display select
-    ld de, HelloWorldStr
-
-    call CopyToTileMap ; set up tilemap
-
-
-        ; temp code
-    ld hl, wShadowOAM
-    ld a, 90
-    ld [hli], a ; set x coor
-    ld a, 100
-    ld [hli], a ;set y coord
-    ld a, 0
-    ld [hl], a
-
-    call hOAMDMA ; transfer sprite data to OAM
-
-    ; Init display registersm and turn on display
-    ld a, %11100100 ; setting the color palette
-    ld [rBGP], a ; render it out
-
-    xor a ; ld a, 0
-    ld [rSCY], a ; make the screen for scroll X and Y start at 0
-    ld [rSCX], a
-    
-    ; Shut sound down
-    ld [rNR52], a
-    
-    ; Turn screen on, display background
-    ld a, %10000011 ; we want to set back LCDC bit 7 to 1
-    ld [rLCDC], a ; turn on the screen
-
-; Lock up
-.lockup
-    jr .lockup
-
-
-/* Copy data to memory */
-MemCopy:
-    ; de - Source address
-    ; bc - number of bytes to fill
-    ; hl - destination address
-
-    ld a, [de] ; Grab 1 byte from the source
-    ld [hli], a ; Place it at the destination, incrementing hl, hli is just increment hl
-    inc de ; Move to next byte
-    dec bc ; Decrement count
-    ld a, b ; Check if count is 0, since `dec bc` doesn't update flags
-    or c ; if b and c are 0, when u or them it'll give 0 also
-    jr nz, MemCopy ; check if not zero
-    
-    ret
-
-
-/* write to tilemap */
-CopyToTileMap:
-    ; de - Source address
-    ; hl - destination address
-
-    ld a, [de]
-    ld [hli], a
-    inc de
-    cp $FF ; Check if the byte we just copied is 0xFF
-    jr c, CopyToTileMap ; Continue if it's not, c will be set if 0xFF is bigger
-    
-    ret

@@ -1,4 +1,5 @@
 INCLUDE "./src/hardware.inc"
+include "./src/util.inc"
 
 /*
     These are where the declaration of OAM variables in memory will be
@@ -51,18 +52,11 @@ DMARoutineEnd:
 SECTION "Clear OAM", ROM0
 /* Reset OAM and shadow OAM values, Use during VBLANK */
 ResetOAM::
-    xor a ; Make a to 0
-    ld b, wShadowOAM.end - wShadowOAM ; size
-    ld hl, _OAMRAM ; destination address is OAM
-    rst Memset_Small ; Here uses rst instead
-
+    MEMSET_SMALL _OAMRAM, 0, wShadowOAM.end - wShadowOAM
 /* Clean up shadowOAM data, can be used anytime, best to use when needing to reinitialise OAM values */
 ResetShawdowOAM::
-    xor a
-    ld b, wShadowOAM.end - wShadowOAM
-    ld hl, wShadowOAM
-    jp Memset_Small
-
+    MEMSET_SMALL wShadowOAM, 0, wShadowOAM.end - wShadowOAM
+    ret
 
 SECTION "OAM DMA", HRAM
 /*  This func contains the DMA transfer to transfer shadow OAM data to actual OAM
@@ -71,7 +65,3 @@ SECTION "OAM DMA", HRAM
 */ 
 hOAMDMA::
     ds DMARoutineEnd - DMARoutine ; Reserve space to copy the routine to
-
-
-
-

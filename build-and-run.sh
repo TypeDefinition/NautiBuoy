@@ -1,8 +1,11 @@
+# Understanding the "-exec" option of "find": https://unix.stackexchange.com/questions/389705/understanding-the-exec-option-of-find/389706
+# Seperate filename & path inside "find"'s' "-exec" option: https://unix.stackexchange.com/questions/178217/separate-filename-and-path-inside-find-commands-exec-option
 mkdir -p ./bin
 mkdir -p ./bin-int
-rgbasm -o ./bin-int/lapis-obj.o ./src/lapis.asm
-rgbasm -o ./bin-int/assets-obj.o ./src/assets.asm
-rgbasm -E ./bin-int/assets-map.map ./src/assets.asm
-rgblink -o ./bin/lapis.gb ./bin-int/assets-obj.o -n ./bin-int/assets-map.map ./bin-int/lapis-obj.o
+mkdir -p tile_data
+
+find ./assets/ -type f -name '*.png' -exec sh -c 'rgbgfx -o ./tile_data/$(basename "{}" .png).2bpp $0' {} \;
+find ./src/ -type f -name '*.asm' -exec sh -c 'rgbasm -o ./bin-int/$(basename "{}" .asm).o $0' {} \;
+find ./bin-int/ -type f -name '*.o' -exec rgblink -o ./bin/lapis.gb -n ./bin-int/symbols.sym {} +
 rgbfix -f lhg -p 255 ./bin/lapis.gb
 wine64 ./bgb/bgb64.exe ./bin/lapis.gb
