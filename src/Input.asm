@@ -11,12 +11,12 @@ P1F_DPAD     EQU $20 ; 0010 0000, select Dpad by setting bit 5 to high and bit 4
     last 4 bits: start(3), select(2), B(1), A(0)
 
     How to use: 
-    ldh a, [m_CurrentInputKeys/m_NewlyInputKeys] ; get current/new inputs
-    bit PADB_START, a ; check if bit n of register a is not z, so can use nz flag to check 
+    ld a, [gCurrentInputKeys/gNewlyInputKeys] ; get current/new inputs
+    bit PADB_START, a ; check if bit n of register a is not z, so can use nz or z flag to check 
 */
 SECTION "Input variables", WRAM0
-m_CurrentInputKeys:: ds 1   ; the input currently initialised, stores all current inputs regardless if pressed previously or not
-m_NewlyInputKeys:: ds 1     ; inputs that was not pressed previously, but pressed this time
+gCurrentInputKeys:: ds 1   ; the input currently initialised, stores all current inputs regardless if pressed previously or not
+gNewlyInputKeys:: ds 1     ; inputs that was not pressed previously, but pressed this time
 
 
 /* Logic to handle and update input */
@@ -44,26 +44,26 @@ UpdateInput::
     ldh [rP1], a
 
     ; Handle and inputs
-    ld a, [m_CurrentInputKeys]
+    ld a, [gCurrentInputKeys]
     xor b    ; keys that were pressed currently and previously becomes 0
     and b    ; keys that is currently pressed is kept, prev input becomes 0
-    ld [m_NewlyInputKeys], a
+    ld [gNewlyInputKeys], a
     ld a, b  ; load the values currently pressed
-    ld [m_CurrentInputKeys], a
+    ld [gCurrentInputKeys], a
 
     ret
 
 /* Function to handle stablization and debouncing inputs before getting the correct one */
 .ReadInput:
-    ldh [rP1],a     ; switch the key matrix
+    ldh [rP1], a     ; switch the key matrix
 
     ; Need some cycles before writing to P1 and reading the result, need wait for it to stabalize
     call .burnCycles  ; burn 10 cycles with a call
 
     ; debouncing
-    ldh a,[rP1]     ; ignore value while waiting for the key matrix to settle
-    ldh a,[rP1]
-    ldh a,[rP1]     ; store this read
+    ldh a, [rP1]     ; ignore value while waiting for the key matrix to settle
+    ldh a, [rP1]
+    ldh a, [rP1]     ; store this read
 
     or $F0   ; We only want the last 4 bits. input returned: 0 means pressed, 1 means not press. 
 .burnCycles:
