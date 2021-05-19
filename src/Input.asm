@@ -11,12 +11,12 @@ P1F_DPAD     EQU $20 ; 0010 0000, select Dpad by setting bit 5 to high and bit 4
     last 4 bits: start(3), select(2), B(1), A(0)
 
     How to use: 
-    ld a, [gCurrentInputKeys/gNewlyInputKeys] ; get current/new inputs
+    ld a, [wCurrentInputKeys/wNewlyInputKeys] ; get current/new inputs
     bit PADB_START, a ; check if bit n of register a is not z, so can use nz or z flag to check 
 */
 SECTION "Input variables", WRAM0
-gCurrentInputKeys:: ds 1   ; the input currently initialised, stores all current inputs regardless if pressed previously or not
-gNewlyInputKeys:: ds 1     ; inputs that was not pressed previously, but pressed this time
+wCurrentInputKeys:: ds 1   ; the input currently initialised, stores all current inputs regardless if pressed previously or not
+wNewlyInputKeys:: ds 1     ; inputs that was not pressed previously, but pressed this time
 
 
 /* Logic to handle and update input */
@@ -29,12 +29,12 @@ UpdateInput::
 
     ; get the d-pad inputs
     ld a, P1F_BUTTONS
-    call .ReadInput
+    call .readInput
     ld b, a ; Store the button inputs in b first
 
     ; get the button inputs
     ld a, P1F_DPAD
-    call .ReadInput
+    call .readInput
     swap a ; Move the lower 4 bits (d pad input) to the first 4 bits
     xor b  ; Merge the button and d-pad input to a. Cause 0 means press, 1 means not pressed. XOR will make the press button to 1, and unpress to 0
     ld b, a 
@@ -44,17 +44,17 @@ UpdateInput::
     ldh [rP1], a
 
     ; Handle and inputs
-    ld a, [gCurrentInputKeys]
+    ld a, [wCurrentInputKeys]
     xor b    ; keys that were pressed currently and previously becomes 0
     and b    ; keys that is currently pressed is kept, prev input becomes 0
-    ld [gNewlyInputKeys], a
+    ld [wNewlyInputKeys], a
     ld a, b  ; load the values currently pressed
-    ld [gCurrentInputKeys], a
+    ld [wCurrentInputKeys], a
 
     ret
 
 /* Function to handle stablization and debouncing inputs before getting the correct one */
-.ReadInput:
+.readInput:
     ldh [rP1], a     ; switch the key matrix
 
     ; Need some cycles before writing to P1 and reading the result, need wait for it to stabalize

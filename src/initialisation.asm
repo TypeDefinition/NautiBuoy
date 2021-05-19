@@ -25,7 +25,6 @@ Initialise::
     ld [rLCDC], a
 
     call ResetOAM
-    call ResetShawdowOAM
 
     ; Copy background tile data into VRAM.
     SET_ROMX_BANK 2 ; Our tile data is in Bank 2, so we load that into ROMX.
@@ -38,12 +37,9 @@ Initialise::
 
     ; Temporary code.
     ld hl, wShadowOAM
-    ld a, 90
-    ld [hli], a ; set x coor
-    ld a, 100
-    ld [hli], a ;set y coord
-    ld a, 0
-    ld [hl], a
+    call InitPlayer
+    call UpdatePlayerShadowOAM
+ 
     call hOAMDMA ; transfer sprite data to OAM
 
     ; Init display registersm and turn on display

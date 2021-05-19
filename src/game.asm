@@ -1,24 +1,41 @@
 INCLUDE "./src/structs.inc"
 INCLUDE "./src/game_structs.inc"
+INCLUDE "./src/hardware.inc"
 
 SECTION "Main Game Loop", ROM0[$0150]
 MainGameLoop::
-    ld de, wPlayer
-    ld hl, Player_XPos
-    ; for now it does nothing here
+    ;ld de, wPlayer
+    ;ld hl, Player_XPos
+    di 
+
+    ;call ResetOAM ; clear the current OAM and shadow OAM
+
+
+    call UpdateInput
+
+    ; TODO:: insert game logic here
+    call HandlePlayerInput
+
+    ; TODO:: update shadow OAM data here
+    ld hl, wShadowOAM
+
+    ; temp code, might move this somewhere else
+    call UpdatePlayerShadowOAM
+
+    ei
+    halt ; Save power, wait for vblank interrupt
+
     jr MainGameLoop
 
 SECTION "VBlank handler", ROM0
 
 VBlankHandler::
-    ; TODO:: scrolling or any tile updates here
-    call ResetOAM ; clear the current OAM
-
-    ; TODO:: update sprites for entities here
-
-
     call hOAMDMA ; Update OAM
-    call ResetShawdowOAM ; clear shadow OAM
+
+    ; TODO:: scrolling or any tile updates here
+    ; TODO:: camera stuff here, just fix with player being in center of it
+    ; TODO:: any UI stuff here too
+
 
     ; get back old state
     pop hl
