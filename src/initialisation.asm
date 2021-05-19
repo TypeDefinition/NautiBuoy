@@ -4,7 +4,6 @@ INCLUDE "./src/util.inc"
 SECTION "Initialisation", ROM0
 Initialise::
     ld sp, $E000 ; Initialise our stack pointer to the end of the work RAM.
-    di ; disable interrupts.
 
     call CopyDMARoutine ; init the copy of the DMA handler func from RAM to HRAM
 
@@ -62,6 +61,10 @@ Initialise::
     ld a, %10000011 ; we want to set back LCDC bit 7 to 1
     ld [rLCDC], a ; turn on the screen
 
+
+    ld a, IEF_VBLANK ; turn on vblank
+    ldh [rIE], a
+    xor a ; clean up work
     ei ; enable intrupts
 
     jp MainGameLoop ; Go to main game loop
