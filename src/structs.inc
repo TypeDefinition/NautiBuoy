@@ -21,6 +21,10 @@
 ; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 ; SOFTWARE.
 
+; If all of these are already defined, don't do it again.
+
+    IF !DEF(STRUCTS_INC)
+DEF STRUCTS_INC EQU 1
 
 
 ; Call with the expected RGBDS-structs version string to ensure your code
@@ -306,3 +310,5 @@ MACRO dstructs ; nb_structs, struct_type, instance_name
     ENDR
     PURGE STRUCT_ID
 ENDM
+
+    ENDC ; STRUCTS_INC
