@@ -8,4 +8,4 @@ find ./assets/ -type f -name '*.png' -exec sh -c 'rgbgfx -o ./tile_data/$(basena
 find ./src/ -type f -name '*.asm' -exec sh -c 'rgbasm -o ./bin-int/$(basename "{}" .asm).o $0' {} \;
 find ./bin-int/ -type f -name '*.o' -exec rgblink -o ./bin/lapis.gb -n ./bin-int/symbols.sym {} +
 rgbfix -f lhg -p 255 ./bin/lapis.gb
-wine64 ./bgb/bgb64.exe ./bin/lapis.gb
+java -jar ./Emulicious/Emulicious.jar
