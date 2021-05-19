@@ -1,5 +1,4 @@
 INCLUDE "./src/structs.inc"
-INCLUDE "./src/game_structs.inc"
 INCLUDE "./src/hardware.inc"
 
 SECTION "Main Game Loop", ROM0[$0150]

@@ -1,6 +1,6 @@
 INCLUDE "./src/hardware.inc"
 INCLUDE "./src/structs.inc"
-INCLUDE "./src/game_structs.inc"
+INCLUDE "./src/entities.inc"
 
 PLAYER_SPEED EQU $8
 

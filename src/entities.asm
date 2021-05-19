@@ -1,7 +1,9 @@
-INCLUDE "./src/game_structs.inc"
+INCLUDE "./src/entities.inc"
+INCLUDE "./src/structs.inc"
 
 SECTION "Entities", WRAM0
-wEntities::
+    dstruct Player, somethingTee
+
     dstruct Character, wEnemy0
     dstruct Character, wEnemy1
     dstruct Character, wEnemy2
