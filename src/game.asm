@@ -4,14 +4,9 @@ INCLUDE "./src/hardware.inc"
 
 SECTION "Main Game Loop", ROM0[$0150]
 MainGameLoop::
-    ;ld de, wPlayer
-    ;ld hl, Player_XPos
-    di 
-
-    ;call ResetOAM ; clear the current OAM and shadow OAM
-
-
     call UpdateInput
+
+    call ResetShawdowOAM
 
     ; TODO:: insert game logic here
     call HandlePlayerInput
@@ -22,7 +17,6 @@ MainGameLoop::
     ; temp code, might move this somewhere else
     call UpdatePlayerShadowOAM
 
-    ei
     halt ; Save power, wait for vblank interrupt
 
     jr MainGameLoop
@@ -30,6 +24,7 @@ MainGameLoop::
 SECTION "VBlank handler", ROM0
 
 VBlankHandler::
+    call ResetOAM
     call hOAMDMA ; Update OAM
 
     ; TODO:: scrolling or any tile updates here

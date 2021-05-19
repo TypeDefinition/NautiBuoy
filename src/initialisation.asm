@@ -25,6 +25,7 @@ Initialise::
     ld [rLCDC], a
 
     call ResetOAM
+    call ResetShawdowOAM
 
     ; Copy background tile data into VRAM.
     SET_ROMX_BANK 2 ; Our tile data is in Bank 2, so we load that into ROMX.
@@ -35,7 +36,7 @@ Initialise::
     SET_ROMX_BANK 3 ; Our tile maps are in Bank 3, so we load that into ROMX.
     MEM_COPY Level0, _SCRN0, Level0.end-Level0
 
-    ; Temporary code.
+    ; TEMP: Temporary code.
     ld hl, wShadowOAM
     call InitPlayer
     call UpdatePlayerShadowOAM
