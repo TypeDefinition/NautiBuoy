@@ -9,4 +9,4 @@ for /r ".\bin-int" %%i in (*.o); do call set "OBJFiles=%%OBJFiles%% %%~i"
 rgblink -o .\bin\lapis.gb -n .\bin-int\symbols.sym %OBJFiles%
 
 rgbfix -f lhg -p 255 .\bin\lapis.gb
-java -jar ./Emulicious/Emulicious.jar
+java -jar .\Emulicious\Emulicious.jar .\bin\lapis.gb
