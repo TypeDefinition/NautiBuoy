@@ -22,7 +22,12 @@ CollisionCheck::
     that the collider size will be something reasonable where
     srcColSize + tgtColSize will not cause an overflow.
     
-    Registers Used: a, b, c, d */
+    Registers Used: a, b, c, d, f */
+
+    ; Save the register values.
+    push af
+    push bc
+    push de
 
     ; Set result to 0.
     xor a
@@ -75,4 +80,9 @@ CollisionCheck::
     ld [wCollisionArgs.result], a
 
 .exit
+    ; Restore the register values.
+    pop de
+    pop bc
+    pop af
+
     ret
