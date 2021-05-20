@@ -5,17 +5,13 @@ INCLUDE "./src/hardware.inc"
     IF !DEF(UTIL_INC)
 DEF UTIL_INC EQU 1
 
-MACRO WAIT_VBLANK
-    call WaitVBlank
-ENDM
-
 /*  Copy data from one memory address to another, byte by byte.
     \1 - Source Address
     \2 - Destination Address
     \3 - Number of Bytes
     
     Registers Used: a, b, c, d, e, h, l */
-MACRO MEM_COPY
+MACRO mem_copy
     ld de, \1
     ld hl, \2
     ld bc, \3
@@ -24,7 +20,7 @@ ENDM
 
 /*  Set the memory bank that is placed into ROMX.
     Registers Used: a */
-MACRO SET_ROMX_BANK
+MACRO set_romx_bank
     ld a, \1
     ld [rROMB0], a
 ENDM
@@ -36,7 +32,7 @@ ENDM
     \3 - Number of Bytes (MUST BE 1 OR MORE!)
     
     Registers Used: a, b, h, l */
-MACRO MEMSET_SMALL
+MACRO mem_set_small
     ld hl, \1
     ld a, \2
     ld b, \3

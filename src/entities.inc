@@ -1,7 +1,7 @@
 INCLUDE "./src/structs.inc"
 
-    IF !DEF(GS_INC)
-DEF GS_INC EQU 1
+    IF !DEF(ENTITIES_INC)
+DEF ENTITIES_INC EQU 1
 
     ; Tags
     DEF TAG_PLAYER EQU 0
@@ -22,10 +22,11 @@ DEF GS_INC EQU 1
         bytes 1, Active
         bytes 1, Tag
         bytes 1, Type
-        bytes 1, XPos
-        bytes 1, YPos
+        bytes 1, PosX
+        bytes 1, PosY
         bytes 1, Direction
-        bytes 1, ColliderSize
+        bytes 1, Velocity
+        bytes 1, ColSize
         bytes 4, SpriteIDs
         bytes 1, HP
     end_struct
@@ -34,20 +35,12 @@ DEF GS_INC EQU 1
         bytes 1, Active
         bytes 1, Tag
         bytes 1, Type
-        bytes 1, XPos
-        bytes 1, YPos
+        bytes 1, PosX
+        bytes 1, PosY
         bytes 1, Direction
+        bytes 1, Velocity
         bytes 1, SpriteID
         bytes 1, Damage
     end_struct
 
-    struct Player
-        bytes 1, IsAlive
-        bytes 1, XPos
-        bytes 1, YPos
-        bytes 1, ColliderSize
-        bytes 1, Direction
-        bytes 4, MetaSpriteID
-    end_struct
-
-    ENDC ; GS_INC
+    ENDC ; ENTITIES_INC

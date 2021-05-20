@@ -6,7 +6,7 @@ for /r ".\assets" %%i in (*.png); do rgbgfx -o .\tile_data\%%~ni.2bpp %%i
 for /r ".\src" %%i in (*.asm); do rgbasm -o .\bin-int\%%~ni.o %%i
 
 for /r ".\bin-int" %%i in (*.o); do call set "OBJFiles=%%OBJFiles%% %%~i"
-rgblink -o .\bin\lapis.gb -n .\bin-int\symbols.sym -m .\bin-int\symbols.map %OBJFiles%
+rgblink -o .\bin\lapis.gb -n .\bin-int\symbols.sym -m .\bin\build_log.map %OBJFiles%
 
 rgbfix -f lhg -p 255 .\bin\lapis.gb
 START .\Emulicious\Emulicious.exe .\bin\lapis.gb

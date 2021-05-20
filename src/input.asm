@@ -14,7 +14,7 @@ P1F_DPAD     EQU $20 ; 0010 0000, select Dpad by setting bit 5 to high and bit 4
     ld a, [wCurrentInputKeys/wNewlyInputKeys] ; get current/new inputs
     bit PADB_START, a ; check if bit n of register a is not z, so can use nz or z flag to check 
 */
-SECTION "Input variables", WRAM0
+SECTION "Input Variables", WRAM0
 wCurrentInputKeys:: ds 1   ; the input currently initialised, stores all current inputs regardless if pressed previously or not
 wNewlyInputKeys:: ds 1     ; inputs that was not pressed previously, but pressed this time
 

@@ -41,9 +41,9 @@ CollisionCheck::
 
     ; If tgtPosX < srcPosX, an underflow will happen.
     jr nc, .noUnderflowX
-    ld [wNegateArgs.src], a
-    call Negate
-    ld a, [wNegateArgs.result]
+    ; Negate the value via 2's complement.
+    xor a, $FF
+    add a, $01
 .noUnderflowX
 
     ld b, a ; Register b contains Abs(srcPosX - tgtPosX)
@@ -56,9 +56,9 @@ CollisionCheck::
 
     ; If tgtPosY < srcPosY, an underflow will happen.
     jr nc, .noUnderflowY
-    ld [wNegateArgs.src], a
-    call Negate
-    ld a, [wNegateArgs.result]
+    ; Negate the value via 2's complement.
+    xor a, $FF
+    add a, $01
 .noUnderflowY
 
     ld c, a ; Register c contains Abs(srcPosY - tgtPosY)

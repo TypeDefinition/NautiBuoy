@@ -1,6 +1,6 @@
 INCLUDE "./src/hardware.inc"
 
-SECTION "Tilemaps", ROMX, BANK[3]
+SECTION "Tile Maps", ROMX, BANK[3]
 Level0::
     db 1,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,2
     db 6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6

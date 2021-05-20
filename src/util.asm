@@ -31,25 +31,3 @@ MemCopy::
     pop af
 
     ret
-
-SECTION "Negate Args", WRAM0
-wNegateArgs::
-    .src::
-        ds 1
-    .result::
-        ds 1
-
-/*  Negate a 8-bit value via 2's Complement.
-    .src - Value to negate.
-    .result - Function output
-
-    Registers Used: a */
-SECTION "Negate", ROM0
-Negate::
-    push af
-    ld a, [wNegateArgs.src]
-    xor a, $FF ; Invert the bits of a.
-    add a, 1
-    ld [wNegateArgs.result], a
-    pop af
-    ret

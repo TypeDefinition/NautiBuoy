@@ -8,7 +8,7 @@ Initialise::
     call CopyDMARoutine ; init the copy of the DMA handler func from RAM to HRAM
 
     ; Wait for VBlank before shutting off the LCD.
-    WAIT_VBLANK
+    call WaitVBlank
 
     /*  The LCDC register ($FF40) is the LCD Control register.
         Bit 0: Background & Window Display (0 = Off, 1 = On)
@@ -28,13 +28,13 @@ Initialise::
     call ResetShawdowOAM
 
     ; Copy background tile data into VRAM.
-    SET_ROMX_BANK 2 ; Our tile data is in Bank 2, so we load that into ROMX.
-    MEM_COPY BackgroundTiles, _VRAM9000, BackgroundTiles.end-BackgroundTiles
-    MEM_COPY TestSprite, _VRAM8000, TestSprite.end-TestSprite
+    set_romx_bank 2 ; Our tile data is in Bank 2, so we load that into ROMX.
+    mem_copy BackgroundTiles, _VRAM9000, BackgroundTiles.end-BackgroundTiles
+    mem_copy TestSprite, _VRAM8000, TestSprite.end-TestSprite
 
     ; Copy tile map into VRAM.
-    SET_ROMX_BANK 3 ; Our tile maps are in Bank 3, so we load that into ROMX.
-    MEM_COPY Level0, _SCRN0, Level0.end-Level0
+    set_romx_bank 3 ; Our tile maps are in Bank 3, so we load that into ROMX.
+    mem_copy Level0, _SCRN0, Level0.end-Level0
 
     ; TEMP: Temporary code.
     ld hl, wShadowOAM

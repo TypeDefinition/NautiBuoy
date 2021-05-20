@@ -21,7 +21,7 @@ wShadowOAM::
 .end
 
 /* Move codes from RAM to HRAM */
-SECTION "OAM DMA routine", ROM0
+SECTION "OAM DMA Routine", ROM0
 
 ; We want to copy our DMARoutine function from ROM to HRAM, since writing to OAM can only happen at HRAM
 CopyDMARoutine::
@@ -52,11 +52,11 @@ DMARoutineEnd:
 SECTION "Clear OAM", ROM0
 /* Reset OAM and shadow OAM values, Use during VBLANK */
 ResetOAM::
-    MEMSET_SMALL _OAMRAM, 0, wShadowOAM.end - wShadowOAM
+    mem_set_small _OAMRAM, 0, wShadowOAM.end - wShadowOAM
     ret
 /* Clean up shadowOAM data, can be used anytime, best to use when needing to reinitialise OAM values */
 ResetShawdowOAM::
-    MEMSET_SMALL wShadowOAM, 0, wShadowOAM.end - wShadowOAM
+    mem_set_small wShadowOAM, 0, wShadowOAM.end - wShadowOAM
     ret
 
 SECTION "OAM DMA", HRAM
