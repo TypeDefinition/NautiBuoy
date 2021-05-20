@@ -1,6 +1,6 @@
 INCLUDE "./src/hardware.inc"
 
-SECTION "Util", ROM0
+SECTION "WaitVBlank", ROM0
 /*  Loop until the LCD is in VBlank state.
     Registers Used: a */
 WaitVBlank::
@@ -15,6 +15,7 @@ WaitVBlank::
     hl - destination address
     
     Registers Used: a, b, c, d, e, h, l */
+SECTION "MemCopy", ROM0
 MemCopy::
     ld a, [de] ; Grab 1 byte from the source
     ld [hli], a ; Place it at the destination, incrementing hl, hli is just increment hl.
@@ -25,19 +26,22 @@ MemCopy::
     jr nz, MemCopy ; check if not zero.
     ret
 
+SECTION "Negate Args", WRAM0
+wNegateArgs::
+    .src::
+        ds 1
+    .result::
+        ds 1
+
 /*  Negate a 8-bit value via 2's Complement.
     .src - Value to negate.
     .result - Function output
 
     Registers Used: a */
+SECTION "Negate", ROM0
 Negate::
-.src::
-    ds 1
-.result::
-    ds 1
-.calculate::
-    ld a, [.src]    
+    ld a, [wNegateArgs.src]
     xor a, $FF ; Invert the bits of a.
     add a, 1
-    ld [.result], a
+    ld [wNegateArgs.result], a
     ret

@@ -1,7 +1,7 @@
 INCLUDE "./src/structs.inc"
 INCLUDE "./src/hardware.inc"
 
-SECTION "Main Game Loop", ROM0[$0150]
+SECTION "Main Game Loop", ROM0
 MainGameLoop::
     call UpdateInput
 
@@ -16,7 +16,33 @@ MainGameLoop::
     ; temp code, might move this somewhere else
     call UpdatePlayerShadowOAM
 
+    ; Collision Test
+    ; Src
+    /*
+    ld a, 22
+    ld [wCollisionArgs.srcPosX], a
+    ld a, 5
+    ld [wCollisionArgs.srcPosY], a
+    ld a, 8
+    ld [wCollisionArgs.srcColSize], a
+
+    ; Tgt
+    ld a, 5
+    ld [wCollisionArgs.tgtPosX], a
+    ld a, 5
+    ld [wCollisionArgs.tgtPosY], a
+    ld a, 8
+    ld [wCollisionArgs.tgtColSize], a
+
+    call CollisionCheck
+    ld a, [wCollisionArgs.result]
+    add a, 48
+    */
+
     halt ; Save power, wait for vblank interrupt
+    
+    ; Print Collision Result Onto Screen
+    ; ld [_SCRN0], a
 
     jr MainGameLoop
 
