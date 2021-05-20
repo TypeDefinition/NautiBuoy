@@ -21,7 +21,7 @@ InitPlayer::
     ld [wPlayer_Active], a
     ld a, TYPE_PLAYER
     ld [wPlayer_Tag], a
-    ld a, 90
+    ld a, 96
     ld [wPlayer_PosY], a
     ld [wPlayer_PosX], a
     xor a
