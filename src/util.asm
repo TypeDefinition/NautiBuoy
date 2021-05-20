@@ -1,6 +1,8 @@
 INCLUDE "./src/hardware.inc"
 
 SECTION "Util", ROM0
+/*  Loop until the LCD is in VBlank state.
+    Registers Used: a */
 WaitVBlank::
     ld a, [rLY] ; rLY is address $FF44, we getting the LCDC Y-Coordinate here to see the current state of the LCDC drawing
     cp 144 ; Check if the LCD is past VBlank, values between 144 - 153 is VBlank period
@@ -10,7 +12,9 @@ WaitVBlank::
 /*  Copy data from one memory address to another, byte by byte.
     de - Source address
     bc - number of bytes to fill
-    hl - destination address */
+    hl - destination address
+    
+    Registers Used: a, b, c, d, e, h, l */
 MemCopy::
     ld a, [de] ; Grab 1 byte from the source
     ld [hli], a ; Place it at the destination, incrementing hl, hli is just increment hl.
@@ -19,4 +23,21 @@ MemCopy::
     ld a, b ; Check if count is 0, since `dec bc` doesn't update flags.
     or c ; if b and c are 0, when u or them it'll give 0 also.
     jr nz, MemCopy ; check if not zero.
+    ret
+
+/*  Negate a 8-bit value via 2's Complement.
+    .src - Value to negate.
+    .result - Function output
+
+    Registers Used: a */
+Negate::
+.src::
+    ds 1
+.result::
+    ds 1
+.calculate::
+    ld a, [.src]    
+    xor a, $FF ; Invert the bits of a.
+    add a, 1
+    ld [.result], a
     ret

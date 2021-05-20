@@ -9,10 +9,12 @@ MACRO WAIT_VBLANK
     call WaitVBlank
 ENDM
 
-; Copy data from one memory address to another, byte by byte.
-; \1 - Source Address
-; \2 - Destination Address
-; \3 - Number of Bytes
+/*  Copy data from one memory address to another, byte by byte.
+    \1 - Source Address
+    \2 - Destination Address
+    \3 - Number of Bytes
+    
+    Registers Used: a, b, c, d, e, h, l */
 MACRO MEM_COPY
     ld de, \1
     ld hl, \2
@@ -20,7 +22,8 @@ MACRO MEM_COPY
     call MemCopy
 ENDM
 
-; Set the memory bank that is placed into ROMX.
+/*  Set the memory bank that is placed into ROMX.
+    Registers Used: a */
 MACRO SET_ROMX_BANK
     ld a, \1
     ld [rROMB0], a
@@ -30,7 +33,9 @@ ENDM
     For small data sets, up to size 256.
     \1 - Destination Address
     \2 - Value
-    \3 - Number of Bytes (MUST BE 1 OR MORE!) */
+    \3 - Number of Bytes (MUST BE 1 OR MORE!)
+    
+    Registers Used: a, b, h, l */
 MACRO MEMSET_SMALL
     ld hl, \1
     ld a, \2
