@@ -1,41 +1,30 @@
 INCLUDE "./src/hardware.inc"
 
-DEF ANIMATION_FRAMES EQU 2
-
 /* All of player sprite data, store in ROMX since only need to read */
-SECTION "Player Sprite Data", ROMX, BANK[3]
+SECTION "Player Sprite Data", ROMX, BANK[2]
 
 PlayerSprites::
-.upSprite
-    dw PlayerAnimation.upAnimation
-    db ANIMATION_FRAMES ; animation frames
-
-    db 0 ; y
+.upSprite::
+    db -8 ; y
     db 0 ; x
     db OAMF_PAL0
 
     ; right sprite of the player
-    db 0 ; y
+    db -8 ; y
     db 8 ; x
     db OAMF_PAL0 | OAMF_XFLIP
 
-.downSprite
-    dw PlayerAnimation.downAnimation
-    db ANIMATION_FRAMES ; animation frames
-
-    db 0 ; y
+.downSprite::
+    db -8 ; y
     db 0 ; x
     db OAMF_PAL0 | OAMF_YFLIP
 
     ; right sprite of the player
-    db 0 ; y
+    db -8 ; y
     db 8 ; x
     db OAMF_PAL0 | OAMF_XFLIP | OAMF_YFLIP
 
-.rightSprite
-    dw PlayerAnimation.rightAnimation
-    db ANIMATION_FRAMES ; animation frames
-
+.rightSprite::
     db 0 ; y
     db 0 ; x
     db OAMF_PAL0
@@ -45,10 +34,7 @@ PlayerSprites::
     db 0 ; x
     db OAMF_PAL0 | OAMF_YFLIP
     
-.leftSprite
-    dw PlayerAnimation.leftAnimation
-    db ANIMATION_FRAMES ; animation frames
-
+.leftSprite::
     db 0 ; y
     db 0 ; x
     db OAMF_PAL0 | OAMF_XFLIP
@@ -70,18 +56,18 @@ variables to store for animation:
 */
 
 PlayerAnimation::
-.upAnimation
+.upAnimation::
     db 0
     db 2
 
-.downAnimation
+.downAnimation::
     db 0
     db 2
 
-.rightAnimation
+.rightAnimation::
     db 0
     db 2
 
-.leftAnimation
+.leftAnimation::
     db 0
     db 2

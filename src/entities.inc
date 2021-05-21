@@ -18,6 +18,9 @@ DEF ENTITIES_INC EQU 1
     DEF TYPE_BULLET2 EQU 5
     DEF TYPE_BULLET3 EQU 6
 
+    ; For animation frames
+    DEF PLAYER_WALK_FRAMES EQU 2
+
     struct Character
         bytes 1, Active
         bytes 1, Tag
@@ -27,7 +30,8 @@ DEF ENTITIES_INC EQU 1
         bytes 1, Direction
         bytes 1, Velocity
         bytes 1, ColSize
-        bytes 4, SpriteIDs
+        bytes 1, CurrAnimationFrame
+        bytes 1, CurrStateMaxAnimFrame  ; Update this based on states
         bytes 1, HP
     end_struct
 
