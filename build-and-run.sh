@@ -4,7 +4,8 @@ mkdir -p ./bin
 mkdir -p ./bin-int
 mkdir -p ./tile_data
 
-find ./assets/ -type f -name '*.png' -exec sh -c 'rgbgfx -o ./tile_data/$(basename "{}" .png).2bpp $0' {} \;
+find ./assets/background -type f -name '*.png' -exec sh -c 'rgbgfx -o ./tile_data/$(basename "{}" .png).2bpp $0' {} \;
+find ./assets/sprites -type f -name '*.png' -exec sh -c 'rgbgfx -h -o ./tile_data/$(basename "{}" .png).2bpp $0' {} \;
 find ./src/ -type f -name '*.asm' -exec sh -c 'rgbasm -o ./bin-int/$(basename "{}" .asm).o $0' {} \;
 find ./bin-int/ -type f -name '*.o' -exec rgblink -o ./bin/lapis.gb -n ./bin-int/symbols.sym -m ./bin/memory_data.map {} +
 rgbfix -f lhg -p 255 ./bin/lapis.gb
