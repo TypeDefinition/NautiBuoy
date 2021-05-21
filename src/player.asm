@@ -18,9 +18,9 @@ InitPlayer::
     ld a, $01
     ld [wPlayer_Active], a
     ld a, TAG_PLAYER
-    ld [wPlayer_Active], a
-    ld a, TYPE_PLAYER
     ld [wPlayer_Tag], a
+    ld a, TYPE_PLAYER
+    ld [wPlayer_Type], a
     ld a, 96
     ld [wPlayer_PosY], a
     ld [wPlayer_PosX], a
@@ -31,6 +31,8 @@ InitPlayer::
     ld [wPlayer_ColSize], a
     ld a, 3
     ld [wPlayer_HP], a
+
+    ; TODO: Make const variables for the initial HP, posX and posY, and velocity
 
     pop af
     ret
@@ -129,17 +131,17 @@ UpdatePlayerShadowOAM::
     ld b, a
     ld a, [wPlayer_PosY]
     sub a, b
-    ld [hli], a
+    ld [hli], a ; init screen y Pos
     
     ld a, [rSCX]
     ld b, a
     ld a, [wPlayer_PosX]
     sub a, b
-    ld [hli], a
+    ld [hli], a ; init screen x pos
     
     xor a
     ld [hli], a ; sprite ID, for now it'll just be this
-    ld [hli], a  ; TEMP flags
+    ld [hli], a  ; TEMP flags for sprite
 
     pop hl
     pop bc
