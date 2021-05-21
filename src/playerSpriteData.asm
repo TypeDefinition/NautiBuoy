@@ -25,7 +25,7 @@ PlayerSprites::
     db OAMF_PAL0 | OAMF_XFLIP | OAMF_YFLIP
 
 .rightSprite::
-    db 0 ; y
+    db -8 ; y
     db 0 ; x
     db OAMF_PAL0
 
@@ -57,7 +57,12 @@ variables to store for animation:
 
 PlayerAnimation::
 .upAnimation::
+    ; frame 1
     db 0
+    db 0
+
+    ; frame 2
+    db 2
     db 2
 
 .downAnimation::
@@ -65,9 +70,9 @@ PlayerAnimation::
     db 2
 
 .rightAnimation::
-    db 0
-    db 2
+    db 4
+    db 6
 
 .leftAnimation::
-    db 0
-    db 2
+    db 4
+    db 6
