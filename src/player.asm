@@ -267,8 +267,7 @@ UpdatePlayerShadowOAM::
 .updateSpriteID
     ; grab the sprite ID from the current animation frame to render
     ld a, [wPlayer_CurrAnimationFrame]
-    ld b, 1
-    sla b ; curr animation frame x 2
+    sla a ; curr animation frame x 2
     
     ld b, 0
     ld c, a ; load curr animation frame

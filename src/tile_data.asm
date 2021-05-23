@@ -10,5 +10,5 @@ BackgroundTiles::
 .end::
 
 TestSprite::
-    INCBIN "./tile_data/test_sprite2.2bpp"
+    INCBIN "./tile_data/tempPlayer.2bpp"
 .end::

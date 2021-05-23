@@ -65,6 +65,10 @@ PlayerAnimation::
     db 2
     db 2
 
+    ; frame 3
+    db 4
+    db 4
+
 .downAnimation::
     db 0
     db 0
@@ -73,18 +77,30 @@ PlayerAnimation::
     db 2
     db 2
 
-.rightAnimation::
-    db 2
+    ; frame 3
+    db 4
     db 4
 
+.rightAnimation::
+    db 6
+    db 8
+
     ; frame 2
-    db 2
-    db 2
+    db 10
+    db 12
+
+    ; frame 3
+    db 14
+    db 16
 
 .leftAnimation::
-    db 4
-    db 2
+    db 8
+    db 6
 
     ; frame 2
-    db 2
-    db 2
+    db 12
+    db 10
+
+    ; frame 3
+    db 16
+    db 14

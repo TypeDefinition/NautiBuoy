@@ -46,6 +46,7 @@ Initialise::
     ; Init display registersm and turn on display
     ld a, %11100100 ; setting the color palette
     ld [rBGP], a ; render it out
+    ld [rOBP0], a ; object palette 0
 
     xor a ; ld a, 0
     ld [rSCY], a ; make the screen for scroll X and Y start at 0

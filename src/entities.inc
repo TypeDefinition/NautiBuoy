@@ -19,7 +19,7 @@ DEF ENTITIES_INC EQU 1
     DEF TYPE_BULLET3 EQU 6
 
     ; For animation frames
-    DEF PLAYER_WALK_FRAMES EQU 2
+    DEF PLAYER_WALK_FRAMES EQU 3
 
     struct Character
         bytes 1, Active
