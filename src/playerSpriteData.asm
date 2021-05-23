@@ -29,20 +29,20 @@ PlayerSprites::
     db 0 ; x
     db OAMF_PAL0
 
-    ; bottom sprite of the player
+    ; right sprite of the player
     db -8 ; y
-    db 0 ; x
-    db OAMF_PAL0 | OAMF_YFLIP
+    db 8 ; x
+    db OAMF_PAL0
     
 .leftSprite::
-    db 0 ; y
+    db -8 ; y
     db 0 ; x
     db OAMF_PAL0 | OAMF_XFLIP
 
-    ; bottom sprite of the player
+    ; right sprite of the player
     db -8 ; y
-    db 0 ; x
-    db OAMF_PAL0 | OAMF_XFLIP | OAMF_YFLIP
+    db 8 ; x
+    db OAMF_PAL0 | OAMF_XFLIP
 
 /*
 variables to store for each sprite for every direction:
@@ -67,12 +67,12 @@ PlayerAnimation::
 
 .downAnimation::
     db 0
-    db 2
+    db 0
 
 .rightAnimation::
+    db 2
     db 4
-    db 6
 
 .leftAnimation::
     db 4
-    db 6
+    db 2
