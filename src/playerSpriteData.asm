@@ -1,46 +1,55 @@
 INCLUDE "./src/hardware.inc"
 
+/*
+    SPRITE INFO
+
+    We are making the top left of the screen (0,0) (there is extra 16 pixels in y and 8 pixels in x on both sides)
+    Thus, the original 8x16 sprite, pivot point is bottom right
+    We want to make the centre of our sprite (0,0)
+*/
+
+
 /* All of player sprite data, store in ROMX since only need to read */
 SECTION "Player Sprite Data", ROMX, BANK[2]
 
 PlayerSprites::
 .upSprite::
-    db -8 ; y
+    db 8 ; y
     db 0 ; x
     db OAMF_PAL0
 
     ; right sprite of the player
-    db -8 ; y
+    db 8 ; y
     db 8 ; x
     db OAMF_PAL0 | OAMF_XFLIP
 
 .downSprite::
-    db -8 ; y
+    db 8 ; y
     db 0 ; x
     db OAMF_PAL0 | OAMF_YFLIP
 
     ; right sprite of the player
-    db -8 ; y
+    db 8 ; y
     db 8 ; x
     db OAMF_PAL0 | OAMF_XFLIP | OAMF_YFLIP
 
 .rightSprite::
-    db -8 ; y
+    db 8 ; y
     db 0 ; x
     db OAMF_PAL0
 
     ; right sprite of the player
-    db -8 ; y
+    db 8 ; y
     db 8 ; x
     db OAMF_PAL0
     
 .leftSprite::
-    db -8 ; y
+    db 8 ; y
     db 0 ; x
     db OAMF_PAL0 | OAMF_XFLIP
 
     ; right sprite of the player
-    db -8 ; y
+    db 8 ; y
     db 8 ; x
     db OAMF_PAL0 | OAMF_XFLIP
 
