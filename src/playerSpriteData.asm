@@ -69,10 +69,22 @@ PlayerAnimation::
     db 0
     db 0
 
+    ; frame 2
+    db 2
+    db 2
+
 .rightAnimation::
     db 2
     db 4
 
+    ; frame 2
+    db 2
+    db 2
+
 .leftAnimation::
     db 4
+    db 2
+
+    ; frame 2
+    db 2
     db 2

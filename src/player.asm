@@ -59,6 +59,7 @@ UpdatePlayerMovement::
     ; Vertical Movement
     ld a, [wPlayer_PosY]
     ld d, a ; store original y pos
+    ld e, 0 ; init the animation frame addition to 0
 
 .up
     bit PADB_UP, b
@@ -69,7 +70,7 @@ UpdatePlayerMovement::
     jr z, .verticalEnd
     add a, c
 .verticalEnd
-    ;ld [wPlayer_PosY], a
+    ld [wPlayer_PosY], a ; update pos Y
 
     cp d ; compare a with the original y pos to know the final dir moved
     jr z, .right ; if they are the same go to horizontal movement
@@ -78,7 +79,7 @@ UpdatePlayerMovement::
     ld a, PADB_DOWN
 
 .verticalSpriteDirEnd
-    ld [wPlayer_Direction], a
+    ld [wPlayer_Direction], a 
     
     ld e, 1 ; add 1 frame in animation
 .right
@@ -95,10 +96,10 @@ UpdatePlayerMovement::
     sub a, c
 
 .horizontalEnd
-    ;ld [wPlayer_PosX], a
+    ld [wPlayer_PosX], a ; update pos X
 
     cp d ; compare a with the original x pos to know the final dir moved
-    jr z, .exit ; if they are the same, go to end
+    jr z, .updateAnimationFrame ; if they are the same, go to end
     ld a, PADB_LEFT
     jr c, .horizontalSpriteDirEnd; there's a carry, means player went left. a < original x pos
     ld a, PADB_RIGHT
@@ -111,6 +112,7 @@ UpdatePlayerMovement::
 .updateAnimationFrame ; Animation update frames here
     ld a, [wPlayer_CurrStateMaxAnimFrame]
     ld b, a ; store max frames into b
+
     xor a
     cp e ; if e (animation frames added) is 0 it means it didnt add anything
     jr z, .exit
@@ -123,7 +125,7 @@ UpdatePlayerMovement::
     xor a
 
 .noResetAnimationCounter
-    ld a, [wPlayer_CurrAnimationFrame]
+    ld [wPlayer_CurrAnimationFrame], a
 
 .exit
     pop hl
@@ -169,36 +171,36 @@ UpdatePlayerCamera::
     pop af
     ret
 
+
 /*  Update shadow OAM for player
+    Update sprite ID according to current frame of animation and direction
+
     hl - shadowOAM address where the player is
 */
 UpdatePlayerShadowOAM::
-    ; TODO:: properly convert the position to screen position instead
-    ; TODO:: Manage the sprite to show here too in the sprite ID
-
     push af
     push bc
     push de
     push hl
 
-    push hl ; this is for the sprite ID intialisation later, store a copy of the original hl
+    push hl ; for sprite ID intialisation later, store another copy of the original hl
 
-    ; TODO:: do it based on direction of sprite
-    ; TODO:: do a check here, store the animation in hl and push, pop it later
+    ; do a dir check for sprite
     ld a, [wPlayer_Direction]
-    ;ld de, PlayerSprites.upSprite
 
 .upSprite
     cp PADB_UP
     jr nz, .downSprite
     ld de, PlayerSprites.upSprite
     ld bc, PlayerAnimation.upAnimation
+    jr .endSpriteDir ; save 6 cycles. original 9 cycles, jr 3 cycles
 
 .downSprite
     cp PADB_DOWN
     jr nz, .rightSprite
     ld de, PlayerSprites.downSprite
     ld bc, PlayerAnimation.downAnimation
+    jr .endSpriteDir ; original 6 cycles, save 3 cycles
 
 .rightSprite
     cp PADB_RIGHT
@@ -214,8 +216,6 @@ UpdatePlayerShadowOAM::
 
 .endSpriteDir
     push bc ; to be used later for animation
-
-    
     set_romx_bank 2 ; bank for sprites is in bank 2
 
     ; Convert player position from world space to screen space.
@@ -231,7 +231,7 @@ UpdatePlayerShadowOAM::
     sub a, c
     ld c, a ; store x screen pos at x
 
-    ; init the sprites shadow OAM, for y, x and flags, sprite ID later
+.initShadowOAMVariables ; init the sprites shadow OAM, for y, x and flags, sprite ID later
     ld a, [de] ; get the sprite offset y
     add b
     ld [hli], a ; init screen y Pos
@@ -263,24 +263,28 @@ UpdatePlayerShadowOAM::
 
     ld a, [de] ; get flags
     ld [hli], a
-    
 
+.updateSpriteID
     ; grab the sprite ID from the current animation frame to render
-    ld hl, 0 ; make hl to 0 so can add the animation address
     ld a, [wPlayer_CurrAnimationFrame]
+    ld b, 1
+    sla b ; curr animation frame x 2
+    
+    ld b, 0
+    ld c, a ; load curr animation frame
 
-    ; TODO:: while loop here to add the offset?
-    ;ld b, 0
-    ;ld c, a ; load curr animation frame
+    ld hl, 0 ; make hl to 0 so can add the animation address
+    add hl, bc ; init the offset to hl
+
     pop bc ; get the animation sprite address
-    add hl, bc ; init the animation sprite address to hl
-    ; TODO:: add the offset to hl for the animation
+    add hl, bc ; add the address to the offset
 
     ld a, [hli] ; grab the first half of the sprite
     ld b, a
     ld a, [hl] ; get the second half of the sprite
     ld c, a
 
+    ; update sprite ID to OAM
     pop hl ; get the original hl from the shadowOAM
     ld d, 0
     ld e, 2
@@ -288,43 +292,13 @@ UpdatePlayerShadowOAM::
     ld [hl], b
 
     ld e, 4
-    add hl, de ; offset by 3 to go to the second half sprite ID address
+    add hl, de ; offset by 4 to go to the second half sprite ID address
     ld [hl], c
 
+    ; end
     pop hl
     pop de
     pop bc
     pop af
 
     ret
-/*
-    i check the current direction, based on it init the address pointing to the correct data
-
-    i grab the sprite from the animation counter
-    if counter is more than the frames, then loop it
-    TODO::if i move, remember to update the animation counter
-    TODO:: maybe, if animation needed make sure to reset counter
-
-    update the address (+ 3)
-    update the y,x in OAM, tile ID and flags for the two sprites
-*/
-
-/* TEMP CODES FOR ANIMATION 
-    ld hl, PlayerAnimation.upAnimation
-    ; check animation frame
-    ;ld a, [wPlayer_CurrStateMaxAnimFrame]
-    ;ld d, a
-    ld a, [wPlayer_CurrAnimationFrame]
-    ;cp d ;check current animation frame no. with max Frames
-    ;jr nz, .noResetAnimationCounter
-
-    ; if reach limit reset curren Animation counter
-    ;xor a
-    ;ld [wPlayer_CurrAnimationFrame], a
-
-;.noResetAnimationCounter
-    ld d, 0
-    ld e, a ; load curr animation frame
-    add hl, de ; add the offset to the address
-    ld a, [hl]
-*/
