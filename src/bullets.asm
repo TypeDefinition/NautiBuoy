@@ -3,6 +3,7 @@ INCLUDE "./src/structs.inc"
 INCLUDE "./src/entities.inc"
 
 DEF BULLET_DATA_SIZE = 8 
+DEF TOTAL_BULLET_ENTITY = 16;
 
 SECTION "Bullets Data", WRAM0
 wBulletObjects::
@@ -29,7 +30,7 @@ SECTION "Bullets", ROM0
 /*  Update all alive bullets movement and collision */
 UpdateBullets::
     ld hl, wBulletObjects
-    ld b, wBulletObjectEnd - wBulletObjects
+    ld b, TOTAL_BULLET_ENTITY
     push bc ; store counter in reg b
 
 .startLoop
@@ -69,31 +70,31 @@ UpdateBullets::
     ld a, [hli] ; get direction
     
 .dirUp
-    cp a, PADB_UP
+    cp a, DIR_UP
     jr nz, .dirDown
     ld a, d ; get posY
     sub b ; add the velocity
     ld d, a
     jr .endUpdateDir
 .dirDown
-    cp a, PADB_DOWN
+    cp a, DIR_DOWN
     jr nz, .dirRight
     ld a, d ; get posY
     add b ; add the velocity
     ld d, a
     jr .endUpdateDir
 .dirRight
-    cp a, PADB_RIGHT
+    cp a, DIR_RIGHT
     jr nz, .dirLeft
     ld a, e ; get posX
-    add e ; add the velocity
+    add b ; add the velocity
     ld e, a
     jr .endUpdateDir
 .dirLeft
-    cp a, PADB_DOWN
+    cp a, DIR_LEFT
     jr nz, .endUpdateDir
     ld a, e ; get posX
-    sub e ; add the velocity
+    sub b ; add the velocity
     ld e, a
 .endUpdateDir ; reg d stores Y coord, reg e stores X coord
     
@@ -120,8 +121,34 @@ UpdateBullets::
 */
 UpdateBulletsShadowOAM::
     ; y, x; tile id, flags
+    ; TODO:: TEMP CODES, FIX IT ONCE THE PROPER PROJECTILE IS PUT IN
+    ld bc, wBulletObjects ; get the address
 
+    ; check if alive first
+    ld a, [bc] ; alive
+    cp a, IS_ALIVE
+    jr nz, .end
 
+    inc bc
 
+    ; TEMP:: translate to screen pos
+    ld a, [rSCY]
+    ld d, a
+    ld a, [bc] ; bullet y pos
+    sub a, d ; decrease by screen offset
+    ld [hli], a
 
+    inc bc
+
+    ld a, [rSCX]
+    ld d, a
+    ld a, [bc] ; bullet x pos
+    sub a, d ; decrease by screen offset
+    ld [hli], a
+
+    xor a
+    ld [hli], a ; sprite ID
+    ld [hli], a ; flags
+
+.end
     ret

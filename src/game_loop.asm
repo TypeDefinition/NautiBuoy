@@ -12,11 +12,14 @@ MainGameLoop::
     call UpdatePlayerAttack
     call UpdatePlayerCamera
 
+    call UpdateBullets
+
     ; TODO:: update shadow OAM data here
     ld hl, wShadowOAM
 
     ; temp code, might move this somewhere else
     call UpdatePlayerShadowOAM
+    call UpdateBulletsShadowOAM
 
     halt ; Save power, wait for vblank interrupt
 
