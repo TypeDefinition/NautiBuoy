@@ -146,8 +146,9 @@ UpdateBulletsShadowOAM::
     sub a, d ; decrease by screen offset
     ld [hli], a
 
-    xor a
+    ld a, 20
     ld [hli], a ; sprite ID
+    xor a
     ld [hli], a ; flags
 
 .end

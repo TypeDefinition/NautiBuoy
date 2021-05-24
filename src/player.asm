@@ -164,7 +164,7 @@ UpdatePlayerAttack::
     ld a, [wPlayer_PosX]
     ld [hli], a ; pos x
     
-    ld a, 3 ; TEMP VARIABLE
+    ld a, 1 ; TEMP VARIABLE
     ld [hli], a ; velocity
     ld a, [wPlayer_Direction]
     ld [hli], a ; direction
@@ -227,7 +227,6 @@ UpdatePlayerShadowOAM::
     push af
     push bc
     push de
-    push hl
 
     push hl ; for sprite ID intialisation later, store another copy of the original hl
 
@@ -340,8 +339,10 @@ UpdatePlayerShadowOAM::
     add hl, de ; offset by 4 to go to the second half sprite ID address
     ld [hl], c
 
+    ld e, 2
+    add hl, de ; offset by 2 to reach the next entity y pos
+
     ; end
-    pop hl
     pop de
     pop bc
     pop af

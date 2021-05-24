@@ -9,6 +9,8 @@ include "./src/util.inc"
     
     OAM is at $FE00 to $FE9F, each sprite is 4 bytes, can only contain 40 sprites
     160 bytes in total
+
+    Y pos, X pos, sprite ID, flags
 */
 
 ; NOTE: ALIGN[8] will cause RGBDS to help allocate in memory to an address that is 256 aligned (like $c100, $C000)

@@ -18,6 +18,9 @@ MainGameLoop::
     ld hl, wShadowOAM
 
     ; temp code, might move this somewhere else
+    /*  WARNING: the hl address will cascade 
+        End hl address for an entity is the starting for the next entity
+    */
     call UpdatePlayerShadowOAM
     call UpdateBulletsShadowOAM
 
