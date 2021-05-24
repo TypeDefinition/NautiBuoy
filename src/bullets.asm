@@ -49,7 +49,6 @@ UpdateBullets::
     jr z, .bulletMovement 
 
     ; bullet not alive
-    ld b, 0
     ld c, BULLET_DATA_SIZE ; based on number of bytes the bullet has
     add hl, bc ; offset to get the next bullet
     jr .startLoop
@@ -57,8 +56,7 @@ UpdateBullets::
 /* Check its direction and update pos */
 .bulletMovement
     push hl ; for updating bullet info later
-
-    inc hl
+    inc hl ; skip the isAlive var
 
     ; pos stored in register de for later calculatations
     ld a, [hli] ; pos Y
@@ -77,21 +75,18 @@ UpdateBullets::
     ld a, d ; get posY
     sub b ; add the velocity
     ld d, a
-    jr .endUpdateDir
 .dirDown
     cp a, DIR_DOWN
     jr nz, .dirRight
     ld a, d ; get posY
     add b ; add the velocity
     ld d, a
-    jr .endUpdateDir
 .dirRight
     cp a, DIR_RIGHT
     jr nz, .dirLeft
     ld a, e ; get posX
     add b ; add the velocity
     ld e, a
-    jr .endUpdateDir
 .dirLeft
     cp a, DIR_LEFT
     jr nz, .endUpdateDir
@@ -99,7 +94,6 @@ UpdateBullets::
     sub b ; add the velocity
     ld e, a
 .endUpdateDir ; reg d stores Y coord, reg e stores X coord
-    
     ; update the bullet data
     pop hl ; get the original starting address of this bullet
     push hl ; push again to keep a copy of original starting address
@@ -110,28 +104,55 @@ UpdateBullets::
     ld a, e
     ld [hli], a ; store new x pos
 
+
+    ; TODO:: Check collision here
+
+    
+    ; go to next loop
     pop hl ; get the original starting address again
     ld b, 0
     ld c, BULLET_DATA_SIZE ; based on number of bytes the bullet has
     add hl, bc ; add the offset to get the next bullet
     jr .startLoop
+
 .end
     ret
 
 
 /*
+    TODO:: may want to consider moving into UpdateBullet loop
     hl - shadow OAM address to start for the bullets
 */
 UpdateBulletsShadowOAM::
     ; y, x; tile id, flags
     ld bc, wBulletObjects ; get the address
+    
+    ; TODO:: Check collision here
+ /*   ld d, 0
+    ld e, TOTAL_BULLET_ENTITY
+    push de ; store counter in reg b */
 
 .startLoop
+  /*  pop de
+    ld a, e
+    cp 0 ; check if end of loop
+    jr z, .end
+
+    ld d, 0
+    dec e ; dec counter
+    push de */
+
     ; check if alive first
     ld a, [bc] ; alive
     cp a, IS_ALIVE
-    jr nz, .endLoop
+    jr z, .showOnScreen
 
+    ; bullet not alive
+    ; TODO:: go to next bullet
+    jr .endLoop
+
+
+.showOnScreen
     inc bc
 
     ; translate to screen pos
@@ -158,12 +179,10 @@ UpdateBulletsShadowOAM::
     cp a, DIR_UP
     jr nz, .downSprite
     ld bc, BulletSprites.upSprite
-    jr .endSpriteDir
 .downSprite
     cp a, DIR_DOWN
     jr nz, .rightSprite
     ld bc, BulletSprites.downSprite
-    jr .endSpriteDir
 .rightSprite
     cp a, DIR_RIGHT
     jr nz, .leftSprite
@@ -191,6 +210,5 @@ UpdateBulletsShadowOAM::
     ld a, [bc] ; flags
     ld [hli], a ; flags
 
-    ;pop bc
 .endLoop
     ret

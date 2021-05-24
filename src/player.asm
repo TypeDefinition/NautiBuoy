@@ -238,15 +238,11 @@ UpdatePlayerShadowOAM::
     jr nz, .downSprite
     ld de, PlayerSprites.upSprite
     ld bc, PlayerAnimation.upAnimation
-    jr .endSpriteDir ; save 6 cycles. original 9 cycles, jr 3 cycles
-
 .downSprite
     cp DIR_DOWN
     jr nz, .rightSprite
     ld de, PlayerSprites.downSprite
     ld bc, PlayerAnimation.downAnimation
-    jr .endSpriteDir ; original 6 cycles, save 3 cycles
-
 .rightSprite
     cp DIR_RIGHT
     jr nz, .leftSprite
