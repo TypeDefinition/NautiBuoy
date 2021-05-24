@@ -155,7 +155,7 @@ UpdatePlayerAttack::
     TODO:: bullet spawn pos should have an offset from player
     TODO:: discuss with terry abt whether the velocity and damage should be by player or bullet type
 */
-    ld hl, BulletsObjects
+    ld hl, wBulletObjects
     ld a, IS_ALIVE
     ld [hli], a ; its alive
 

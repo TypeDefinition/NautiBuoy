@@ -5,7 +5,7 @@ INCLUDE "./src/entities.inc"
 DEF BULLET_DATA_SIZE = 8 
 
 SECTION "Bullets Data", WRAM0
-BulletsObjects::
+wBulletObjects::
     dstruct Bullet, wBullet0
     dstruct Bullet, wBullet1
     dstruct Bullet, wBullet2
@@ -22,15 +22,25 @@ BulletsObjects::
     dstruct Bullet, wBullet13
     dstruct Bullet, wBullet14
     dstruct Bullet, wBullet15
-.endBulletsObjects
+wBulletObjectEnd:
+
 
 SECTION "Bullets", ROM0
-
 /*  Update all alive bullets movement and collision */
 UpdateBullets::
-    ld hl, BulletsObjects
+    ld hl, wBulletObjects
+    ld b, wBulletObjectEnd - wBulletObjects
+    push bc ; store counter in reg b
 
 .startLoop
+    pop bc
+    ld a, b
+    cp 0 ; check if end of loop
+    jr z, .end
+
+    dec b ; dec counter
+    push bc
+
     ld a, [hl]
     cp a, IS_ALIVE ; check if alive
     jr z, .bulletMovement 
@@ -41,10 +51,7 @@ UpdateBullets::
     add hl, bc ; offset to get the next bullet
     jr .startLoop
    
-    /*
-        Check direction its moving
-        Update accordingly
-    */
+/* Check its direction and update pos */
 .bulletMovement
     push hl ; for updating bullet info later
 
@@ -100,7 +107,21 @@ UpdateBullets::
     ld a, e
     ld [hli], a ; store new x pos
 
-    pop hl ; get the original hl again
+    pop hl ; get the original starting address again
+    ld b, 0
+    ld c, BULLET_DATA_SIZE ; based on number of bytes the bullet has
     jr .startLoop
 .end
+    ret
+
+
+/*
+    hl - shadow OAM address to start for the bullets
+*/
+UpdateBulletsShadowOAM::
+    ; y, x; tile id, flags
+
+
+
+
     ret
