@@ -33,7 +33,7 @@ InitPlayer::
     ld [wPlayer_HP], a
 
     ; variables for animation
-    ld a, PADB_DOWN ; make the sprite look upwards at first
+    ld a, DIR_DOWN ; make the sprite look upwards at first
     ld [wPlayer_Direction], a
     xor a
     ld [wPlayer_CurrAnimationFrame], a
@@ -74,9 +74,9 @@ UpdatePlayerMovement::
 
     cp d ; compare a with the original y pos to know the final dir moved
     jr z, .right ; if they are the same go to horizontal movement
-    ld a, PADB_UP
+    ld a, DIR_UP
     jr c, .verticalSpriteDirEnd; there's a carry, means player went up. a < original y pos
-    ld a, PADB_DOWN
+    ld a, DIR_DOWN
 
 .verticalSpriteDirEnd
     ld [wPlayer_Direction], a 
@@ -100,9 +100,9 @@ UpdatePlayerMovement::
 
     cp d ; compare a with the original x pos to know the final dir moved
     jr z, .updateAnimationFrame ; if they are the same, go to end
-    ld a, PADB_LEFT
+    ld a, DIR_LEFT
     jr c, .horizontalSpriteDirEnd; there's a carry, means player went left. a < original x pos
-    ld a, PADB_RIGHT
+    ld a, DIR_RIGHT
 
 .horizontalSpriteDirEnd
     ld [wPlayer_Direction], a 
@@ -135,9 +135,55 @@ UpdatePlayerMovement::
     ret
 
 
+/*  For checking player inputs that allow them to attack
+    Current attacks:
+    - Shooting (press A)
+    - Bombs maybe?
+*/
 UpdatePlayerAttack::
+    ; SHOOTING
+    ld a, [wNewlyInputKeys]
+    bit PADB_A, a
+    jr z, .finishAttack ; if player doesnt PRESS A
+
+/*
+    Over here we only want to initialise the bullets
+    Make it alive, set pos x, pos y
+
+    TODO:: make a fire rate or something
+    TODO:: check if bullet is alive first LOL
+    TODO:: bullet spawn pos should have an offset from player
+    TODO:: discuss with terry abt whether the velocity and damage should be by player or bullet type
+*/
+    ld hl, BulletsObjects
+    ld a, IS_ALIVE
+    ld [hli], a ; its alive
+
+    ld a, [wPlayer_PosY] 
+    ld [hli], a ; pos Y
+    ld a, [wPlayer_PosX]
+    ld [hli], a ; pos x
+    
+    ld a, 3 ; TEMP VARIABLE
+    ld [hli], a ; velocity
+    ld a, [wPlayer_Direction]
+    ld [hli], a ; direction
+
+    ld a, TAG_PLAYER
+    ld [hli], a ; tag
+    ld a, TYPE_BULLET1
+    ld [hli], a ; type
+    ld a, [wPlayer_Direction]
+    ld a, 1 ; TEMP VARIABLE
+    ld [hli], a ; set damage?
+
+.finishAttack
     ret
 
+/*  Update camera pos based on player pos
+    Player in middle of camera
+    When borders are reached, camera stops
+*/
 UpdatePlayerCamera::
     push af
 
@@ -189,27 +235,27 @@ UpdatePlayerShadowOAM::
     ld a, [wPlayer_Direction]
 
 .upSprite
-    cp PADB_UP
+    cp DIR_UP
     jr nz, .downSprite
     ld de, PlayerSprites.upSprite
     ld bc, PlayerAnimation.upAnimation
     jr .endSpriteDir ; save 6 cycles. original 9 cycles, jr 3 cycles
 
 .downSprite
-    cp PADB_DOWN
+    cp DIR_DOWN
     jr nz, .rightSprite
     ld de, PlayerSprites.downSprite
     ld bc, PlayerAnimation.downAnimation
     jr .endSpriteDir ; original 6 cycles, save 3 cycles
 
 .rightSprite
-    cp PADB_RIGHT
+    cp DIR_RIGHT
     jr nz, .leftSprite
     ld de, PlayerSprites.rightSprite
     ld bc, PlayerAnimation.rightAnimation
 
 .leftSprite
-    cp PADB_LEFT
+    cp DIR_LEFT
     jr nz, .endSpriteDir
     ld de, PlayerSprites.leftSprite
     ld bc, PlayerAnimation.leftAnimation
@@ -229,7 +275,7 @@ UpdatePlayerShadowOAM::
     ld c, a
     ld a, [wPlayer_PosX]
     sub a, c
-    ld c, a ; store x screen pos at x
+    ld c, a ; store x screen pos at c
 
 .initShadowOAMVariables ; init the sprites shadow OAM, for y, x and flags, sprite ID later
     ld a, [de] ; get the sprite offset y

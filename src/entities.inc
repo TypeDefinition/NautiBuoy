@@ -21,12 +21,25 @@ DEF ENTITIES_INC EQU 1
     ; For animation frames
     DEF PLAYER_WALK_FRAMES EQU 3
 
+    ; states
+    DEF IS_ALIVE EQU 1
+    DEF IS_DEAD EQU 0
+
+    ; Directions
+    ; can use bit to compare, frees up reg A, but takes 2 cycles and 2 bytes
+    ; can use cp to compare, takes reg A, but takes only 1 cycle and 1 byte
+    DEF DIR_DOWN EQU %10000000
+    DEF DIR_UP EQU %01000000
+    DEF DIR_LEFT EQU %00100000
+    DEF DIR_RIGHT EQU %00010000
+
+
     struct Character
         bytes 1, Active
         bytes 1, Tag
         bytes 1, Type
-        bytes 1, PosX
         bytes 1, PosY
+        bytes 1, PosX
         bytes 1, Direction
         bytes 1, Velocity
         bytes 1, ColSize
@@ -37,13 +50,12 @@ DEF ENTITIES_INC EQU 1
 
     struct Bullet
         bytes 1, Active
+        bytes 1, PosY
+        bytes 1, PosX
+        bytes 1, Velocity
+        bytes 1, Direction
         bytes 1, Tag
         bytes 1, Type
-        bytes 1, PosX
-        bytes 1, PosY
-        bytes 1, Direction
-        bytes 1, Velocity
-        bytes 1, SpriteID
         bytes 1, Damage
     end_struct
 
