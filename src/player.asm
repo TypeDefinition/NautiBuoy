@@ -23,12 +23,11 @@ InitPlayer::
     ld [wPlayer_Tag], a
     ld a, TYPE_PLAYER
     ld [wPlayer_Type], a
-    ld a, 80
+    ld a, 128
     ld [wPlayer_PosY], a
     ld [wPlayer_PosX], a
     ld a, 8
     ld [wPlayer_Velocity], a
-    ld [wPlayer_ColSize], a
     ld a, 3
     ld [wPlayer_HP], a
 
@@ -55,59 +54,207 @@ UpdatePlayerMovement::
     ld b, a ; store the input keys into b
     ld a, [wPlayer_Velocity]
     ld c, a ; store player velocity into c
-
-    ; Vertical Movement
-    ld a, [wPlayer_PosY]
-    ld d, a ; store original y pos
     ld e, 0 ; init the animation frame addition to 0
 
 .up
     bit PADB_UP, b
-    jr z, .down
+    jp z, .down
+
+    ld a, DIR_UP
+    ld [wPlayer_Direction], a
+    ld e, 1 ; add 1 frame in animation
+
+    ; Top Left Corner Collision Check
+    push bc
+
+    ld a, [wPlayer_PosY]
+    sub a, COLLIDER_SIZE
     sub a, c
+    ld b, a ; b = PosY - Velocity - Collider Size
+
+    ld a, [wPlayer_PosX]
+    sub a, COLLIDER_SIZE
+    ld c, a ; c = PosX - Collider Size
+
+    call GetTileValue
+    pop bc
+    cp a, $0F
+    jp c, .updateAnimationFrame
+
+    ; Top Right Corner Collision Check
+    push bc
+    
+    ld a, [wPlayer_PosY]
+    sub a, COLLIDER_SIZE
+    sub a, c
+    ld b, a ; b = PosY - Velocity - Collider Size
+    
+    ld a, [wPlayer_PosX]
+    add a, COLLIDER_SIZE
+    sub a, 1
+    ld c, a ; c = PosX + Collider Size - 1
+    
+    call GetTileValue
+    pop bc
+    cp a, $0F
+    jp c, .updateAnimationFrame
+    
+    ; Update PosY
+    ld a, [wPlayer_PosY]
+    sub a, c
+    ld [wPlayer_PosY], a ; update pos Y
+    jp .updateAnimationFrame
+
 .down
     bit PADB_DOWN, b
-    jr z, .verticalEnd
-    add a, c
-.verticalEnd
-    ld [wPlayer_PosY], a ; update pos Y
+    jp z, .left
 
-    cp d ; compare a with the original y pos to know the final dir moved
-    jr z, .right ; if they are the same go to horizontal movement
-    ld a, DIR_UP
-    jr c, .verticalSpriteDirEnd; there's a carry, means player went up. a < original y pos
     ld a, DIR_DOWN
-
-.verticalSpriteDirEnd
     ld [wPlayer_Direction], a 
-    
     ld e, 1 ; add 1 frame in animation
-.right
-    ; Horizontal Movement
-    ld a, [wPlayer_PosX]
-    ld d, a ; store original x pos
 
-    bit PADB_RIGHT, b
-    jr z, .left
+    ; Bottom Left Corner Collision Check
+    push bc
+
+    ld a, [wPlayer_PosY]
+    add a, COLLIDER_SIZE
     add a, c
+    sub a, 1
+    ld b, a ; b = PosY + Collider Size + Velocity - 1
+
+    ld a, [wPlayer_PosX]
+    sub a, COLLIDER_SIZE
+    ld c, a ; c = PosX - Collider Size
+    
+    call GetTileValue
+    pop bc
+    cp a, $0F
+    jp c, .updateAnimationFrame
+
+    ; Bottom Right Corner Collision Check
+    push bc
+
+    ld a, [wPlayer_PosY]
+    add a, COLLIDER_SIZE
+    add a, c
+    sub a, 1
+    ld b, a ; b = PosY + Collider Size + Velocity - 1
+
+    ld a, [wPlayer_PosX]
+    add a, COLLIDER_SIZE
+    sub a, 1
+    ld c, a ; c = PosX + Collider Size - 1
+    
+    call GetTileValue
+    pop bc
+    cp a, $0F
+    jp c, .updateAnimationFrame
+
+    ; Update PosY
+    ld a, [wPlayer_PosY]
+    add a, c
+    ld [wPlayer_PosY], a ; update pos Y
+    jp .updateAnimationFrame
+
 .left
     bit PADB_LEFT, b
-    jr z, .horizontalEnd
-    sub a, c
+    jp z, .right
 
-.horizontalEnd
-    ld [wPlayer_PosX], a ; update pos X
-
-    cp d ; compare a with the original x pos to know the final dir moved
-    jr z, .updateAnimationFrame ; if they are the same, go to end
     ld a, DIR_LEFT
-    jr c, .horizontalSpriteDirEnd; there's a carry, means player went left. a < original x pos
-    ld a, DIR_RIGHT
-
-.horizontalSpriteDirEnd
     ld [wPlayer_Direction], a 
-    
     ld e, 1 ; add 1 frame in animation
+
+    ; Top Left Corner Collision Check
+    push bc
+
+    ld a, [wPlayer_PosY]
+    sub a, COLLIDER_SIZE
+    ld b, a ; b = PosY - Collider Size
+
+    ld a, [wPlayer_PosX]
+    sub a, COLLIDER_SIZE
+    sub a, c
+    ld c, a ; c = PosX - Collider Size - Velocity
+    
+    call GetTileValue
+    pop bc
+    cp a, $0F
+    jp c, .updateAnimationFrame
+
+    ; Bottom Left Corner Collision Check
+    push bc
+
+    ld a, [wPlayer_PosY]
+    add a, COLLIDER_SIZE
+    sub a, 1
+    ld b, a ; b = PosY + Collider Size - 1
+
+    ld a, [wPlayer_PosX]
+    sub a, COLLIDER_SIZE
+    sub a, c
+    ld c, a ; c = PosX - Collider Size - Velocity
+    
+    call GetTileValue
+    pop bc
+    cp a, $0F
+    jp c, .updateAnimationFrame
+
+    ; Update PosX
+    ld a, [wPlayer_PosX]
+    sub a, c
+    ld [wPlayer_PosX], a ; update pos Y
+    jp .updateAnimationFrame
+
+.right
+    bit PADB_RIGHT, b
+    jp z, .updateAnimationFrame
+
+    ld a, DIR_RIGHT
+    ld [wPlayer_Direction], a 
+    ld e, 1 ; add 1 frame in animation
+
+    ; Top Right Corner Collision Check
+    push bc
+
+    ld a, [wPlayer_PosY]
+    sub a, COLLIDER_SIZE
+    ld b, a ; b = PosY - Collider Size
+
+    ld a, [wPlayer_PosX]
+    add a, COLLIDER_SIZE
+    add a, c
+    sub a, 1
+    ld c, a ; c = PosX + Collider Size + Velocity - 1
+    
+    call GetTileValue
+    pop bc
+    cp a, $0F
+    jp c, .updateAnimationFrame
+
+    ; Bottom Right Corner Collision Check
+    push bc
+
+    ld a, [wPlayer_PosY]
+    add a, COLLIDER_SIZE
+    sub a, 1
+    ld b, a ; b = PosY + Collider Size - 1
+
+    ld a, [wPlayer_PosX]
+    add a, COLLIDER_SIZE
+    add a, c
+    sub a, 1
+    ld c, a ; c = PosX + Collider Size + Velocity - 1
+    
+    call GetTileValue
+    pop bc
+    cp a, $0F
+    jp c, .updateAnimationFrame
+
+    ; Update PosX
+    ld a, [wPlayer_PosX]
+    add a, c
+    ld [wPlayer_PosX], a ; update pos Y
+    jp .updateAnimationFrame
 
 .updateAnimationFrame ; Animation update frames here
     ld a, [wPlayer_CurrStateMaxAnimFrame]
@@ -117,7 +264,7 @@ UpdatePlayerMovement::
     cp e ; if e (animation frames added) is 0 it means it didnt add anything
     jr z, .exit
     ld a, [wPlayer_CurrAnimationFrame]
-    add e ; add the numbner of animation frame
+    add e ; add the number of animation frame
 
     cp b ; check current animation frame no. with max Frames
     jr nz, .noResetAnimationCounter

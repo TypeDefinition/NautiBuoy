@@ -34,7 +34,8 @@ Initialise::
 
     ; Copy tile map into VRAM.
     set_romx_bank 3 ; Our tile maps are in Bank 3, so we load that into ROMX.
-    mem_copy Level0, _SCRN0, Level0.end-Level0
+    mem_copy Level0, GameLevelData, Level0.end-Level0
+    mem_copy GameLevelData, _SCRN0, GameLevelData.end-GameLevelData
 
     ; TEMP: Temporary code.
     ld hl, wShadowOAM

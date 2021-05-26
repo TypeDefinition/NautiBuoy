@@ -18,6 +18,10 @@ DEF ENTITIES_INC EQU 1
     DEF TYPE_BULLET2 EQU 5
     DEF TYPE_BULLET3 EQU 6
 
+    ; Collidable Tiles: A tile is assumed to be collidable if it's value is between 0 to 15 inclusive.
+    DEF COLLIDABLE EQU $0F
+    DEF COLLIDER_SIZE EQU $08
+
     ; For animation frames
     DEF PLAYER_WALK_FRAMES EQU 3
 
@@ -42,7 +46,6 @@ DEF ENTITIES_INC EQU 1
         bytes 1, PosX
         bytes 1, Direction
         bytes 1, Velocity
-        bytes 1, ColSize
         bytes 1, CurrAnimationFrame
         bytes 1, CurrStateMaxAnimFrame  ; Update this based on states
         bytes 1, HP
