@@ -5,8 +5,7 @@ DEF ENTITIES_INC EQU 1
 
     struct Character
         bytes 1, Active
-        bytes 1, Tag
-        bytes 1, Type
+        bytes 1, Flags
         bytes 1, PosYInterpolateTarget
         bytes 1, PosY
         bytes 1, PosYFrac
