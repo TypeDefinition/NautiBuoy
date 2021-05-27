@@ -8,6 +8,8 @@ DEF VIEWPORT_SIZE_X EQU 80
 DEF VIEWPORT_MAX_Y EQU 112 ; 256pixels - 144pixels
 DEF VIEWPORT_MAX_X EQU 96 ; 256pixels - 160pixels
 
+DEF PLAYER_VEL EQU 8
+
 SECTION "Player Data", WRAM0
     dstruct Character, wPlayer
 
@@ -33,7 +35,7 @@ InitPlayer::
     ld [wPlayer_HP], a
 
     ; variables for animation
-    ld a, DIR_DOWN ; make the sprite look upwards at first
+    ld a, DIR_UP ; make the sprite look upwards at first
     ld [wPlayer_Direction], a
     xor a
     ld [wPlayer_CurrAnimationFrame], a
@@ -56,74 +58,77 @@ UpdatePlayerMovement::
     ld b, a
     ld a, [wPlayer_PosYInterpolateTarget]
     cp a, b
-    jr nz, .interpolateBranch
+    jr nz, .interpolateStart
     ld a, [wPlayer_PosX]
     ld b, a
     ld a, [wPlayer_PosXInterpolateTarget]
     cp a, b
-    jr nz, .interpolateBranch
+    jr nz, .interpolateStart
     jr .inputStart
 
-.interpolateBranch
-    ld [wPlayer_Direction], a
+.interpolateStart
+    ld a, [wPlayer_Direction]
+
+.interpolateUpStart
     cp a, DIR_UP
-    jp z, .interpolateUp
+    jr nz, .interpolateUpEnd
+    ld a, [wPlayer_PosYFrac]
+    add a, 128
+    ld [wPlayer_PosYFrac], a
+    ld a, [wPlayer_PosY]
+    sbc a, $00
+    ld [wPlayer_PosY], a
+    jp .interpolateEnd
+.interpolateUpEnd
+
+.interpolateDownStart
     cp a, DIR_DOWN
-    jp z, .interpolateDown
+    jr nz, .interpolateDownEnd
+    ld a, [wPlayer_PosYFrac]
+    add a, 128
+    ld [wPlayer_PosYFrac], a
+    ld a, [wPlayer_PosY]
+    adc a, $00
+    ld [wPlayer_PosY], a
+    jp .interpolateEnd
+.interpolateDownEnd
+
+.interpolateLeftStart
     cp a, DIR_LEFT
-    jp z, .interpolateLeft
+    jr nz, .interpolateLeftEnd
+    ld a, [wPlayer_PosXFrac]
+    add a, 128
+    ld [wPlayer_PosXFrac], a
+    ld a, [wPlayer_PosX]
+    sbc a, $00
+    ld [wPlayer_PosX], a
+    jp .interpolateEnd
+.interpolateLeftEnd
+
+.interpolateRightStart
     cp a, DIR_RIGHT
-    jp z, .interpolateRight
-
-.interpolateUp
-    ld a, [wPlayer_PosYFrac]
-    add a, 128
-    ld [wPlayer_PosYFrac], a
-    ld a, [wPlayer_PosY]
-    sbc a, $00
-    ld [wPlayer_PosY], a
-    jp .updateAnimationFrame
-
-.interpolateDown
-    ld a, [wPlayer_PosYFrac]
-    add a, 128
-    ld [wPlayer_PosYFrac], a
-    ld a, [wPlayer_PosY]
-    adc a, $00
-    ld [wPlayer_PosY], a
-    jp .updateAnimationFrame
-
-.interpolateLeft
-    ld a, [wPlayer_PosXFrac]
-    add a, 128
-    ld [wPlayer_PosXFrac], a
-    ld a, [wPlayer_PosX]
-    sbc a, $00
-    ld [wPlayer_PosX], a
-    jp .updateAnimationFrame
-
-.interpolateRight
+    jr nz, .interpolateRightEnd
     ld a, [wPlayer_PosXFrac]
     add a, 128
     ld [wPlayer_PosXFrac], a
     ld a, [wPlayer_PosX]
     adc a, $00
     ld [wPlayer_PosX], a
-    jp .updateAnimationFrame
+    jp .interpolateEnd
+.interpolateRightEnd
 
 .interpolateEnd
+    jp .animationStart
 
 .inputStart
     ; The player is not interpolating, so we check for input.
     ld a, [wCurrentInputKeys]
     ld b, a ; b = Input Key
-    ld a, [wPlayer_Velocity]
-    ld c, a ; c = Player Velocity
     ld e, 0 ; Initialise animation frame addition to 0.
 
-.inputUp
+.inputUpStart
     bit PADB_UP, b
-    jp z, .inputDown
+    jp z, .inputUpEnd
 
     ld a, DIR_UP
     ld [wPlayer_Direction], a
@@ -133,100 +138,94 @@ UpdatePlayerMovement::
     push bc
 
     ld a, [wPlayer_PosY]
-    sub a, COLLIDER_SIZE
-    sub a, c
-    ld b, a ; b = PosY - Velocity - Collider Size
+    sub a, (TILE_SIZE + COLLIDER_SIZE)
+    ld b, a
 
     ld a, [wPlayer_PosX]
     sub a, COLLIDER_SIZE
-    ld c, a ; c = PosX - Collider Size
+    ld c, a
 
     call GetTileValue
     pop bc
-    cp a, $0F
+    cp a, COLLIDABLE_TILES
     jp c, .inputEnd
 
     ; Top Right Corner Collision Check
     push bc
     
     ld a, [wPlayer_PosY]
-    sub a, COLLIDER_SIZE
-    sub a, c
-    ld b, a ; b = PosY - Velocity - Collider Size
+    sub a, (TILE_SIZE + COLLIDER_SIZE)
+    ld b, a
     
     ld a, [wPlayer_PosX]
-    add a, COLLIDER_SIZE
-    sub a, 1
-    ld c, a ; c = PosX + Collider Size - 1
+    add a, COLLIDER_SIZE - 1
+    ld c, a
     
     call GetTileValue
     pop bc
-    cp a, $0F
+    cp a, COLLIDABLE_TILES
     jp c, .inputEnd
     
     ; Update Interpolation Target Position
     ld a, [wPlayer_PosYInterpolateTarget]
-    sub a, c
+    sub a, TILE_SIZE
     ld [wPlayer_PosYInterpolateTarget], a
     jp .inputEnd
+.inputUpEnd
 
-.inputDown
+.inputDownStart
     bit PADB_DOWN, b
-    jp z, .inputLeft
+    jp z, .inputDownEnd
 
     ld a, DIR_DOWN
-    ld [wPlayer_Direction], a 
+    ld [wPlayer_Direction], a
     ld e, 1 ; add 1 frame in animation
 
     ; Bottom Left Corner Collision Check
     push bc
 
     ld a, [wPlayer_PosY]
-    add a, COLLIDER_SIZE
-    add a, c
-    sub a, 1
-    ld b, a ; b = PosY + Collider Size + Velocity - 1
+    add a, (TILE_SIZE + COLLIDER_SIZE - 1)
+    ld b, a
 
     ld a, [wPlayer_PosX]
     sub a, COLLIDER_SIZE
-    ld c, a ; c = PosX - Collider Size
-    
+    ld c, a
+
     call GetTileValue
     pop bc
-    cp a, $0F
+    cp a, COLLIDABLE_TILES
     jp c, .inputEnd
 
     ; Bottom Right Corner Collision Check
     push bc
-
+    
     ld a, [wPlayer_PosY]
-    add a, COLLIDER_SIZE
-    add a, c
-    sub a, 1
-    ld b, a ; b = PosY + Collider Size + Velocity - 1
-
+    add a, (TILE_SIZE + COLLIDER_SIZE - 1)
+    ld b, a
+    
     ld a, [wPlayer_PosX]
-    add a, COLLIDER_SIZE
-    sub a, 1
-    ld c, a ; c = PosX + Collider Size - 1
+    add a, COLLIDER_SIZE - 1
+    ld c, a
     
     call GetTileValue
     pop bc
-    cp a, $0F
+    cp a, COLLIDABLE_TILES
     jp c, .inputEnd
-
+    
     ; Update Interpolation Target Position
     ld a, [wPlayer_PosYInterpolateTarget]
-    add a, c
+    add a, TILE_SIZE
     ld [wPlayer_PosYInterpolateTarget], a
     jp .inputEnd
+.inputDownEnd
 
-.inputLeft
+.inputLeftStart
     bit PADB_LEFT, b
-    jp z, .inputRight
+    jp z, .inputLeftEnd
 
     ld a, DIR_LEFT
-    ld [wPlayer_Direction], a 
+    ld [wPlayer_Direction], a
     ld e, 1 ; add 1 frame in animation
 
     ; Top Left Corner Collision Check
@@ -234,48 +233,46 @@ UpdatePlayerMovement::
 
     ld a, [wPlayer_PosY]
     sub a, COLLIDER_SIZE
-    ld b, a ; b = PosY - Collider Size
+    ld b, a
 
     ld a, [wPlayer_PosX]
-    sub a, COLLIDER_SIZE
-    sub a, c
-    ld c, a ; c = PosX - Collider Size - Velocity
-    
+    sub a, (TILE_SIZE + COLLIDER_SIZE)
+    ld c, a
+
     call GetTileValue
     pop bc
-    cp a, $0F
+    cp a, COLLIDABLE_TILES
     jp c, .inputEnd
 
     ; Bottom Left Corner Collision Check
     push bc
-
+    
     ld a, [wPlayer_PosY]
-    add a, COLLIDER_SIZE
-    sub a, 1
-    ld b, a ; b = PosY + Collider Size - 1
-
+    add a, COLLIDER_SIZE - 1
+    ld b, a
+    
     ld a, [wPlayer_PosX]
-    sub a, COLLIDER_SIZE
-    sub a, c
-    ld c, a ; c = PosX - Collider Size - Velocity
+    sub a, (TILE_SIZE + COLLIDER_SIZE)
+    ld c, a
     
     call GetTileValue
     pop bc
-    cp a, $0F
+    cp a, COLLIDABLE_TILES
     jp c, .inputEnd
-
-    ; Update PosX
+    
+    ; Update Interpolation Target Position
     ld a, [wPlayer_PosXInterpolateTarget]
-    sub a, c
-    ld [wPlayer_PosXInterpolateTarget], a ; update pos Y
+    sub a, TILE_SIZE
+    ld [wPlayer_PosXInterpolateTarget], a
     jp .inputEnd
+.inputLeftEnd
 
-.inputRight
+.inputRightStart
     bit PADB_RIGHT, b
-    jp z, .inputEnd
+    jp z, .inputRightEnd
 
     ld a, DIR_RIGHT
-    ld [wPlayer_Direction], a 
+    ld [wPlayer_Direction], a
     ld e, 1 ; add 1 frame in animation
 
     ; Top Right Corner Collision Check
@@ -283,46 +280,44 @@ UpdatePlayerMovement::
 
     ld a, [wPlayer_PosY]
     sub a, COLLIDER_SIZE
-    ld b, a ; b = PosY - Collider Size
+    ld b, a
 
     ld a, [wPlayer_PosX]
-    add a, COLLIDER_SIZE
-    add a, c
-    sub a, 1
-    ld c, a ; c = PosX + Collider Size + Velocity - 1
-    
+    add a, (TILE_SIZE + COLLIDER_SIZE - 1)
+    ld c, a
+
     call GetTileValue
     pop bc
-    cp a, $0F
+    cp a, COLLIDABLE_TILES
     jp c, .inputEnd
 
     ; Bottom Right Corner Collision Check
     push bc
-
+    
     ld a, [wPlayer_PosY]
-    add a, COLLIDER_SIZE
-    sub a, 1
-    ld b, a ; b = PosY + Collider Size - 1
-
+    add a, COLLIDER_SIZE - 1
+    ld b, a
+    
     ld a, [wPlayer_PosX]
-    add a, COLLIDER_SIZE
-    add a, c
-    sub a, 1
-    ld c, a ; c = PosX + Collider Size + Velocity - 1
+    add a, (TILE_SIZE + COLLIDER_SIZE - 1)
+    ld c, a
     
     call GetTileValue
     pop bc
-    cp a, $0F
+    cp a, COLLIDABLE_TILES
     jp c, .inputEnd
-
-    ; Update PosX
+    
+    ; Update Interpolation Target Position
     ld a, [wPlayer_PosXInterpolateTarget]
-    add a, c
-    ld [wPlayer_PosXInterpolateTarget], a ; update pos Y
+    add a, TILE_SIZE
+    ld [wPlayer_PosXInterpolateTarget], a
     jp .inputEnd
+.inputRightEnd
 
 .inputEnd
+    jp .animationStart
 
+.animationStart
 .updateAnimationFrame ; Animation update frames here
     ld a, [wPlayer_CurrStateMaxAnimFrame]
     ld b, a ; store max frames into b
@@ -340,6 +335,7 @@ UpdatePlayerMovement::
 
 .noResetAnimationCounter
     ld [wPlayer_CurrAnimationFrame], a
+.animationEnd
 
 .exit
     pop hl

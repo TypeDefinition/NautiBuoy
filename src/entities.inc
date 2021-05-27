@@ -3,6 +3,8 @@ INCLUDE "./src/structs.inc"
     IF !DEF(ENTITIES_INC)
 DEF ENTITIES_INC EQU 1
 
+    DEF TILE_SIZE EQU 8
+
     ; Tags
     DEF TAG_PLAYER EQU 0
     DEF TAG_ENEMY EQU 1
@@ -32,10 +34,10 @@ DEF ENTITIES_INC EQU 1
     ; Directions
     ; can use bit to compare, frees up reg A, but takes 2 cycles and 2 bytes
     ; can use cp to compare, takes reg A, but takes only 1 cycle and 1 byte
-    DEF DIR_DOWN EQU %10000000
-    DEF DIR_UP EQU %01000000
-    DEF DIR_LEFT EQU %00100000
-    DEF DIR_RIGHT EQU %00010000
+    DEF DIR_UP EQU 0
+    DEF DIR_DOWN EQU 1
+    DEF DIR_LEFT EQU 2
+    DEF DIR_RIGHT EQU 3
 
     struct Character
         bytes 1, Active
