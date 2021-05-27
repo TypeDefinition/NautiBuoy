@@ -1,4 +1,4 @@
-INCLUDE "./src/hardware.inc"
+INCLUDE "./src/include/hardware.inc"
 
 SECTION "WaitVBlank", ROM0
 /*  Loop until the LCD is in VBlank state.

@@ -1,6 +1,7 @@
-INCLUDE "./src/hardware.inc"
-INCLUDE "./src/structs.inc"
-INCLUDE "./src/entities.inc"
+INCLUDE "./src/include/hardware.inc"
+INCLUDE "./src/include/structs.inc"
+INCLUDE "./src/include/entities.inc"
+INCLUDE "./src/include/definitions.inc"
 
 DEF BULLET_DATA_SIZE = 8 
 DEF TOTAL_BULLET_ENTITY = 16
@@ -45,7 +46,7 @@ UpdateBullets::
     push bc
 
     ld a, [hl]
-    cp a, IS_ALIVE ; check if alive
+    cp a, ACTIVE ; check if alive
     jr z, .bulletMovement 
 
     ; bullet not alive
@@ -98,7 +99,7 @@ UpdateBullets::
     pop hl ; get the original starting address of this bullet
     push hl ; push again to keep a copy of original starting address
 
-    inc hl ; TEMP:: SKIP IS_ALIVE var FOR NOW
+    inc hl ; TEMP:: SKIP ACTIVE var FOR NOW
     ld a, d
     ld [hli], a ; store new y pos
     ld a, e
@@ -144,7 +145,7 @@ UpdateBulletsShadowOAM::
 
     ; check if alive first
     ld a, [bc] ; alive
-    cp a, IS_ALIVE
+    cp a, ACTIVE
     jr z, .showOnScreen
 
     ; bullet not alive

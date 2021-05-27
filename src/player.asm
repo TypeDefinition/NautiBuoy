@@ -1,26 +1,27 @@
-INCLUDE "./src/hardware.inc"
-INCLUDE "./src/structs.inc"
-INCLUDE "./src/entities.inc"
-INCLUDE "./src/util.inc"
+INCLUDE "./src/include/hardware.inc"
+INCLUDE "./src/include/structs.inc"
+INCLUDE "./src/include/entities.inc"
+INCLUDE "./src/include/util.inc"
+INCLUDE "./src/include/tile_collision.inc"
+INCLUDE "./src/include/movement.inc"
 
 DEF VIEWPORT_SIZE_Y EQU 72
 DEF VIEWPORT_SIZE_X EQU 80
 DEF VIEWPORT_MAX_Y EQU 112 ; 256pixels - 144pixels
 DEF VIEWPORT_MAX_X EQU 96 ; 256pixels - 160pixels
 
-DEF PLAYER_VEL EQU 8
-
 SECTION "Player Data", WRAM0
     dstruct Character, wPlayer
 
 /* Any logic/behavior/function related to player here */
 SECTION "Player", ROM0
-InitPlayer::
+InitialisePlayer::
     push af
 
     ; TODO: Make const variables for the initial HP, posX and posY, and velocity
     ld a, $01
     ld [wPlayer_Active], a
+    ; Set Position
     ld a, 128
     ld [wPlayer_PosYInterpolateTarget], a
     ld [wPlayer_PosXInterpolateTarget], a
@@ -29,29 +30,126 @@ InitPlayer::
     xor a
     ld [wPlayer_PosYFrac], a
     ld [wPlayer_PosXFrac], a
+    ; Set Velocity
     ld a, 8
     ld [wPlayer_Velocity], a
+    ; Set Direction
+    ld a, DIR_UP
+    ld [wPlayer_Direction], a
+    ; Set HP
     ld a, 3
     ld [wPlayer_HP], a
-
-    ; variables for animation
-    ld a, DIR_UP ; make the sprite look upwards at first
-    ld [wPlayer_Direction], a
+    ; Set Animation
     xor a
     ld [wPlayer_CurrAnimationFrame], a
-
     ld a, PLAYER_WALK_FRAMES
     ld [wPlayer_CurrStateMaxAnimFrame], a
 
     pop af
     ret
 
-/* Move the player based on user input, update sprite dir and animation frame accordingly */
+InterpolatePlayerPosition::
+    push af
+    ld a, [wPlayer_Direction]
+.upStart
+    cp a, DIR_UP
+    jr nz, .upEnd
+    interpolate_pos_dec wPlayer_PosY, wPlayer_PosYFrac, 2
+    jp .end
+.upEnd
+.downStart
+    cp a, DIR_DOWN
+    jr nz, .downEnd
+    interpolate_pos_inc wPlayer_PosY, wPlayer_PosYFrac, 2
+    jp .end
+.downEnd
+.leftStart
+    cp a, DIR_LEFT
+    jr nz, .leftEnd
+    interpolate_pos_dec wPlayer_PosX, wPlayer_PosXFrac, 2
+    jp .end
+.leftEnd
+.rightStart
+    cp a, DIR_RIGHT
+    jr nz, .rightEnd
+    interpolate_pos_inc wPlayer_PosX, wPlayer_PosXFrac, 2
+    jp .end
+.rightEnd
+.end
+    pop af
+    ret
+
+GetUserInput::
+    push af
+    push bc
+    ld a, [wCurrentInputKeys]
+    ld b, a ; b = Input Key
+
+.upStart
+    bit PADB_UP, b
+    jp z, .upEnd
+    ld a, DIR_UP
+    ld [wPlayer_Direction], a
+    tile_collision_check_up wPlayer_PosY, wPlayer_PosX, PLAYER_COLLIDER_SIZE, .end, .setUpPosTarget
+.setUpPosTarget
+    ; Update Interpolation Target Position
+    ld a, [wPlayer_PosYInterpolateTarget]
+    sub a, TILE_SIZE
+    ld [wPlayer_PosYInterpolateTarget], a
+    jp .end
+.upEnd
+
+.downStart
+    bit PADB_DOWN, b
+    jp z, .downEnd
+    ld a, DIR_DOWN
+    ld [wPlayer_Direction], a
+    tile_collision_check_down wPlayer_PosY, wPlayer_PosX, PLAYER_COLLIDER_SIZE, .end, .setDownPosTarget
+.setDownPosTarget
+    ; Update Interpolation Target Position
+    ld a, [wPlayer_PosYInterpolateTarget]
+    add a, TILE_SIZE
+    ld [wPlayer_PosYInterpolateTarget], a
+    jp .end
+.downEnd
+
+.leftStart
+    bit PADB_LEFT, b
+    jp z, .leftEnd
+    ld a, DIR_LEFT
+    ld [wPlayer_Direction], a
+    tile_collision_check_left wPlayer_PosY, wPlayer_PosX, PLAYER_COLLIDER_SIZE, .end, .setLeftPosTarget
+.setLeftPosTarget
+    ; Update Interpolation Target Position
+    ld a, [wPlayer_PosXInterpolateTarget]
+    sub a, TILE_SIZE
+    ld [wPlayer_PosXInterpolateTarget], a
+    jp .end
+.leftEnd
+
+.rightStart
+    bit PADB_RIGHT, b
+    jp z, .rightEnd
+    ld a, DIR_RIGHT
+    ld [wPlayer_Direction], a
+    tile_collision_check_right wPlayer_PosY, wPlayer_PosX, PLAYER_COLLIDER_SIZE, .end, .setRightPosTarget
+.setRightPosTarget
+    ; Update Interpolation Target Position
+    ld a, [wPlayer_PosXInterpolateTarget]
+    add a, TILE_SIZE
+    ld [wPlayer_PosXInterpolateTarget], a
+    jp .end
+.rightEnd
+
+.end
+    pop bc
+    pop af
+    ret
+
 UpdatePlayerMovement::
     push af
     push bc
     push de
-    push hl
 
     ld e, 0 ; Initialise animation frame addition to 0.
 
@@ -60,269 +158,29 @@ UpdatePlayerMovement::
     ld b, a
     ld a, [wPlayer_PosYInterpolateTarget]
     cp a, b
-    jr nz, .interpolateStart
+    jr nz, .interpolatePosition
     ld a, [wPlayer_PosX]
     ld b, a
     ld a, [wPlayer_PosXInterpolateTarget]
     cp a, b
-    jr nz, .interpolateStart
-    jr .inputStart
+    jr nz, .interpolatePosition
+    jr .getUserInput
 
-.interpolateStart
-    ld a, [wPlayer_Direction]
-    inc e ; add 1 frame in animation
+.getUserInput
+    call GetUserInput
+    jr .updateAnimationFrame
+.interpolatePosition
+    call InterpolatePlayerPosition
+    ld e, 1
+    jr .updateAnimationFrame
 
-.interpolateUpStart
-    cp a, DIR_UP
-    jr nz, .interpolateUpEnd
-    ld a, [wPlayer_PosYFrac]
-    add a, 128
-    ld [wPlayer_PosYFrac], a
-    ld a, [wPlayer_PosY]
-    sbc a, $00
-    ld [wPlayer_PosY], a
-    jp .interpolateEnd
-.interpolateUpEnd
-
-.interpolateDownStart
-    cp a, DIR_DOWN
-    jr nz, .interpolateDownEnd
-    ld a, [wPlayer_PosYFrac]
-    add a, 128
-    ld [wPlayer_PosYFrac], a
-    ld a, [wPlayer_PosY]
-    adc a, $00
-    ld [wPlayer_PosY], a
-    jp .interpolateEnd
-.interpolateDownEnd
-
-.interpolateLeftStart
-    cp a, DIR_LEFT
-    jr nz, .interpolateLeftEnd
-    ld a, [wPlayer_PosXFrac]
-    add a, 128
-    ld [wPlayer_PosXFrac], a
-    ld a, [wPlayer_PosX]
-    sbc a, $00
-    ld [wPlayer_PosX], a
-    jp .interpolateEnd
-.interpolateLeftEnd
-
-.interpolateRightStart
-    cp a, DIR_RIGHT
-    jr nz, .interpolateRightEnd
-    ld a, [wPlayer_PosXFrac]
-    add a, 128
-    ld [wPlayer_PosXFrac], a
-    ld a, [wPlayer_PosX]
-    adc a, $00
-    ld [wPlayer_PosX], a
-    jp .interpolateEnd
-.interpolateRightEnd
-
-.interpolateEnd
-    jp .animationStart
-
-.inputStart
-    ; The player is not interpolating, so we check for input.
-    ld a, [wCurrentInputKeys]
-    ld b, a ; b = Input Key
-    
-.inputUpStart
-    bit PADB_UP, b
-    jp z, .inputUpEnd
-
-    ld a, DIR_UP
-    ld [wPlayer_Direction], a
-
-    ; Top Left Corner Collision Check
-    push bc
-
-    ld a, [wPlayer_PosY]
-    sub a, (TILE_SIZE + COLLIDER_SIZE)
-    ld b, a
-
-    ld a, [wPlayer_PosX]
-    sub a, COLLIDER_SIZE
-    ld c, a
-
-    call GetTileValue
-    pop bc
-    cp a, COLLIDABLE_TILES
-    jp c, .inputEnd
-
-    ; Top Right Corner Collision Check
-    push bc
-    
-    ld a, [wPlayer_PosY]
-    sub a, (TILE_SIZE + COLLIDER_SIZE)
-    ld b, a
-    
-    ld a, [wPlayer_PosX]
-    add a, COLLIDER_SIZE - 1
-    ld c, a
-    
-    call GetTileValue
-    pop bc
-    cp a, COLLIDABLE_TILES
-    jp c, .inputEnd
-    
-    ; Update Interpolation Target Position
-    ld a, [wPlayer_PosYInterpolateTarget]
-    sub a, TILE_SIZE
-    ld [wPlayer_PosYInterpolateTarget], a
-    jp .inputEnd
-.inputUpEnd
-
-.inputDownStart
-    bit PADB_DOWN, b
-    jp z, .inputDownEnd
-
-    ld a, DIR_DOWN
-    ld [wPlayer_Direction], a
-
-    ; Bottom Left Corner Collision Check
-    push bc
-
-    ld a, [wPlayer_PosY]
-    add a, (TILE_SIZE + COLLIDER_SIZE - 1)
-    ld b, a
-
-    ld a, [wPlayer_PosX]
-    sub a, COLLIDER_SIZE
-    ld c, a
-
-    call GetTileValue
-    pop bc
-    cp a, COLLIDABLE_TILES
-    jp c, .inputEnd
-
-    ; Bottom Right Corner Collision Check
-    push bc
-    
-    ld a, [wPlayer_PosY]
-    add a, (TILE_SIZE + COLLIDER_SIZE - 1)
-    ld b, a
-    
-    ld a, [wPlayer_PosX]
-    add a, COLLIDER_SIZE - 1
-    ld c, a
-    
-    call GetTileValue
-    pop bc
-    cp a, COLLIDABLE_TILES
-    jp c, .inputEnd
-    
-    ; Update Interpolation Target Position
-    ld a, [wPlayer_PosYInterpolateTarget]
-    add a, TILE_SIZE
-    ld [wPlayer_PosYInterpolateTarget], a
-    jp .inputEnd
-.inputDownEnd
-
-.inputLeftStart
-    bit PADB_LEFT, b
-    jp z, .inputLeftEnd
-
-    ld a, DIR_LEFT
-    ld [wPlayer_Direction], a
-
-    ; Top Left Corner Collision Check
-    push bc
-
-    ld a, [wPlayer_PosY]
-    sub a, COLLIDER_SIZE
-    ld b, a
-
-    ld a, [wPlayer_PosX]
-    sub a, (TILE_SIZE + COLLIDER_SIZE)
-    ld c, a
-
-    call GetTileValue
-    pop bc
-    cp a, COLLIDABLE_TILES
-    jp c, .inputEnd
-
-    ; Bottom Left Corner Collision Check
-    push bc
-    
-    ld a, [wPlayer_PosY]
-    add a, COLLIDER_SIZE - 1
-    ld b, a
-    
-    ld a, [wPlayer_PosX]
-    sub a, (TILE_SIZE + COLLIDER_SIZE)
-    ld c, a
-    
-    call GetTileValue
-    pop bc
-    cp a, COLLIDABLE_TILES
-    jp c, .inputEnd
-    
-    ; Update Interpolation Target Position
-    ld a, [wPlayer_PosXInterpolateTarget]
-    sub a, TILE_SIZE
-    ld [wPlayer_PosXInterpolateTarget], a
-    jp .inputEnd
-.inputLeftEnd
-
-.inputRightStart
-    bit PADB_RIGHT, b
-    jp z, .inputRightEnd
-
-    ld a, DIR_RIGHT
-    ld [wPlayer_Direction], a
-
-    ; Top Right Corner Collision Check
-    push bc
-
-    ld a, [wPlayer_PosY]
-    sub a, COLLIDER_SIZE
-    ld b, a
-
-    ld a, [wPlayer_PosX]
-    add a, (TILE_SIZE + COLLIDER_SIZE - 1)
-    ld c, a
-
-    call GetTileValue
-    pop bc
-    cp a, COLLIDABLE_TILES
-    jp c, .inputEnd
-
-    ; Bottom Right Corner Collision Check
-    push bc
-    
-    ld a, [wPlayer_PosY]
-    add a, COLLIDER_SIZE - 1
-    ld b, a
-    
-    ld a, [wPlayer_PosX]
-    add a, (TILE_SIZE + COLLIDER_SIZE - 1)
-    ld c, a
-    
-    call GetTileValue
-    pop bc
-    cp a, COLLIDABLE_TILES
-    jp c, .inputEnd
-    
-    ; Update Interpolation Target Position
-    ld a, [wPlayer_PosXInterpolateTarget]
-    add a, TILE_SIZE
-    ld [wPlayer_PosXInterpolateTarget], a
-    jp .inputEnd
-.inputRightEnd
-
-.inputEnd
-    jp .animationStart
-
-.animationStart
 .updateAnimationFrame ; Animation update frames here
     ld a, [wPlayer_CurrStateMaxAnimFrame]
     ld b, a ; store max frames into b
 
     xor a
     cp e ; if e (animation frames added) is 0 it means it didnt add anything
-    jr z, .exit
+    jr z, .end
     ld a, [wPlayer_CurrAnimationFrame]
     add e ; add the number of animation frame
 
@@ -333,15 +191,12 @@ UpdatePlayerMovement::
 
 .noResetAnimationCounter
     ld [wPlayer_CurrAnimationFrame], a
-.animationEnd
 
-.exit
-    pop hl
+.end
     pop de
     pop bc
     pop af
     ret
-
 
 /*  For checking player inputs that allow them to attack
     Current attacks:
@@ -364,7 +219,7 @@ UpdatePlayerAttack::
     TODO:: discuss with terry abt whether the velocity and damage should be by player or bullet type
 */
     ld hl, wBulletObjects
-    ld a, IS_ALIVE
+    ld a, ACTIVE
     ld [hli], a ; its alive
 
     ld a, [wPlayer_PosY] 

@@ -1,12 +1,15 @@
 DEF NUM_COLS EQU $20
 DEF NUM_ROWS EQU $20
 
-SECTION "Game Level Data", WRAM0
-GameLevelData::
+; Collidable Tiles: A tile is assumed to be collidable if it's value is less than 16.
+DEF COLLIDABLE_TILES EQU $10
+
+SECTION "Game Level Tiles", WRAM0
+GameLevelTiles::
     ds 1024
 .end::
 
-SECTION "Gameplay Functions", ROM0
+SECTION "Tile Functions", ROM0
 ; Get the value of the tile, given a Y and X position.
 ; @ b: PosY
 ; @ c: PoxX
@@ -45,8 +48,8 @@ GetTileValue::
     jr .loopStart
 .loopEnd
 
-; hl = de + GameLevelData
-    ld hl, GameLevelData
+; hl = de + GameLevelTiles
+    ld hl, GameLevelTiles
     add hl, de
 
     ld a, [hl]

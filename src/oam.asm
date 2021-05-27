@@ -1,5 +1,5 @@
-INCLUDE "./src/hardware.inc"
-include "./src/util.inc"
+INCLUDE "./src/include/hardware.inc"
+INCLUDE "./src/include/util.inc"
 
 /*
     These are where the declaration of OAM variables in memory will be

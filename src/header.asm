@@ -1,4 +1,4 @@
-INCLUDE "./src/hardware.inc"
+INCLUDE "./src/include/hardware.inc"
 
 ; $0000 - $00FF: Boot ROM
 /*  During boot-up, this area is reserved for the Boot ROM located in the Game Boy's CPU.
@@ -22,15 +22,6 @@ INCLUDE "./src/hardware.inc"
     Before every instruction, the CPU checks if an interrupt needs to be handled.
     If there is an interrupt, the CPU will call the instruction at certain predetermined memory addresses.
     So if there is an Timer interrupt, the CPU would essentially do "call $0050". */
-
-; $0100 - $0103: Entry Point
-SECTION "Entry Point", ROM0[$0100]
-/*  After booting, the CPU jumps to the actual main program in the cartridge, which is $0100.
-    Usually this 4 byte area contains a NOP instruction, followed by an instruction to jump to $0150. But not always.
-    The reason for the jump is that while the entry point is $100, the header of the game spans from $0104 to $014F.
-    So there's only 4 bytes in which we can run any code before the header. So we use these 4 bytes to jump to after the header. */
-    di ; Disable interrupts until we have finish initialisation.
-    jp Initialise ; Leave this tiny space.
 
 ; $0104 - $014F: Header
 SECTION "Header", ROM0[$0104]

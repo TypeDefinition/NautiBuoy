@@ -1,4 +1,4 @@
-INCLUDE "./src/hardware.inc"
+INCLUDE "./src/include/hardware.inc"
 
 ; $0040 - $0067: Interrupts
 /*  Interrupts are used to call a given function when certain conditions are met.

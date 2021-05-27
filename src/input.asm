@@ -1,4 +1,4 @@
-INCLUDE "./src/hardware.inc"
+INCLUDE "./src/include/hardware.inc"
 
 P1F_NONE     EQU $30 ; 0011 0000, used to release the controller
 P1F_BUTTONS  EQU $10 ; 0001 0000, select button, set bit 4 high, rest low

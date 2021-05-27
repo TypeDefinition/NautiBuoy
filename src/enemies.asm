@@ -1,6 +1,6 @@
-INCLUDE "./src/hardware.inc"
-INCLUDE "./src/structs.inc"
-INCLUDE "./src/entities.inc"
+INCLUDE "./src/include/hardware.inc"
+INCLUDE "./src/include/structs.inc"
+INCLUDE "./src/include/entities.inc"
 
 SECTION "Enemies", WRAM0
     dstruct Character, wEnemy0

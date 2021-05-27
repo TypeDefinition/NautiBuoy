@@ -1,4 +1,4 @@
-INCLUDE "./src/hardware.inc"
+INCLUDE "./src/include/hardware.inc"
 
 SECTION "Tile Maps", ROMX, BANK[3]
 Level0::

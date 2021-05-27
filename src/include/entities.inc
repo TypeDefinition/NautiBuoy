@@ -5,6 +5,8 @@ DEF ENTITIES_INC EQU 1
 
     struct Character
         bytes 1, Active
+        bytes 1, Tag
+        bytes 1, Type
         bytes 1, PosYInterpolateTarget
         bytes 1, PosY
         bytes 1, PosYFrac
@@ -14,7 +16,6 @@ DEF ENTITIES_INC EQU 1
         bytes 1, Velocity
         bytes 1, Direction
         bytes 1, HP
-        bytes 1, Flags
         bytes 1, CurrAnimationFrame
         bytes 1, CurrStateMaxAnimFrame  ; Update this based on states
     end_struct

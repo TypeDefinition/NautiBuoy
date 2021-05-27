@@ -1,4 +1,4 @@
-INCLUDE "./src/hardware.inc"
+INCLUDE "./src/include/hardware.inc"
 
 SECTION "Bullet Sprite Data", ROMX, BANK[2]
 

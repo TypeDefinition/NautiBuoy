@@ -1,4 +1,4 @@
-INCLUDE "./src/hardware.inc"
+INCLUDE "./src/include/hardware.inc"
 
 SECTION "Title Tile Data", ROMX, BANK[1]
 TitleTiles::

@@ -1,5 +1,14 @@
-INCLUDE "./src/hardware.inc"
-INCLUDE "./src/util.inc"
+INCLUDE "./src/include/hardware.inc"
+INCLUDE "./src/include/util.inc"
+
+; $0100 - $0103: Entry Point
+SECTION "Entry Point", ROM0[$0100]
+/*  After booting, the CPU jumps to the actual main program in the cartridge, which is $0100.
+    Usually this 4 byte area contains a NOP instruction, followed by an instruction to jump to $0150. But not always.
+    The reason for the jump is that while the entry point is $100, the header of the game spans from $0104 to $014F.
+    So there's only 4 bytes in which we can run any code before the header. So we use these 4 bytes to jump to after the header. */
+    di ; Disable interrupts until we have finish initialisation.
+    jp Initialise ; Leave this tiny space.
 
 SECTION "Initialisation", ROM0
 Initialise::
@@ -40,12 +49,12 @@ Initialise::
 
     ; Copy tile map into VRAM.
     set_romx_bank 3 ; Our tile maps are in Bank 3, so we load that into ROMX.
-    mem_copy Level0, GameLevelData, Level0.end-Level0
-    mem_copy GameLevelData, _SCRN0, GameLevelData.end-GameLevelData
+    mem_copy Level0, GameLevelTiles, Level0.end-Level0
+    mem_copy GameLevelTiles, _SCRN0, GameLevelTiles.end-GameLevelTiles
 
     ; TEMP: Temporary code.
     ld hl, wShadowOAM
-    call InitPlayer
+    call InitialisePlayer
     call UpdatePlayerShadowOAM
  
     call hOAMDMA ; transfer sprite data to OAM
@@ -68,9 +77,9 @@ Initialise::
     ld [rLCDC], a ; turn on the screen
 
 
-    ld a, IEF_VBLANK | IEF_TIMER ; turn on vblank & timer
+    ld a, IEF_HILO | IEF_SERIAL | IEF_TIMER| IEF_STAT | IEF_VBLANK ; Enable Interrupts
     ld [rIE], a
     xor a ; clean up work
-    ei ; enable intrupts
+    ei ; Enable Master Interrupt Switch
 
     jp MainGameLoop ; Go to main game loop

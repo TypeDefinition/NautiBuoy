@@ -1,4 +1,4 @@
-INCLUDE "./src/hardware.inc"
+INCLUDE "./src/include/hardware.inc"
 
 ; $0000 - $003F: Restart Commands (RST)
 /*  Restart Commands, or "rst" commands, jumps to an address and execute code until encountering a return command.

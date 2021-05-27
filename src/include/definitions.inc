@@ -1,0 +1,43 @@
+    IF !DEF(DEFINITIONS_INC)
+DEF DEFINITIONS_INC EQU 1
+
+; Tags
+DEF TAG_PLAYER EQU 0
+DEF TAG_ENEMY EQU 1
+
+; Types
+DEF TYPE_PLAYER EQU 0
+
+DEF TYPE_ENEMY0 EQU 1
+DEF TYPE_ENEMY1 EQU 2
+DEF TYPE_ENEMY2 EQU 3
+
+DEF TYPE_BULLET1 EQU 4
+DEF TYPE_BULLET2 EQU 5
+DEF TYPE_BULLET3 EQU 6
+
+; Collider Size
+DEF PLAYER_COLLIDER_SIZE EQU $08
+DEF ENEMY_COLLIDER_SIZE EQU $08
+DEF BULLET_COLLIDER_SIZE EQU $02
+
+; For Animation Frames
+DEF PLAYER_WALK_FRAMES EQU 3
+
+; States
+DEF INACTIVE EQU 0
+DEF ACTIVE EQU 1
+
+; Directions
+; can use bit to compare, frees up reg A, but takes 2 cycles and 2 bytes
+; can use cp to compare, takes reg A, but takes only 1 cycle and 1 byte
+DEF DIR_UP EQU 0
+DEF DIR_DOWN EQU 1
+DEF DIR_LEFT EQU 2
+DEF DIR_RIGHT EQU 3
+
+; Tiles
+DEF TILE_SIZE EQU 8
+DEF COLLIDABLE_TILES EQU $10 ; Collidable Tiles: A tile is assumed to be collidable if it's value is less than 16.
+
+    ENDC ; DEFINITIONS_INC
