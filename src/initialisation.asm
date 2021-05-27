@@ -5,6 +5,12 @@ SECTION "Initialisation", ROM0
 Initialise::
     ld sp, $E000 ; Initialise our stack pointer to the end of the work RAM.
 
+    ; Initialise Timer (https://gbdev.gg8.se/wiki/articles/Timer_and_Divider_Registers)
+    xor a
+    ld [rTMA], a
+    ld a, TACF_START | TACF_4KHZ ; TACF_START & TACF_4KHZ
+    ld [rTAC], a
+
     call CopyDMARoutine ; init the copy of the DMA handler func from RAM to HRAM
 
     ; Wait for VBlank before shutting off the LCD.
@@ -62,8 +68,8 @@ Initialise::
     ld [rLCDC], a ; turn on the screen
 
 
-    ld a, IEF_VBLANK ; turn on vblank
-    ldh [rIE], a
+    ld a, IEF_VBLANK | IEF_TIMER ; turn on vblank & timer
+    ld [rIE], a
     xor a ; clean up work
     ei ; enable intrupts
 

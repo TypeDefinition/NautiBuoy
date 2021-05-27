@@ -19,13 +19,14 @@ InitPlayer::
     ; TODO: Make const variables for the initial HP, posX and posY, and velocity
     ld a, $01
     ld [wPlayer_Active], a
-    ld a, TAG_PLAYER
-    ld [wPlayer_Tag], a
-    ld a, TYPE_PLAYER
-    ld [wPlayer_Type], a
     ld a, 128
+    ld [wPlayer_PosYInterpolateTarget], a
+    ld [wPlayer_PosXInterpolateTarget], a
     ld [wPlayer_PosY], a
     ld [wPlayer_PosX], a
+    xor a
+    ld [wPlayer_PosYFrac], a
+    ld [wPlayer_PosXFrac], a
     ld a, 8
     ld [wPlayer_Velocity], a
     ld a, 3
@@ -50,15 +51,79 @@ UpdatePlayerMovement::
     push de
     push hl
 
-    ld a, [wCurrentInputKeys]
-    ld b, a ; store the input keys into b
-    ld a, [wPlayer_Velocity]
-    ld c, a ; store player velocity into c
-    ld e, 0 ; init the animation frame addition to 0
+    ; If the player is still interpolating, do not check for input.
+    ld a, [wPlayer_PosY]
+    ld b, a
+    ld a, [wPlayer_PosYInterpolateTarget]
+    cp a, b
+    jr nz, .interpolateBranch
+    ld a, [wPlayer_PosX]
+    ld b, a
+    ld a, [wPlayer_PosXInterpolateTarget]
+    cp a, b
+    jr nz, .interpolateBranch
+    jr .inputStart
 
-.up
+.interpolateBranch
+    ld [wPlayer_Direction], a
+    cp a, DIR_UP
+    jp z, .interpolateUp
+    cp a, DIR_DOWN
+    jp z, .interpolateDown
+    cp a, DIR_LEFT
+    jp z, .interpolateLeft
+    cp a, DIR_RIGHT
+    jp z, .interpolateRight
+
+.interpolateUp
+    ld a, [wPlayer_PosYFrac]
+    add a, 128
+    ld [wPlayer_PosYFrac], a
+    ld a, [wPlayer_PosY]
+    sbc a, $00
+    ld [wPlayer_PosY], a
+    jp .updateAnimationFrame
+
+.interpolateDown
+    ld a, [wPlayer_PosYFrac]
+    add a, 128
+    ld [wPlayer_PosYFrac], a
+    ld a, [wPlayer_PosY]
+    adc a, $00
+    ld [wPlayer_PosY], a
+    jp .updateAnimationFrame
+
+.interpolateLeft
+    ld a, [wPlayer_PosXFrac]
+    add a, 128
+    ld [wPlayer_PosXFrac], a
+    ld a, [wPlayer_PosX]
+    sbc a, $00
+    ld [wPlayer_PosX], a
+    jp .updateAnimationFrame
+
+.interpolateRight
+    ld a, [wPlayer_PosXFrac]
+    add a, 128
+    ld [wPlayer_PosXFrac], a
+    ld a, [wPlayer_PosX]
+    adc a, $00
+    ld [wPlayer_PosX], a
+    jp .updateAnimationFrame
+
+.interpolateEnd
+
+.inputStart
+    ; The player is not interpolating, so we check for input.
+    ld a, [wCurrentInputKeys]
+    ld b, a ; b = Input Key
+    ld a, [wPlayer_Velocity]
+    ld c, a ; c = Player Velocity
+    ld e, 0 ; Initialise animation frame addition to 0.
+
+.inputUp
     bit PADB_UP, b
-    jp z, .down
+    jp z, .inputDown
 
     ld a, DIR_UP
     ld [wPlayer_Direction], a
@@ -79,7 +144,7 @@ UpdatePlayerMovement::
     call GetTileValue
     pop bc
     cp a, $0F
-    jp c, .updateAnimationFrame
+    jp c, .inputEnd
 
     ; Top Right Corner Collision Check
     push bc
@@ -97,17 +162,17 @@ UpdatePlayerMovement::
     call GetTileValue
     pop bc
     cp a, $0F
-    jp c, .updateAnimationFrame
+    jp c, .inputEnd
     
-    ; Update PosY
-    ld a, [wPlayer_PosY]
+    ; Update Interpolation Target Position
+    ld a, [wPlayer_PosYInterpolateTarget]
     sub a, c
-    ld [wPlayer_PosY], a ; update pos Y
-    jp .updateAnimationFrame
+    ld [wPlayer_PosYInterpolateTarget], a
+    jp .inputEnd
 
-.down
+.inputDown
     bit PADB_DOWN, b
-    jp z, .left
+    jp z, .inputLeft
 
     ld a, DIR_DOWN
     ld [wPlayer_Direction], a 
@@ -129,7 +194,7 @@ UpdatePlayerMovement::
     call GetTileValue
     pop bc
     cp a, $0F
-    jp c, .updateAnimationFrame
+    jp c, .inputEnd
 
     ; Bottom Right Corner Collision Check
     push bc
@@ -148,17 +213,17 @@ UpdatePlayerMovement::
     call GetTileValue
     pop bc
     cp a, $0F
-    jp c, .updateAnimationFrame
+    jp c, .inputEnd
 
-    ; Update PosY
-    ld a, [wPlayer_PosY]
+    ; Update Interpolation Target Position
+    ld a, [wPlayer_PosYInterpolateTarget]
     add a, c
-    ld [wPlayer_PosY], a ; update pos Y
-    jp .updateAnimationFrame
+    ld [wPlayer_PosYInterpolateTarget], a
+    jp .inputEnd
 
-.left
+.inputLeft
     bit PADB_LEFT, b
-    jp z, .right
+    jp z, .inputRight
 
     ld a, DIR_LEFT
     ld [wPlayer_Direction], a 
@@ -179,7 +244,7 @@ UpdatePlayerMovement::
     call GetTileValue
     pop bc
     cp a, $0F
-    jp c, .updateAnimationFrame
+    jp c, .inputEnd
 
     ; Bottom Left Corner Collision Check
     push bc
@@ -197,17 +262,17 @@ UpdatePlayerMovement::
     call GetTileValue
     pop bc
     cp a, $0F
-    jp c, .updateAnimationFrame
+    jp c, .inputEnd
 
     ; Update PosX
-    ld a, [wPlayer_PosX]
+    ld a, [wPlayer_PosXInterpolateTarget]
     sub a, c
-    ld [wPlayer_PosX], a ; update pos Y
-    jp .updateAnimationFrame
+    ld [wPlayer_PosXInterpolateTarget], a ; update pos Y
+    jp .inputEnd
 
-.right
+.inputRight
     bit PADB_RIGHT, b
-    jp z, .updateAnimationFrame
+    jp z, .inputEnd
 
     ld a, DIR_RIGHT
     ld [wPlayer_Direction], a 
@@ -229,7 +294,7 @@ UpdatePlayerMovement::
     call GetTileValue
     pop bc
     cp a, $0F
-    jp c, .updateAnimationFrame
+    jp c, .inputEnd
 
     ; Bottom Right Corner Collision Check
     push bc
@@ -248,13 +313,15 @@ UpdatePlayerMovement::
     call GetTileValue
     pop bc
     cp a, $0F
-    jp c, .updateAnimationFrame
+    jp c, .inputEnd
 
     ; Update PosX
-    ld a, [wPlayer_PosX]
+    ld a, [wPlayer_PosXInterpolateTarget]
     add a, c
-    ld [wPlayer_PosX], a ; update pos Y
-    jp .updateAnimationFrame
+    ld [wPlayer_PosXInterpolateTarget], a ; update pos Y
+    jp .inputEnd
+
+.inputEnd
 
 .updateAnimationFrame ; Animation update frames here
     ld a, [wPlayer_CurrStateMaxAnimFrame]
