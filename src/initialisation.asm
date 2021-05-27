@@ -77,7 +77,7 @@ Initialise::
     ld [rLCDC], a ; turn on the screen
 
 
-    ld a, IEF_HILO | IEF_SERIAL | IEF_TIMER| IEF_STAT | IEF_VBLANK ; Enable Interrupts
+    ld a, IEF_VBLANK ; Enable Interrupts
     ld [rIE], a
     xor a ; clean up work
     ei ; Enable Master Interrupt Switch

@@ -8,7 +8,7 @@ DEF TILE_COLLISION_INC EQU 1
     \2 - Entity PosX Address
     \3 - Collider Size
     \4 - True Jump Address
-    \5 - False Jump Address*/
+    \5 - False Jump Address */
 MACRO tile_collision_check_up
     ; Top Left Corner Collision Check
     push bc
@@ -44,7 +44,7 @@ ENDM
     \2 - Entity PosX Address
     \3 - Collider Size
     \4 - True Jump Address
-    \5 - False Jump Address*/
+    \5 - False Jump Address */
 MACRO tile_collision_check_down
     ; Bottom Left Corner Collision Check
     push bc
@@ -80,7 +80,7 @@ ENDM
     \2 - Entity PosX Address
     \3 - Collider Size
     \4 - True Jump Address
-    \5 - False Jump Address*/
+    \5 - False Jump Address */
 MACRO tile_collision_check_left
     ; Top Left Corner Collision Check
     push bc
@@ -116,7 +116,7 @@ ENDM
     \2 - Entity PosX Address
     \3 - Collider Size
     \4 - True Jump Address
-    \5 - False Jump Address*/
+    \5 - False Jump Address */
 MACRO tile_collision_check_right
     ; Top Right Corner Collision Check
     push bc
