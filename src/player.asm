@@ -53,6 +53,8 @@ UpdatePlayerMovement::
     push de
     push hl
 
+    ld e, 0 ; Initialise animation frame addition to 0.
+
     ; If the player is still interpolating, do not check for input.
     ld a, [wPlayer_PosY]
     ld b, a
@@ -68,6 +70,7 @@ UpdatePlayerMovement::
 
 .interpolateStart
     ld a, [wPlayer_Direction]
+    inc e ; add 1 frame in animation
 
 .interpolateUpStart
     cp a, DIR_UP
@@ -124,15 +127,13 @@ UpdatePlayerMovement::
     ; The player is not interpolating, so we check for input.
     ld a, [wCurrentInputKeys]
     ld b, a ; b = Input Key
-    ld e, 0 ; Initialise animation frame addition to 0.
-
+    
 .inputUpStart
     bit PADB_UP, b
     jp z, .inputUpEnd
 
     ld a, DIR_UP
     ld [wPlayer_Direction], a
-    ld e, 1 ; add 1 frame in animation
 
     ; Top Left Corner Collision Check
     push bc
@@ -179,7 +180,6 @@ UpdatePlayerMovement::
 
     ld a, DIR_DOWN
     ld [wPlayer_Direction], a
-    ld e, 1 ; add 1 frame in animation
 
     ; Bottom Left Corner Collision Check
     push bc
@@ -226,7 +226,6 @@ UpdatePlayerMovement::
 
     ld a, DIR_LEFT
     ld [wPlayer_Direction], a
-    ld e, 1 ; add 1 frame in animation
 
     ; Top Left Corner Collision Check
     push bc
@@ -273,7 +272,6 @@ UpdatePlayerMovement::
 
     ld a, DIR_RIGHT
     ld [wPlayer_Direction], a
-    ld e, 1 ; add 1 frame in animation
 
     ; Top Right Corner Collision Check
     push bc
