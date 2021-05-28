@@ -46,7 +46,7 @@ UpdateBullets::
     push bc
 
     ld a, [hl]
-    cp a, ACTIVE ; check if alive
+    cp a, FLAG_ACTIVE ; check if alive
     jr z, .bulletMovement 
 
     ; bullet not alive
@@ -148,7 +148,7 @@ UpdateBulletsShadowOAM::
 
     ; check if alive first
     ld a, [bc] ; alive
-    cp a, ACTIVE
+    cp a, FLAG_ACTIVE
     jr z, .showOnScreen
 
     ; bullet not alive

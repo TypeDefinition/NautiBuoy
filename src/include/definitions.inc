@@ -22,8 +22,11 @@ DEF ENEMY_COLLIDER_SIZE EQU $08
 DEF BULLET_COLLIDER_SIZE EQU $02
 
 ; States
-DEF INACTIVE EQU 0
-DEF ACTIVE EQU 1
+DEF FLAG_INACTIVE EQU $00
+DEF FLAG_ACTIVE EQU $01
+
+DEF FLAG_PLAYER EQU $00
+DEF FLAG_ENEMY EQU $02
 
 ; Directions
 ; can use bit to compare, frees up reg A, but takes 2 cycles and 2 bytes

@@ -19,8 +19,8 @@ InitialisePlayer::
     push af
 
     ; TODO: Make const variables for the initial HP, posX and posY, and velocity
-    ld a, $01
-    ld [wPlayer_Active], a
+    ld a, FLAG_ACTIVE | FLAG_PLAYER
+    ld [wPlayer_Flags], a
     ; Set Position
     ld a, 128
     ld [wPlayer_PosYInterpolateTarget], a
@@ -36,6 +36,12 @@ InitialisePlayer::
     ; Set HP
     ld a, 3
     ld [wPlayer_HP], a
+    ; Set Velocity
+    ld hl, VELOCITY_NORMAL
+    ld a, h
+    ld [wPlayer_Velocity], a
+    ld a, l
+    ld [wPlayer_Velocity + 1], a
     ; Set Animation
     xor a
     ld [wPlayer_CurrAnimationFrame], a
@@ -50,25 +56,25 @@ InterpolatePlayerPosition::
 .upStart
     cp a, DIR_UP
     jr nz, .upEnd
-    interpolate_pos_dec wPlayer_PosY, wPlayer_PosYFrac, VELOCITY_NORMAL
+    interpolate_pos_dec wPlayer_PosY, wPlayer_PosYFrac, wPlayer_Velocity
     jp .end
 .upEnd
 .downStart
     cp a, DIR_DOWN
     jr nz, .downEnd
-    interpolate_pos_inc wPlayer_PosY, wPlayer_PosYFrac, VELOCITY_NORMAL
+    interpolate_pos_inc wPlayer_PosY, wPlayer_PosYFrac, wPlayer_Velocity
     jp .end
 .downEnd
 .leftStart
     cp a, DIR_LEFT
     jr nz, .leftEnd
-    interpolate_pos_dec wPlayer_PosX, wPlayer_PosXFrac, VELOCITY_NORMAL
+    interpolate_pos_dec wPlayer_PosX, wPlayer_PosXFrac, wPlayer_Velocity
     jp .end
 .leftEnd
 .rightStart
     cp a, DIR_RIGHT
     jr nz, .rightEnd
-    interpolate_pos_inc wPlayer_PosX, wPlayer_PosXFrac, VELOCITY_NORMAL
+    interpolate_pos_inc wPlayer_PosX, wPlayer_PosXFrac, wPlayer_Velocity
     jp .end
 .rightEnd
 .end
@@ -200,7 +206,7 @@ UpdatePlayerAttack::
     TODO:: discuss with terry abt whether the velocity and damage should be by player or bullet type
 */
     ld hl, wBulletObjects
-    ld a, ACTIVE
+    ld a, FLAG_ACTIVE | FLAG_PLAYER
     ld [hli], a ; its alive
 
     ld a, [wPlayer_PosY] 
