@@ -4,7 +4,7 @@ INCLUDE "./src/include/entities.inc"
 INCLUDE "./src/include/definitions.inc"
 
 DEF BULLET_DATA_SIZE = 8 
-DEF TOTAL_BULLET_ENTITY = 16
+DEF TOTAL_BULLET_ENTITY = 1
 
 SECTION "Bullets Data", WRAM0
 wBulletObjects::
@@ -76,18 +76,21 @@ UpdateBullets::
     ld a, d ; get posY
     sub b ; add the velocity
     ld d, a
+    jr .endUpdateDir
 .dirDown
     cp a, DIR_DOWN
     jr nz, .dirRight
     ld a, d ; get posY
     add b ; add the velocity
     ld d, a
+    jr .endUpdateDir
 .dirRight
     cp a, DIR_RIGHT
     jr nz, .dirLeft
     ld a, e ; get posX
     add b ; add the velocity
     ld e, a
+    jr .endUpdateDir
 .dirLeft
     cp a, DIR_LEFT
     jr nz, .endUpdateDir
