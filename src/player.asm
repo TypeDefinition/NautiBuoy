@@ -30,9 +30,6 @@ InitialisePlayer::
     xor a
     ld [wPlayer_PosYFrac], a
     ld [wPlayer_PosXFrac], a
-    ; Set Velocity
-    ld a, 8
-    ld [wPlayer_Velocity], a
     ; Set Direction
     ld a, DIR_UP
     ld [wPlayer_Direction], a
@@ -49,39 +46,35 @@ InitialisePlayer::
     ret
 
 InterpolatePlayerPosition::
-    push af
     ld a, [wPlayer_Direction]
 .upStart
     cp a, DIR_UP
     jr nz, .upEnd
-    interpolate_pos_dec wPlayer_PosY, wPlayer_PosYFrac, 3
+    interpolate_pos_dec wPlayer_PosY, wPlayer_PosYFrac, VELOCITY_NORMAL
     jp .end
 .upEnd
 .downStart
     cp a, DIR_DOWN
     jr nz, .downEnd
-    interpolate_pos_inc wPlayer_PosY, wPlayer_PosYFrac, 3
+    interpolate_pos_inc wPlayer_PosY, wPlayer_PosYFrac, VELOCITY_NORMAL
     jp .end
 .downEnd
 .leftStart
     cp a, DIR_LEFT
     jr nz, .leftEnd
-    interpolate_pos_dec wPlayer_PosX, wPlayer_PosXFrac, 3
+    interpolate_pos_dec wPlayer_PosX, wPlayer_PosXFrac, VELOCITY_NORMAL
     jp .end
 .leftEnd
 .rightStart
     cp a, DIR_RIGHT
     jr nz, .rightEnd
-    interpolate_pos_inc wPlayer_PosX, wPlayer_PosXFrac, 3
+    interpolate_pos_inc wPlayer_PosX, wPlayer_PosXFrac, VELOCITY_NORMAL
     jp .end
 .rightEnd
 .end
-    pop af
     ret
 
 GetUserInput::
-    push af
-    push bc
     ld a, [wCurrentInputKeys]
     ld b, a ; b = Input Key
 
@@ -142,16 +135,24 @@ GetUserInput::
 .rightEnd
 
 .end
-    pop bc
-    pop af
+    ret
+
+AdvancePlayerAnimation::
+    ld a, [wPlayer_CurrStateMaxAnimFrame]
+    ld b, a ; store max frames into b
+    
+    ld a, [wPlayer_CurrAnimationFrame]
+    inc a ; Advance the animation frame by 1.
+    cp a, b
+    jr nz, .end
+    xor a
+.end
+    ld [wPlayer_CurrAnimationFrame], a
     ret
 
 UpdatePlayerMovement::
     push af
     push bc
-    push de
-
-    ld e, 0 ; Initialise animation frame addition to 0.
 
     ; If the player is still interpolating, do not check for input.
     ld a, [wPlayer_PosY]
@@ -168,32 +169,12 @@ UpdatePlayerMovement::
 
 .getUserInput
     call GetUserInput
-    jr .updateAnimationFrame
+    jr .end
 .interpolatePosition
     call InterpolatePlayerPosition
-    ld e, 1
-    jr .updateAnimationFrame
-
-.updateAnimationFrame ; Animation update frames here
-    ld a, [wPlayer_CurrStateMaxAnimFrame]
-    ld b, a ; store max frames into b
-
-    xor a
-    cp e ; if e (animation frames added) is 0 it means it didnt add anything
-    jr z, .end
-    ld a, [wPlayer_CurrAnimationFrame]
-    add e ; add the number of animation frame
-
-    cp b ; check current animation frame no. with max Frames
-    jr nz, .noResetAnimationCounter
-    ; if reach limit reset curren Animation counter
-    xor a
-
-.noResetAnimationCounter
-    ld [wPlayer_CurrAnimationFrame], a
+    call AdvancePlayerAnimation
 
 .end
-    pop de
     pop bc
     pop af
     ret

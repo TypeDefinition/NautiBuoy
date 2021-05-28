@@ -7,12 +7,24 @@ DEF MOVEMENT_INC EQU 1
     \3 - Entity Velocity */
 MACRO interpolate_pos_dec
     push af
-    ld a, [\2]
-    add a, (\3 * 64)
-    ld [\2], a
+    push bc
+    push hl
+    
+    ld bc, -\3
+
     ld a, [\1]
-    sbc a, $00
+    ld h, a
+    ld a, [\2]
+    ld l, a
+
+    add hl, bc
+    ld a, h
     ld [\1], a
+    ld a, l
+    ld [\2], a
+
+    pop hl
+    pop bc
     pop af
 ENDM
 
@@ -22,12 +34,24 @@ ENDM
     \3 - Entity Velocity */
 MACRO interpolate_pos_inc
     push af
-    ld a, [\2]
-    add a, (\3 * 64)
-    ld [\2], a
+    push bc
+    push hl
+
+    ld bc, \3
+
     ld a, [\1]
-    adc a, $00
+    ld h, a
+    ld a, [\2]
+    ld l, a
+
+    add hl, bc
+    ld a, h
     ld [\1], a
+    ld a, l
+    ld [\2], a
+
+    pop hl
+    pop bc
     pop af
 ENDM
 

@@ -82,4 +82,4 @@ Initialise::
     xor a ; clean up work
     ei ; Enable Master Interrupt Switch
 
-    jp MainGameLoop ; Go to main game loop
+    jp UpdateLoop ; Go to main game loop

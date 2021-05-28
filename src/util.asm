@@ -1,14 +1,5 @@
 INCLUDE "./src/include/hardware.inc"
 
-SECTION "WaitVBlank", ROM0
-/*  Loop until the LCD is in VBlank state.
-    Registers Used: a */
-WaitVBlank::
-    ld a, [rLY] ; rLY is address $FF44, we getting the LCDC Y-Coordinate here to see the current state of the LCDC drawing
-    cp 144 ; Check if the LCD is past VBlank, values between 144 - 153 is VBlank period
-    jr c, WaitVBlank ; We need wait for Vblank before we can turn off the LCD
-    ret
-
 /*  Copy data from one memory address to another, byte by byte.
     de - Source address
     bc - number of bytes to fill

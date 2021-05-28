@@ -1,8 +1,8 @@
 INCLUDE "./src/include/structs.inc"
 INCLUDE "./src/include/hardware.inc"
 
-SECTION "Main Game Loop", ROM0
-MainGameLoop::
+SECTION "Update Loop", ROM0
+UpdateLoop::
     call UpdateInput
 
     call ResetShawdowOAM
@@ -26,23 +26,4 @@ MainGameLoop::
 
     halt ; Save power, wait for vblank interrupt
 
-    jr MainGameLoop
-
-SECTION "VBlank Handler", ROM0
-
-VBlankHandler::
-    call ResetOAM
-    call hOAMDMA ; Update OAM
-
-    ; TODO:: scrolling or any tile updates here
-    ; TODO:: camera stuff here, just fix with player being in center of it
-    ; TODO:: any UI stuff here too
-
-
-    ; get back old state
-    pop hl
-    pop de
-    pop bc
-    pop af
-
-    reti
+    jr UpdateLoop

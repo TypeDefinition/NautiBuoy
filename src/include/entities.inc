@@ -12,7 +12,6 @@ DEF ENTITIES_INC EQU 1
         bytes 1, PosXInterpolateTarget
         bytes 1, PosX
         bytes 1, PosXFrac
-        bytes 1, Velocity
         bytes 1, Direction
         bytes 1, HP
         bytes 1, CurrAnimationFrame
