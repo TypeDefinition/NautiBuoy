@@ -36,7 +36,7 @@ MACRO mem_set_small
     ld hl, \1
     ld a, \2
     ld b, \3
-    rst MemSetSmall ; Here uses rst instead
+    rst $0008 ; Here uses rst instead
 ENDM
 
     ENDC ; UTIL_INC
