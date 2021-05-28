@@ -2,9 +2,9 @@ INCLUDE "./src/include/hardware.inc"
 INCLUDE "./src/include/structs.inc"
 INCLUDE "./src/include/entities.inc"
 INCLUDE "./src/include/definitions.inc"
+INCLUDE "./src/include/util.inc"
 
-DEF BULLET_DATA_SIZE = 8 
-DEF TOTAL_BULLET_ENTITY = 1
+DEF TOTAL_BULLET_ENTITY = 16
 
 SECTION "Bullets Data", WRAM0
 wBulletObjects::
@@ -28,6 +28,13 @@ wBulletObjectEnd:
 
 
 SECTION "Bullets", ROM0
+
+/* reset all bullet data */
+ResetAllBullets::
+    mem_set_small wBulletObjects, 0, wBulletObjectEnd - wBulletObjects
+    ret
+
+
 /*  Update all alive bullets movement and collision */
 UpdateBullets::
     ld hl, wBulletObjects
@@ -50,7 +57,7 @@ UpdateBullets::
     jr z, .bulletMovement 
 
     ; bullet not alive
-    ld c, BULLET_DATA_SIZE ; based on number of bytes the bullet has
+    ld c, sizeof_Bullet ; based on number of bytes the bullet has
     add hl, bc ; offset to get the next bullet
     jr .startLoop
    
@@ -115,7 +122,7 @@ UpdateBullets::
     ; go to next loop
     pop hl ; get the original starting address again
     ld b, 0
-    ld c, BULLET_DATA_SIZE ; based on number of bytes the bullet has
+    ld c, sizeof_Bullet ; based on number of bytes the bullet has
     add hl, bc ; add the offset to get the next bullet
     jr .startLoop
 
