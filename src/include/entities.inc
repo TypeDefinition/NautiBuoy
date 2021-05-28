@@ -22,11 +22,9 @@ DEF ENTITIES_INC EQU 1
     struct Character
         bytes 1, Flags
         bytes 1, PosYInterpolateTarget
-        bytes 1, PosY
-        bytes 1, PosYFrac
+        words 1, PosY ; The 1st byte of PosY represents the integer portion. The 2nd byte of PosY represents the fractional portion.
         bytes 1, PosXInterpolateTarget
-        bytes 1, PosX
-        bytes 1, PosXFrac
+        words 1, PosX ; The 1st byte of PosX represents the integer portion. The 2nd byte of Posx represents the fractional portion.
         bytes 1, Direction
         bytes 1, HP
         words 1, Velocity
@@ -40,10 +38,8 @@ DEF ENTITIES_INC EQU 1
     */
     struct Bullet
         bytes 1, Flags
-        bytes 1, PosY
-        bytes 1, PosYFrac
-        bytes 1, PosX
-        bytes 1, PosXFrac
+        words 1, PosY ; The 1st byte of PosY represents the integer portion. The 2nd byte of PosY represents the fractional portion.
+        words 1, PosX ; The 1st byte of PosX represents the integer portion. The 2nd byte of Posx represents the fractional portion.
         bytes 1, Direction
     end_struct
 
