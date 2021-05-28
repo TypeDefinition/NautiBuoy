@@ -28,6 +28,11 @@ DEF FLAG_ACTIVE EQU $01
 DEF FLAG_PLAYER EQU $00
 DEF FLAG_ENEMY EQU $02
 
+; definitions for the bit flags
+DEF BIT_FLAG_ACTIVE EQU $0 ; 0 bit
+DEF BIT_FLAG_PLAYER EQU $1 ; 01 bit
+
+
 ; Directions
 ; can use bit to compare, frees up reg A, but takes 2 cycles and 2 bytes
 ; can use cp to compare, takes reg A, but takes only 1 cycle and 1 byte
