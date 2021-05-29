@@ -14,6 +14,7 @@ wBulletObjects::
     dstruct Bullet, wBullet0
     dstruct Bullet, wBullet1
     dstruct Bullet, wBullet2
+w_BulletObjectPlayerEnd:: ; reserve the first 3 bullets just for the player
     dstruct Bullet, wBullet3
     dstruct Bullet, wBullet4
     dstruct Bullet, wBullet5
@@ -35,6 +36,33 @@ SECTION "Bullets", ROM0
 /* reset all bullet data */
 ResetAllBullets::
     mem_set_small wBulletObjects, 0, wBulletObjectEnd - wBulletObjects
+    ret
+
+/*  Searches and returns a non-active bullet within a certain limit
+
+    hl - starting address
+    b - number of bullets
+
+    return hl - starting address of available bullet, if no available bullets, return the last bullet
+    WARNING: after calling this function, need to check if active anyway, there's no null check...
+*/
+GetNonActiveBullet:
+.startLoop
+    ld a, [hl]
+    bit BIT_FLAG_ACTIVE, a ; check if alive
+    jr z, .endLoop ; found one, end loop
+    
+    ld b, 0
+    ld c, sizeof_Bullet
+
+    add hl, bc ; go to next bullet address
+
+    dec b ; decrement and check
+    ld a, b
+    cp a, 0
+    jr nz, .startLoop
+
+.endLoop
     ret
 
 
@@ -83,14 +111,14 @@ UpdateBullets::
     ld d, h
     ld e, l
     inc de
-    inc de
+    inc de ; incerement by 2 to get the pos x
 
     pop af ; get back the direction
 
 .dirUp
     cp a, DIR_UP
     jr nz, .dirDown
-    tile_collision_check_up_reg 0, .collided , .updateUpPos ; hl address of posy, de address of posX
+    tile_collision_check_up_reg 0, .collided, .updateUpPos ; hl address of posy, de address of posX
 .updateUpPos
     interpolate_pos_dec_reg
     jp .endUpdateDir
@@ -126,6 +154,7 @@ UpdateBullets::
     pop hl
     push hl
     ld [hl], FLAG_INACTIVE
+
 
 .endUpdateDir
     ; go to next loop
