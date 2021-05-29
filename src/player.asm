@@ -202,30 +202,30 @@ UpdatePlayerAttack::
 
     TODO:: make a fire rate or something
     TODO:: check if bullet is alive first LOL
-    TODO:: bullet spawn pos should have an offset from player
-    TODO:: discuss with terry abt whether the velocity and damage should be by player or bullet type
 */
     ld hl, wBulletObjects
+    ld a, [hl]
+    bit BIT_FLAG_ACTIVE, a
+    jr nz, .finishAttack ; if active, finish attack
+
+    ; set the variables
     ld a, FLAG_ACTIVE | FLAG_PLAYER
     ld [hli], a ; its alive
 
     ld a, [wPlayer_PosY] 
     ld [hli], a ; pos Y
+    
+    ld a, [wPlayer_PosY + 1] 
+    ld [hli], a ; load the other half of posY
+
     ld a, [wPlayer_PosX]
     ld [hli], a ; pos x
+
+    ld a, [wPlayer_PosX] 
+    ld [hli], a ; load the other half of posX
     
-    ld a, 1 ; TEMP VARIABLE
-    ld [hli], a ; velocity
     ld a, [wPlayer_Direction]
     ld [hli], a ; direction
-
-    ld a, TAG_PLAYER
-    ld [hli], a ; tag
-    ld a, TYPE_BULLET1
-    ld [hli], a ; type
-    ld a, [wPlayer_Direction]
-    ld a, 1 ; TEMP VARIABLE
-    ld [hli], a ; set damage?
 
 .finishAttack
     ret

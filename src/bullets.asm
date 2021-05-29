@@ -53,8 +53,8 @@ UpdateBullets::
     push bc
 
     ld a, [hl]
-    cp a, FLAG_ACTIVE ; check if alive
-    jr z, .bulletMovement 
+    bit BIT_FLAG_ACTIVE, a ; check if alive
+    jr nz, .bulletMovement
 
     ; bullet not alive
     ld c, sizeof_Bullet ; based on number of bytes the bullet has
@@ -69,13 +69,18 @@ UpdateBullets::
     ; pos stored in register de for later calculatations
     ld a, [hli] ; pos Y
     ld d, a ; put posY in d
+    
+    inc hl
+
     ld a, [hli] ; pos X
     ld e, a ; posX in e
 
-    ld a, [hli] ; get velocity
-    ld b, a ; store velocity into b
+    inc hl
 
-    ld a, [hli] ; get direction
+    ;ld a, [hli] ; get velocity
+    ld b, 1 ; store velocity into b, TEMP VELOCITY
+
+    ld a, [hl] ; get direction
     
 .dirUp
     cp a, DIR_UP
@@ -113,6 +118,9 @@ UpdateBullets::
     ld a, d
     ld [hli], a ; store new y pos
     ld a, e
+
+    inc hl
+
     ld [hli], a ; store new x pos
 
 
@@ -155,8 +163,8 @@ UpdateBulletsShadowOAM::
 
     ; check if alive first
     ld a, [bc] ; alive
-    cp a, FLAG_ACTIVE
-    jr z, .showOnScreen
+    bit BIT_FLAG_ACTIVE, a
+    jr nz, .showOnScreen
 
     ; bullet not alive
     ; TODO:: go to next bullet
@@ -173,6 +181,7 @@ UpdateBulletsShadowOAM::
     sub a, d ; decrease by screen offset
     ld d, a
     
+    inc bc ;TEMP
     inc bc
 
     ld a, [rSCX]
@@ -181,7 +190,8 @@ UpdateBulletsShadowOAM::
     sub a, e ; decrease by screen offset
     ld e, a
 
-    inc bc ; velocity
+    inc bc ; last part of posX
+
     inc bc ; direction of bullet
     
     ld a, [bc] ; get direction

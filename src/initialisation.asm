@@ -56,6 +56,8 @@ Initialise::
     ld hl, wShadowOAM
     call InitialisePlayer
     call UpdatePlayerShadowOAM
+
+    call ResetAllBullets
  
     call hOAMDMA ; transfer sprite data to OAM
 
