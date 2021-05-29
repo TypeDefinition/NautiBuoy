@@ -216,6 +216,9 @@ UpdatePlayerAttack::
     ld a, FLAG_ACTIVE | FLAG_PLAYER
     ld [hli], a ; its alive
 
+    ld a, [wPlayer_Direction]
+    ld [hli], a ; direction
+
     ld a, [wPlayer_PosY] 
     ld [hli], a ; pos Y
     
@@ -225,12 +228,9 @@ UpdatePlayerAttack::
     ld a, [wPlayer_PosX]
     ld [hli], a ; pos x
 
-    ld a, [wPlayer_PosX] 
+    ld a, [wPlayer_PosX + 1] 
     ld [hli], a ; load the other half of posX
     
-    ld a, [wPlayer_Direction]
-    ld [hli], a ; direction
-
 .finishAttack
     ret
 

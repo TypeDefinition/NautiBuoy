@@ -67,6 +67,10 @@ UpdateBullets::
     
     inc hl ; skip the flag
 
+    ld a, [hli] ; get direction
+    ld c, a
+
+
     ; pos stored in register de for later calculatations
     ld a, [hli] ; pos Y
     ld d, a ; put posY in d
@@ -81,8 +85,7 @@ UpdateBullets::
     ;ld a, [hli] ; get velocity
     ld b, 1 ; store velocity into b, TEMP VELOCITY
 
-    ld a, [hl] ; get direction
-    
+    ld a, c
 .dirUp
     cp a, DIR_UP
     jr nz, .dirDown
@@ -116,6 +119,8 @@ UpdateBullets::
     push hl ; push again to keep a copy of original starting address
 
     inc hl ; TEMP:: SKIP ACTIVE var FOR NOW
+    inc hl ; TEMP:: skiup dir for now
+
     ld a, d
     ld [hli], a ; store new y pos
     ld a, e
@@ -174,6 +179,10 @@ UpdateBulletsShadowOAM::
 .showOnScreen
     inc bc
 
+    ld a, [bc] ; get direction
+    push af
+    inc bc
+
     ; translate to screen pos
     ld a, [rSCY]
     ld d, a
@@ -192,10 +201,9 @@ UpdateBulletsShadowOAM::
 
     inc bc ; last part of posX
 
-    inc bc ; direction of bullet
+    ;inc bc ; direction of bullet
     
-    ld a, [bc] ; get direction
-
+    pop af
 .upSprite
     cp a, DIR_UP
     jr nz, .downSprite
