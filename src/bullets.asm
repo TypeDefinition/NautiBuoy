@@ -3,6 +3,8 @@ INCLUDE "./src/include/structs.inc"
 INCLUDE "./src/include/entities.inc"
 INCLUDE "./src/include/definitions.inc"
 INCLUDE "./src/include/util.inc"
+INCLUDE "./src/include/movement.inc"
+
 
 DEF TOTAL_BULLET_ENTITY = 16
 
@@ -46,7 +48,7 @@ UpdateBullets::
     pop bc
     ld a, c
     cp 0 ; check if end of loop
-    jr z, .end
+    jp z, .end
 
     ld b, 0
     dec c ; dec counter
@@ -68,77 +70,45 @@ UpdateBullets::
     inc hl ; skip the flag
 
     ld a, [hli] ; get direction
+    ld d, a
+    
+    ; get velocity, store in register bc
+    ld a, [hli] ; get first part of velocity
+    ld b, a
+    ld a, [hli] ; get second part of velocity
     ld c, a
 
-
-    ; pos stored in register de for later calculatations
-    ld a, [hli] ; pos Y
-    ld d, a ; put posY in d
-    
-    inc hl
-
-    ld a, [hli] ; pos X
-    ld e, a ; posX in e
-
-    inc hl
-
-    ;ld a, [hli] ; get velocity
-    ld b, 1 ; store velocity into b, TEMP VELOCITY
-
-    ld a, c
+    ld a, d
 .dirUp
     cp a, DIR_UP
     jr nz, .dirDown
-    ld a, d ; get posY
-    sub b ; add the velocity
-    ld d, a
+    interpolate_pos_dec_reg
     jr .endUpdateDir
 .dirDown
     cp a, DIR_DOWN
     jr nz, .dirRight
-    ld a, d ; get posY
-    add b ; add the velocity
-    ld d, a
+    interpolate_pos_inc_reg
     jr .endUpdateDir
 .dirRight
+    inc hl
+    inc hl ; go to address of pos X
+
     cp a, DIR_RIGHT
     jr nz, .dirLeft
-    ld a, e ; get posX
-    add b ; add the velocity
-    ld e, a
+    interpolate_pos_inc_reg
     jr .endUpdateDir
 .dirLeft
     cp a, DIR_LEFT
+    interpolate_pos_dec_reg
     jr nz, .endUpdateDir
-    ld a, e ; get posX
-    sub b ; add the velocity
-    ld e, a
-.endUpdateDir ; reg d stores Y coord, reg e stores X coord
-    ; update the bullet data
-    pop hl ; get the original starting address of this bullet
-    push hl ; push again to keep a copy of original starting address
-
-    inc hl ; TEMP:: SKIP ACTIVE var FOR NOW
-    inc hl ; TEMP:: skiup dir for now
-
-    ld a, d
-    ld [hli], a ; store new y pos
-    ld a, e
-
-    inc hl
-
-    ld [hli], a ; store new x pos
-
-
-    ; TODO:: Check collision here
-
-    
+.endUpdateDir 
     ; go to next loop
     pop hl ; get the original starting address again
     ld b, 0
     ld c, sizeof_Bullet ; based on number of bytes the bullet has
     add hl, bc ; add the offset to get the next bullet
-    jr .startLoop
+
+    jp .startLoop ; have to use jump, address out of reach
 
 .end
     ret
@@ -181,6 +151,9 @@ UpdateBulletsShadowOAM::
 
     ld a, [bc] ; get direction
     push af
+    inc bc
+
+    inc bc
     inc bc
 
     ; translate to screen pos

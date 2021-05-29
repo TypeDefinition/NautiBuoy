@@ -218,6 +218,11 @@ UpdatePlayerAttack::
 
     ld a, [wPlayer_Direction]
     ld [hli], a ; direction
+ 
+    xor a
+    ld [hli], a ; velocity
+    ld a, $40
+    ld [hli], a ; second part of velocity
 
     ld a, [wPlayer_PosY] 
     ld [hli], a ; pos Y
