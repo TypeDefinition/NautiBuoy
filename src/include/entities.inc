@@ -21,9 +21,9 @@ DEF ENTITIES_INC EQU 1
     */
     struct Character
         bytes 1, Flags
-        bytes 1, PosYInterpolateTarget
+        bytes 1, PosYInterpolateTarget ; the next target tile pos 
         words 1, PosY ; The 1st byte of PosY represents the integer portion. The 2nd byte of PosY represents the fractional portion.
-        bytes 1, PosXInterpolateTarget
+        bytes 1, PosXInterpolateTarget ; the next target tile pos 
         words 1, PosX ; The 1st byte of PosX represents the integer portion. The 2nd byte of Posx represents the fractional portion.
         bytes 1, Direction
         bytes 1, HP

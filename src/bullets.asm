@@ -64,7 +64,8 @@ UpdateBullets::
 /* Check its direction and update pos */
 .bulletMovement
     push hl ; for updating bullet info later
-    inc hl ; skip the isAlive var
+    
+    inc hl ; skip the flag
 
     ; pos stored in register de for later calculatations
     ld a, [hli] ; pos Y
@@ -146,7 +147,6 @@ UpdateBulletsShadowOAM::
     ; y, x; tile id, flags
     ld bc, wBulletObjects ; get the address
     
-    ; TODO:: Check collision here
  /*   ld d, 0
     ld e, TOTAL_BULLET_ENTITY
     push de ; store counter in reg b */

@@ -51,6 +51,7 @@ InitialisePlayer::
     pop af
     ret
 
+/* For interpolating player position to the next tile */
 InterpolatePlayerPosition::
     ld a, [wPlayer_Direction]
 .upStart
@@ -80,6 +81,7 @@ InterpolatePlayerPosition::
 .end
     ret
 
+/* Get User input for moving */
 GetUserInput::
     ld a, [wCurrentInputKeys]
     ld b, a ; b = Input Key
@@ -143,6 +145,7 @@ GetUserInput::
 .end
     ret
 
+/* To update Player animation frame */
 AdvancePlayerAnimation::
     ld a, [wPlayer_CurrStateMaxAnimFrame]
     ld b, a ; store max frames into b
@@ -156,6 +159,7 @@ AdvancePlayerAnimation::
     ld [wPlayer_CurrAnimationFrame], a
     ret
 
+/* Update Player Movement */
 UpdatePlayerMovement::
     push af
     push bc
@@ -165,7 +169,7 @@ UpdatePlayerMovement::
     ld b, a
     ld a, [wPlayer_PosYInterpolateTarget]
     cp a, b
-    jr nz, .interpolatePosition
+    jr nz, .interpolatePosition ; player hasnt reached the interpolate target yet
     ld a, [wPlayer_PosX]
     ld b, a
     ld a, [wPlayer_PosXInterpolateTarget]
