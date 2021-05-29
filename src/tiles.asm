@@ -31,8 +31,8 @@ GetTileValue::
 ; de = Col + Row * NUM_COLS.
     ld d, 0
     ld e, c
-.loopStart
-    ld a, b
+.loopStart ; adding row * num_cols to de = col
+    ld a, b 
     cp a, $00
     jr z, .loopEnd
 

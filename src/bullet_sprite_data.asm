@@ -20,12 +20,12 @@ BulletSprites::
 
 .rightSprite::
     db 8 ; y
-    db 0 ; x
+    db 4 ; x
     db 20 ; sprite ID
     db OAMF_PAL0
     
 .leftSprite::
     db 8 ; y
-    db 0 ; x
+    db 4 ; x
     db 20 ; sprite ID
     db OAMF_PAL0 | OAMF_XFLIP

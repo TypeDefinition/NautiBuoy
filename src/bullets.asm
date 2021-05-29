@@ -4,9 +4,10 @@ INCLUDE "./src/include/entities.inc"
 INCLUDE "./src/include/definitions.inc"
 INCLUDE "./src/include/util.inc"
 INCLUDE "./src/include/movement.inc"
+INCLUDE "./src/include/tile_collision.inc"
 
 
-DEF TOTAL_BULLET_ENTITY = 16
+DEF TOTAL_BULLET_ENTITY = 1
 
 SECTION "Bullets Data", WRAM0
 wBulletObjects::
@@ -65,12 +66,12 @@ UpdateBullets::
    
 /* Check its direction and update pos */
 .bulletMovement
-    push hl ; for updating bullet info later
+    push hl ; for getting back the original startiong address info
     
     inc hl ; skip the flag
 
     ld a, [hli] ; get direction
-    ld d, a
+    push af ; to get the dir again later
     
     ; get velocity, store in register bc
     ld a, [hli] ; get first part of velocity
@@ -78,34 +79,62 @@ UpdateBullets::
     ld a, [hli] ; get second part of velocity
     ld c, a
 
-    ld a, d
+    ; store the address of posX here
+    ld d, h
+    ld e, l
+    inc de
+    inc de
+
+    pop af ; get back the direction
+
 .dirUp
     cp a, DIR_UP
     jr nz, .dirDown
+    tile_collision_check_up_reg 0, .collided , .updateUpPos ; hl address of posy, de address of posX
+.updateUpPos
     interpolate_pos_dec_reg
-    jr .endUpdateDir
+    jp .endUpdateDir
+
 .dirDown
     cp a, DIR_DOWN
     jr nz, .dirRight
+    tile_collision_check_down_reg 0, .collided , .updateDownPos ; hl address of posy, de address of posX
+.updateDownPos
     interpolate_pos_inc_reg
-    jr .endUpdateDir
-.dirRight
-    inc hl
-    inc hl ; go to address of pos X
+    jp .endUpdateDir
 
+.dirRight
     cp a, DIR_RIGHT
     jr nz, .dirLeft
+    tile_collision_check_right_reg 0, .collided , .updateRightPos
+.updateRightPos
+    inc hl
+    inc hl ; go to pos X address in hl
     interpolate_pos_inc_reg
     jr .endUpdateDir
-.dirLeft
-    cp a, DIR_LEFT
+
+.dirLeft ; only direction, no need do dir check
+    tile_collision_check_left_reg 0, .collided , .updateLeftPos
+.updateLeftPos
+    inc hl
+    inc hl ; go to pos X address in hl
     interpolate_pos_dec_reg
     jr nz, .endUpdateDir
-.endUpdateDir 
+
+.collided
+    ; TEMP CODES
+    pop hl
+    push hl
+    ld [hl], FLAG_INACTIVE
+
+.endUpdateDir
     ; go to next loop
     pop hl ; get the original starting address again
     ld b, 0
     ld c, sizeof_Bullet ; based on number of bytes the bullet has
+
+    
+
     add hl, bc ; add the offset to get the next bullet
 
     jp .startLoop ; have to use jump, address out of reach
