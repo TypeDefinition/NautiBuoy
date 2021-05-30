@@ -12,6 +12,8 @@ DEF VIEWPORT_MAX_X EQU 96 ; 256pixels - 160pixels
 
 SECTION "Player Data", WRAM0
     dstruct Character, wPlayer
+wShadowSCData::
+    ds 2 ; y pos, then x pos
 
 /* Any logic/behavior/function related to player here */
 SECTION "Player", ROM0
@@ -258,7 +260,7 @@ UpdatePlayerCamera::
     jr c, .verticalEnd
     ld a, VIEWPORT_MAX_Y
 .verticalEnd
-    ld [rSCY], a
+    ld [wShadowSCData], a
 
 .horizontal
     ld a, [wPlayer_PosX]
@@ -272,7 +274,7 @@ UpdatePlayerCamera::
     jr c, .horizontalEnd
     ld a, VIEWPORT_MAX_X
 .horizontalEnd
-    ld [rSCX], a
+    ld [wShadowSCData + 1], a
 
     pop af
     ret
@@ -324,13 +326,13 @@ UpdatePlayerShadowOAM::
     set_romx_bank 2 ; bank for sprites is in bank 2
 
     ; Convert player position from world space to screen space.
-    ld a, [rSCY]
+    ld a, [wShadowSCData]
     ld b, a
     ld a, [wPlayer_PosY]
     sub a, b
     ld b, a ; store y screen pos at b
 
-    ld a, [rSCX]
+    ld a, [wShadowSCData + 1]
     ld c, a
     ld a, [wPlayer_PosX]
     sub a, c

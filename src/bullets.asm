@@ -60,7 +60,7 @@ GetNonActiveBullet::
     ld d, 0
     ld e, sizeof_Bullet
     add hl, de ; go to next bullet address
-    
+
     jr .startLoop
 
 .endLoop
@@ -168,7 +168,7 @@ UpdateBullets::
     add hl, de ; offset hl by 4
     
     ; translate to screen pos
-    ld a, [rSCY]
+    ld a, [wShadowSCData]
     ld d, a
     ld a, [hli] ; bullet y pos
     sub a, d ; decrease by screen offset
@@ -176,7 +176,7 @@ UpdateBullets::
     
     inc hl
 
-    ld a, [rSCX]
+    ld a, [wShadowSCData + 1]
     ld e, a
     ld a, [hl] ; bullet x pos
     sub a, e ; decrease by screen offset
