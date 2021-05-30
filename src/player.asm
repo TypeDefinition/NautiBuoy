@@ -12,8 +12,6 @@ DEF VIEWPORT_MAX_X EQU 96 ; 256pixels - 160pixels
 
 SECTION "Player Data", WRAM0
     dstruct Character, wPlayer
-wShadowSCData::
-    ds 2 ; y pos, then x pos
 
 /* Any logic/behavior/function related to player here */
 SECTION "Player", ROM0

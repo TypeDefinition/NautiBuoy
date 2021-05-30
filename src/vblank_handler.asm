@@ -1,5 +1,9 @@
 INCLUDE "./src/include/hardware.inc"
 
+SECTION "VBlank Data", WRAM0
+wShadowSCData::
+    ds 2 ; y pos, then x pos
+
 SECTION "Wait VBlank", ROM0
 /*  Loop until the LCD is in VBlank state.
     Registers Used: a */
