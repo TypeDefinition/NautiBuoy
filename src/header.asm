@@ -38,8 +38,8 @@ SECTION "Header", ROM0[$0104]
     /*  Title of the game in UPPER CASE ASCII. Originally the title was 16 bytes.
         When the CGB was released, it was reduced to 15 bytes, and some months later they had the fantastic idea to reduce it to 11 bytes only.
         The remaining bytes were later on used to represent other things. */
-    db "LAPIS" ; A title of length n.
-    ds 6 ; The ds instruction is used to pad the remaining 11-n bytes with zero.
+    db "GBGAME" ; A title of length n.
+    ds 5 ; The ds instruction is used to pad the remaining 11-n bytes with zero.
 
     ; $013F - $0142: Manufacturer Code
     /*  In older cartridges this area was part of the title.
