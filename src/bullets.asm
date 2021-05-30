@@ -180,6 +180,12 @@ UpdateBulletsShadowOAM::
     ; y, x; tile id, flags
     ld bc, wBulletObjects ; get the address
     
+    ; get the current address of shadow OAM to hl
+    ld a, [wCurrentShadowOAMPtr]
+    ld l, a
+    ld a, [wCurrentShadowOAMPtr + 1]
+    ld h, a
+
  /*   ld d, 0
     ld e, TOTAL_BULLET_ENTITY
     push de ; store counter in reg b */

@@ -208,6 +208,10 @@ UpdatePlayerAttack::
     TODO:: check if bullet is alive first LOL
 */
     ld hl, wBulletObjects
+
+    
+
+
     ld a, [hl]
     bit BIT_FLAG_ACTIVE, a
     jr nz, .finishAttack ; if active, finish attack
@@ -279,13 +283,17 @@ UpdatePlayerCamera::
 
 /*  Update shadow OAM for player
     Update sprite ID according to current frame of animation and direction
-
-    hl - shadowOAM address where the player is
 */
 UpdatePlayerShadowOAM::
     push af
     push bc
     push de
+
+    ; get the current address of shadow OAM to hl
+    ld a, [wCurrentShadowOAMPtr]
+    ld l, a
+    ld a, [wCurrentShadowOAMPtr + 1]
+    ld h, a
 
     push hl ; for sprite ID intialisation later, store another copy of the original hl
 
@@ -396,6 +404,12 @@ UpdatePlayerShadowOAM::
 
     ld e, 2
     add hl, de ; offset by 2 to reach the next entity y pos
+
+    ; update the current address of from hl to the wCurrentShadowOAMPtr
+    ld a, l
+    ld [wCurrentShadowOAMPtr], a
+    ld a, h
+    ld a, [wCurrentShadowOAMPtr + 1]
 
     ; end
     pop de

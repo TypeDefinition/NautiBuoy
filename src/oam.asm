@@ -17,10 +17,13 @@ INCLUDE "./src/include/util.inc"
 ; address for VAR needs to be 256-bytes aligned for easier access to OAM later on
 ; If Align[8] causes problem, change to a fix address instead
 SECTION "Shadow OAM Vars", WRAM0, ALIGN[8] 
-
 wShadowOAM::
     ds 4 * 40 ; This is the buffer we'll write sprite data to, reserve 4*40 bytes for it
 .end
+
+wCurrentShadowOAMPtr::
+    ds 2 ; stores the address of the current empty set of wShadowOAM data
+.end 
 
 /* Move codes from RAM to HRAM */
 SECTION "OAM DMA Routine", ROM0
@@ -59,6 +62,12 @@ ResetOAM::
 /* Clean up shadowOAM data, can be used anytime, best to use when needing to reinitialise OAM values */
 ResetShawdowOAM::
     mem_set_small wShadowOAM, 0, wShadowOAM.end - wShadowOAM
+
+    ; reset the pointer too
+    ld a, LOW(wShadowOAM)
+    ld [wCurrentShadowOAMPtr], a
+    ld a, HIGH(wShadowOAM)
+    ld [wCurrentShadowOAMPtr + 1], a
     ret
 
 SECTION "OAM DMA", HRAM
