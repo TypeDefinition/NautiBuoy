@@ -17,7 +17,6 @@ UpdateLoop::
     ; TODO:: update shadow OAM data here
     ; temp code, might move this somewhere else
     call UpdatePlayerShadowOAM
-    call UpdateBulletsShadowOAM
 
     halt ; Save power, wait for vblank interrupt
 

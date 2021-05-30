@@ -7,7 +7,7 @@ INCLUDE "./src/include/movement.inc"
 INCLUDE "./src/include/tile_collision.inc"
 
 
-DEF TOTAL_BULLET_ENTITY = 1
+DEF TOTAL_BULLET_ENTITY = 16
 
 SECTION "Bullets Data", WRAM0
 wBulletObjects::
@@ -118,146 +118,74 @@ UpdateBullets::
 .dirUp
     cp a, DIR_UP
     jr nz, .dirDown
-    tile_collision_check_up_reg 0, .collided, .updateUpPos ; hl address of posy, de address of posX
-.updateUpPos
+    tile_collision_check_up_reg 0, .collided ; hl address of posy, de address of posX
+    ; update up pos
     interpolate_pos_dec_reg
-    jp .endUpdateDir
+    ld bc, BulletSprites.upSprite
+    jp .updateShadowOAM
 
 .dirDown
     cp a, DIR_DOWN
     jr nz, .dirRight
-    tile_collision_check_down_reg 0, .collided , .updateDownPos ; hl address of posy, de address of posX
-.updateDownPos
+    tile_collision_check_down_reg 0, .collided ; hl address of posy, de address of posX
+    ; update down pos
     interpolate_pos_inc_reg
-    jp .endUpdateDir
+    ld bc, BulletSprites.downSprite
+    jp .updateShadowOAM
 
 .dirRight
     cp a, DIR_RIGHT
     jr nz, .dirLeft
-    tile_collision_check_right_reg 0, .collided , .updateRightPos
-.updateRightPos
-    inc hl
-    inc hl ; go to pos X address in hl
+    tile_collision_check_right_reg 0, .collided
+    ; update the right pos
+    ld h, d ; de stored the address of posX, transfer it
+    ld l, e
     interpolate_pos_inc_reg
-    jr .endUpdateDir
+    ld bc, BulletSprites.rightSprite
+    jr .updateShadowOAM
 
 .dirLeft ; only direction, no need do dir check
-    tile_collision_check_left_reg 0, .collided , .updateLeftPos
-.updateLeftPos
-    inc hl
-    inc hl ; go to pos X address in hl
+    tile_collision_check_left_reg 0, .collided
+    ; update the left pos
+    ld h, d ; de stored the address of posX, transfer it
+    ld l, e
     interpolate_pos_dec_reg
-    jr nz, .endUpdateDir
+    ld bc, BulletSprites.leftSprite
+    jr .updateShadowOAM
 
-.collided
-    ; TEMP CODES
+.collided ; when collided, make it inactive, go next loop
     pop hl
-    push hl
     ld [hl], FLAG_INACTIVE
+    jr .endUpdateDir
 
+.updateShadowOAM
+    pop hl ; get starting address
+    push hl
 
-.endUpdateDir
-    ; go to next loop
-    pop hl ; get the original starting address again
-    ld b, 0
-    ld c, sizeof_Bullet ; based on number of bytes the bullet has
-
+    ld d, 0
+    ld e, 4
+    add hl, de ; offset hl by 4
     
-
-    add hl, bc ; add the offset to get the next bullet
-
-    jp .startLoop ; have to use jump, address out of reach
-
-.end
-    ret
-
-
-/*
-    TODO:: may want to consider moving into UpdateBullet loop
-    hl - shadow OAM address to start for the bullets
-*/
-UpdateBulletsShadowOAM::
-    ; y, x; tile id, flags
-    ld bc, wBulletObjects ; get the address
+    ; translate to screen pos
+    ld a, [rSCY]
+    ld d, a
+    ld a, [hli] ; bullet y pos
+    sub a, d ; decrease by screen offset
+    ld d, a
     
+    inc hl
+
+    ld a, [rSCX]
+    ld e, a
+    ld a, [hl] ; bullet x pos
+    sub a, e ; decrease by screen offset
+    ld e, a
+
     ; get the current address of shadow OAM to hl
     ld a, [wCurrentShadowOAMPtr]
     ld l, a
     ld a, [wCurrentShadowOAMPtr + 1]
     ld h, a
-
- /*   ld d, 0
-    ld e, TOTAL_BULLET_ENTITY
-    push de ; store counter in reg b */
-
-.startLoop
-  /*  pop de
-    ld a, e
-    cp 0 ; check if end of loop
-    jr z, .end
-
-    ld d, 0
-    dec e ; dec counter
-    push de */
-
-    ; check if alive first
-    ld a, [bc] ; alive
-    bit BIT_FLAG_ACTIVE, a
-    jr nz, .showOnScreen
-
-    ; bullet not alive
-    ; TODO:: go to next bullet
-    jr .endLoop
-
-
-.showOnScreen
-    inc bc
-
-    ld a, [bc] ; get direction
-    push af
-    inc bc
-
-    inc bc
-    inc bc
-
-    ; translate to screen pos
-    ld a, [rSCY]
-    ld d, a
-    ld a, [bc] ; bullet y pos
-    sub a, d ; decrease by screen offset
-    ld d, a
-    
-    inc bc ;TEMP
-    inc bc
-
-    ld a, [rSCX]
-    ld e, a
-    ld a, [bc] ; bullet x pos
-    sub a, e ; decrease by screen offset
-    ld e, a
-
-    inc bc ; last part of posX
-
-    ;inc bc ; direction of bullet
-    
-    pop af
-.upSprite
-    cp a, DIR_UP
-    jr nz, .downSprite
-    ld bc, BulletSprites.upSprite
-.downSprite
-    cp a, DIR_DOWN
-    jr nz, .rightSprite
-    ld bc, BulletSprites.downSprite
-.rightSprite
-    cp a, DIR_RIGHT
-    jr nz, .leftSprite
-    ld bc, BulletSprites.rightSprite
-.leftSprite
-    cp a, DIR_LEFT
-    jr nz, .endSpriteDir
-    ld bc, BulletSprites.leftSprite
-.endSpriteDir
 
     ld a, [bc] ; y offset
     add a, d
@@ -276,5 +204,20 @@ UpdateBulletsShadowOAM::
     ld a, [bc] ; flags
     ld [hli], a ; flags
 
-.endLoop
+    ; update the current address from hl to the wCurrentShadowOAMPtr
+    ld a, l
+    ld [wCurrentShadowOAMPtr], a
+    ld a, h
+    ld a, [wCurrentShadowOAMPtr + 1]
+
+    pop hl ; go back to original hl
+
+.endUpdateDir
+    ; go to next loop
+    ld b, 0
+    ld c, sizeof_Bullet ; based on number of bytes the bullet has
+    add hl, bc ; add the offset to get the next bullet
+    jp .startLoop ; have to use jump, address out of reach
+
+.end
     ret
