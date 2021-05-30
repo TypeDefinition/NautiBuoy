@@ -1,5 +1,9 @@
 INCLUDE "./src/include/hardware.inc"
 
+SECTION "VBlank Data", WRAM0
+wShadowSCData::
+    ds 2 ; y pos, then x pos
+
 SECTION "Wait VBlank", ROM0
 /*  Loop until the LCD is in VBlank state.
     Registers Used: a */
@@ -13,6 +17,13 @@ SECTION "VBlank Handler", ROM0
 VBlankHandler::
     call ResetOAM
     call hOAMDMA ; Update OAM
+    
+    ; update registers for camera
+    ld a, [wShadowSCData]
+    ld [rSCY], a
+    ld a, [wShadowSCData + 1]
+    ld [rSCX], a 
+
 
     ; TODO:: scrolling or any tile updates here
     ; TODO:: camera stuff here, just fix with player being in center of it
