@@ -203,15 +203,11 @@ UpdatePlayerAttack::
 /*
     Over here we only want to initialise the bullets
     Make it alive, set pos x, pos y
-
-    TODO:: make a fire rate or something
-    TODO:: check if bullet is alive first LOL
 */
     ld hl, wBulletObjects
-
+    ld b, PLAYER_BULLER_NUMBER
+    call GetNonActiveBullet
     
-
-
     ld a, [hl]
     bit BIT_FLAG_ACTIVE, a
     jr nz, .finishAttack ; if active, finish attack
@@ -223,6 +219,7 @@ UpdatePlayerAttack::
     ld a, [wPlayer_Direction]
     ld [hli], a ; direction
  
+    ; TODO:: SET VELOCITY FOR BULLET BASED ON TYPE LATER
     ld a, $02
     ld [hli], a ; velocity
     xor a

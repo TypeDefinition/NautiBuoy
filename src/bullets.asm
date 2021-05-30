@@ -46,21 +46,22 @@ ResetAllBullets::
     return hl - starting address of available bullet, if no available bullets, return the last bullet
     WARNING: after calling this function, need to check if active anyway, there's no null check...
 */
-GetNonActiveBullet:
+GetNonActiveBullet::
 .startLoop
     ld a, [hl]
     bit BIT_FLAG_ACTIVE, a ; check if alive
-    jr z, .endLoop ; found one, end loop
+    jr z, .endLoop ; if not alive return and end loop
     
-    ld b, 0
-    ld c, sizeof_Bullet
-
-    add hl, bc ; go to next bullet address
-
     dec b ; decrement and check
     ld a, b
     cp a, 0
-    jr nz, .startLoop
+    jr z, .endLoop
+
+    ld d, 0
+    ld e, sizeof_Bullet
+    add hl, de ; go to next bullet address
+    
+    jr .startLoop
 
 .endLoop
     ret
