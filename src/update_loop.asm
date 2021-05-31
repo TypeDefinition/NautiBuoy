@@ -13,6 +13,7 @@ UpdateLoop::
     call UpdatePlayerCamera
 
     call UpdateBullets
+    call UpdateAllEnemies
 
     ; TODO:: update shadow OAM data here
     ; temp code, might move this somewhere else

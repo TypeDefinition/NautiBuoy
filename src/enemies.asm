@@ -86,7 +86,7 @@ InitEnemiesAndPlaceOnMap::
     ld [hli], a ; set CurrStateMaxAnimFrame
 
     dec d
-    ld d, a
+    ld a, d
     cp a, 0 ; check if initialise all the required enemies yet
     jr nz, .loop
 .endloop
@@ -94,7 +94,7 @@ InitEnemiesAndPlaceOnMap::
 
 
 UpdateAllEnemies::
-    ld hl, EnemiesData
+    ld hl, wEnemiesData
 
     ; TODO:: make update loop
     ; check enemies type and then call the correct update
@@ -102,7 +102,7 @@ UpdateAllEnemies::
 .startOfLoop
     ld a, [hl]
     bit BIT_FLAG_ACTIVE, a ; check if alive
-    jr nz, .updateEnemy ; if not alive, redo loop
+    jr z, .endOfLoop ; TODO:: fix this, if not alive, for now end loop
 
 .updateEnemy
     ;push hl
@@ -115,6 +115,9 @@ UpdateAllEnemies::
 .enemyTypeB
     call UpdateEnemyB ; call correct update for enemy
 
+    
+
+
 .endOfLoop
     ret
 
@@ -124,11 +127,123 @@ UpdateAllEnemies::
     - hl: the starting address of the enemy
 */
 UpdateEnemyA:
+
+    ; be able to find player 
+    ; if player on the same screen
+    ; same line, then start facing to player and try shoot?
     ; just be able to shoot first maybe?
 
     ; be able to render too
+    ; just try rendering first, in player.asm we reserve bc and de for the addresses
+    ; hl reserved for addres of enemy
+    ; META SPRITE need to render that too
+    ; we need an address for the wshadowOAM too
 
-/*
+    ; after updating curranimation frame, x2 and add to animation address de
+    ; push de the animation address
+    ; use the hl address of enemy to get x and y first, init to de
+    ; hl used for the wshadowOAM instead
+    ; after putting value of de to pos x and y and add the bc offset
+    ; then initialise the last part flag, and do it again for the other sprite part
+    ; pop back de
+    ; get the tile id, init it to the correct addresses
+
+.updateOAM
+    set_romx_bank 2 ; bank for sprites is in bank 2
+
+    ; TODO:: HL NEEDS TO BE THE Y POS
+    ld hl, wEnemy0_PosY
+
+    ; TODO:: bc stores animation address, de stores sprite info address
+    ld de, EnemySprites.upSprite
+    ld bc, EnemyAnimation.upAnimation
+    push bc
+
+    ; Convert position from world space to screen space.
+    ld a, [wShadowSCData]
+    ld b, a
+    ld a, [hli] ; get Y pos
+    sub a, b
+    ld b, a ; store y screen pos at b
+
+    inc hl ; skip second part of y pos
+    inc hl ; skip the PosXInterpolateTarget
+    
+    ld a, [wShadowSCData + 1]
+    ld c, a
+    ld a, [hl] ; get x pos
+    sub a, c
+    ld c, a ; store x screen pos at c
+
+    ; get the current address of shadow OAM to hl
+    ld a, [wCurrentShadowOAMPtr]
+    ld l, a
+    ld a, [wCurrentShadowOAMPtr + 1]
+    ld h, a
+
+    ; start initialising to shadow OAM
+    ld a, [de] ; get the sprite offset y
+    add b 
+    ld [hli], a ; init screen y Pos
+    inc de ; inc to get x pos
+
+    ld a, [de] ; get the sprite offset x
+    add c
+    ld [hli], a ; init screen x pos
+    inc de ; inc to get flags
+
+    ld a, 0
+    ld [hli], a ; TODO, sprite ID
+    ;inc hl ; skip the sprite ID first
+
+    ld a, [de] ; get flags
+    ld [hli], a
+    inc de
+
+    ; Init second half of enemy sprite to shadow OAM
+    ld a, [de] ; get the sprite offset y
+    add b
+    ld [hli], a ; init screen y Pos
+    inc de
+    
+    ld a, [de] ; get the sprite offset x
+    add c
+    ld [hli], a ; init screen x pos
+    inc de
+
+    ld a, 0
+    ld [hli], a ; TODO, sprite ID
+    ;inc hl ; skip the sprite id first
+
+    ld a, [de] ; get flags
+    ld [hli], a
+
+    ; update the current address of from hl to the wCurrentShadowOAMPtr
+    ld a, l
+    ld [wCurrentShadowOAMPtr], a
+    ld a, h
+    ld a, [wCurrentShadowOAMPtr + 1]
+    
+
+    pop bc
+
+    ret
+
+/* Update for enemy type B */
+UpdateEnemyB:
+    ret
+
+
+/* Call this when enemy has been hit */
+HitEnemy::
+    ; should be passing in the address of the enemy here
+    ; should also be passing the amount of damage dealth
+    ; deduct health
+    ; if health < 0, mens dead, set the variable to dead
+    ret
+
+
+    /*
 .attack
     call GetNonActiveBullet 
 
@@ -162,19 +277,3 @@ UpdateEnemyA:
     ld [hli], a ; load the other half of posX
 
 .finishAttack */
-
-
-    ret
-
-/* Update for enemy type B */
-UpdateEnemyB:
-    ret
-
-
-/* Call this when enemy has been hit */
-HitEnemy::
-    ; should be passing in the address of the enemy here
-    ; should also be passing the amount of damage dealth
-    ; deduct health
-    ; if health < 0, mens dead, set the variable to dead
-    ret
