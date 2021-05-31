@@ -16,7 +16,7 @@ LevelOneEnemyData::
     db 1 ; number of enemies in level
 .enemyOne
     db TYPE_ENEMYA | FLAG_ENEMY | FLAG_ACTIVE   
-    db 10 * 8 ; y 
+    db 12 * 8 ; y 
     db 6 * 8 ; x
     db DIR_UP
     db ENEMY_TYPEA_HEALTH

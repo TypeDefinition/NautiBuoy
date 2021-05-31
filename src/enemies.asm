@@ -107,7 +107,8 @@ UpdateAllEnemies::
 .updateEnemy
     ;push hl
     and a, BIT_MASK_TYPE
-    
+    inc hl ; no need the flags
+
 .enemyTypeA
     cp a, TYPE_ENEMYA
     jr nz, .enemyTypeB
@@ -124,7 +125,7 @@ UpdateAllEnemies::
 
 /*  Update for enemy type A 
     Parameters:
-    - hl: the starting address of the enemy
+    - hl: the starting address of the enemy from PosYInterpolateTarget onwards
 */
 UpdateEnemyA:
 
@@ -133,12 +134,50 @@ UpdateEnemyA:
     ; same line, then start facing to player and try shoot?
     ; just be able to shoot first maybe?
 
-    ; be able to render too
-    ; just try rendering first, in player.asm we reserve bc and de for the addresses
-    ; hl reserved for addres of enemy
-    ; META SPRITE need to render that too
-    ; we need an address for the wshadowOAM too
+.attack
+    /* TODO:: TEMP CODES:: HL = starting address of PosYInterpolateTarget */
+    inc hl ; skip PosYInterpolateTarget
+    ld d, h
+    ld e, l ; transfer hl, address of enemy to de
 
+    ld hl, w_BulletObjectPlayerEnd
+    ld b, ENEMY_TYPEA_BULLET_NUM
+    call GetNonActiveBullet ; get bullet address, store in hl
+
+    ld a, [hl] ; check if bullet is active
+    bit BIT_FLAG_ACTIVE, a
+    jr nz, .finishAttack ; if active, finish attack
+
+    ; set the variables
+    ld a, FLAG_ACTIVE | FLAG_ENEMY
+    ld [hli], a ; its alive
+
+    ld a, DIR_UP ; TODO:: change this, reg c is available
+    ld [hli], a ; load direction
+
+    ; TODO:: SET VELOCITY FOR BULLET BASED ON TYPE LATER
+    ld a, $02
+    ld [hli], a ; velocity
+    xor a
+    ld [hli], a ; second part of velocity
+
+    ld a, [de]  ; pos Y
+    ld [hli], a ; set first byte of pos Y for bullet
+    inc de 
+
+    ld a, [de]  ; pos Y second byte
+    ld [hli], a ; set second byte of pos Y for bullet
+    inc de ; go to next byte
+    inc de ; skip PosXInterpolateTarget
+
+    ld a, [de]  ; pos X first byte
+    ld [hli], a ; set first byte of pos X for bullet
+    inc de 
+
+    ld a, [de]  ; pos X second byte
+    ld [hl], a ; set second byte of pos X for bullet
+
+.finishAttack
     ; after updating curranimation frame, x2 and add to animation address de
     ; push de the animation address
     ; use the hl address of enemy to get x and y first, init to de
@@ -147,8 +186,31 @@ UpdateEnemyA:
     ; then initialise the last part flag, and do it again for the other sprite part
     ; pop back de
     ; get the tile id, init it to the correct addresses
+    call UpdateEnemySpriteOAM
 
-.updateOAM
+
+    ret
+
+/* Update for enemy type B */
+UpdateEnemyB:
+    ret
+
+
+/* Call this when enemy has been hit */
+HitEnemy::
+    ; should be passing in the address of the enemy here
+    ; should also be passing the amount of damage dealth
+    ; deduct health
+    ; if health < 0, mens dead, set the variable to dead
+    ret
+
+/*  Render and set enemy OAM data and animation 
+    Parameters:
+        - hl: address of enemy pos Y
+        - bc: address of enemy animation data
+        - de: address of enemy sprite data
+*/
+UpdateEnemySpriteOAM::
     set_romx_bank 2 ; bank for sprites is in bank 2
 
     ; TODO:: HL NEEDS TO BE THE Y POS
@@ -168,7 +230,7 @@ UpdateEnemyA:
 
     inc hl ; skip second part of y pos
     inc hl ; skip the PosXInterpolateTarget
-    
+
     ld a, [wShadowSCData + 1]
     ld c, a
     ld a, [hl] ; get x pos
@@ -226,22 +288,7 @@ UpdateEnemyA:
     
 
     pop bc
-
-    ret
-
-/* Update for enemy type B */
-UpdateEnemyB:
-    ret
-
-
-/* Call this when enemy has been hit */
-HitEnemy::
-    ; should be passing in the address of the enemy here
-    ; should also be passing the amount of damage dealth
-    ; deduct health
-    ; if health < 0, mens dead, set the variable to dead
-    ret
-
+    ret 
 
     /*
 .attack
