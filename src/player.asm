@@ -91,7 +91,7 @@ GetUserInput::
     jp z, .upEnd
     ld a, DIR_UP
     ld [wPlayer_Direction], a
-    tile_collision_check_up wPlayer_PosY, wPlayer_PosX, PLAYER_COLLIDER_SIZE, .end, .setUpPosTarget
+    tile_collision_check_up_immd wPlayer_PosY, wPlayer_PosX, PLAYER_COLLIDER_SIZE, CHARACTER_COLLIDABLE_TILES, .end, .setUpPosTarget
 .setUpPosTarget
     ; Update Interpolation Target Position
     ld a, [wPlayer_PosYInterpolateTarget]
@@ -105,7 +105,7 @@ GetUserInput::
     jp z, .downEnd
     ld a, DIR_DOWN
     ld [wPlayer_Direction], a
-    tile_collision_check_down wPlayer_PosY, wPlayer_PosX, PLAYER_COLLIDER_SIZE, .end, .setDownPosTarget
+    tile_collision_check_down_immd wPlayer_PosY, wPlayer_PosX, PLAYER_COLLIDER_SIZE, CHARACTER_COLLIDABLE_TILES, .end, .setDownPosTarget
 .setDownPosTarget
     ; Update Interpolation Target Position
     ld a, [wPlayer_PosYInterpolateTarget]
@@ -119,7 +119,7 @@ GetUserInput::
     jp z, .leftEnd
     ld a, DIR_LEFT
     ld [wPlayer_Direction], a
-    tile_collision_check_left wPlayer_PosY, wPlayer_PosX, PLAYER_COLLIDER_SIZE, .end, .setLeftPosTarget
+    tile_collision_check_left_immd wPlayer_PosY, wPlayer_PosX, PLAYER_COLLIDER_SIZE, CHARACTER_COLLIDABLE_TILES, .end, .setLeftPosTarget
 .setLeftPosTarget
     ; Update Interpolation Target Position
     ld a, [wPlayer_PosXInterpolateTarget]
@@ -133,7 +133,7 @@ GetUserInput::
     jp z, .rightEnd
     ld a, DIR_RIGHT
     ld [wPlayer_Direction], a
-    tile_collision_check_right wPlayer_PosY, wPlayer_PosX, PLAYER_COLLIDER_SIZE, .end, .setRightPosTarget
+    tile_collision_check_right_immd wPlayer_PosY, wPlayer_PosX, PLAYER_COLLIDER_SIZE, CHARACTER_COLLIDABLE_TILES, .end, .setRightPosTarget
 .setRightPosTarget
     ; Update Interpolation Target Position
     ld a, [wPlayer_PosXInterpolateTarget]

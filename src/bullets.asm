@@ -119,7 +119,7 @@ UpdateBullets::
 .dirUp
     cp a, DIR_UP
     jr nz, .dirDown
-    tile_collision_check_up_reg 0, .collided ; hl address of posy, de address of posX
+    tile_collision_check_up_reg 0, BULLET_COLLIDABLE_TILES, .collided ; hl address of posy, de address of posX
     ; update up pos
     interpolate_pos_dec_reg
     ld bc, BulletSprites.upSprite
@@ -128,7 +128,7 @@ UpdateBullets::
 .dirDown
     cp a, DIR_DOWN
     jr nz, .dirRight
-    tile_collision_check_down_reg 0, .collided ; hl address of posy, de address of posX
+    tile_collision_check_down_reg 0, BULLET_COLLIDABLE_TILES, .collided ; hl address of posy, de address of posX
     ; update down pos
     interpolate_pos_inc_reg
     ld bc, BulletSprites.downSprite
@@ -137,7 +137,7 @@ UpdateBullets::
 .dirRight
     cp a, DIR_RIGHT
     jr nz, .dirLeft
-    tile_collision_check_right_reg 0, .collided
+    tile_collision_check_right_reg 0, BULLET_COLLIDABLE_TILES, .collided
     ; update the right pos
     ld h, d ; de stored the address of posX, transfer it
     ld l, e
@@ -146,7 +146,7 @@ UpdateBullets::
     jr .updateShadowOAM
 
 .dirLeft ; only direction, no need do dir check
-    tile_collision_check_left_reg 0, .collided
+    tile_collision_check_left_reg 0, BULLET_COLLIDABLE_TILES, .collided
     ; update the left pos
     ld h, d ; de stored the address of posX, transfer it
     ld l, e

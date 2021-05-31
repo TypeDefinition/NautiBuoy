@@ -7,9 +7,10 @@ DEF TILE_COLLISION_INC EQU 1
     \1 - Entity PosY Address
     \2 - Entity PosX Address
     \3 - Collider Size
-    \4 - True Jump Address
-    \5 - False Jump Address */
-MACRO tile_collision_check_up
+    \4 - Collidable Tiles
+    \5 - True Jump Address
+    \6 - False Jump Address */
+MACRO tile_collision_check_up_immd
     ; Top Left Corner Collision Check
     push bc
     ld a, [\1]
@@ -20,8 +21,8 @@ MACRO tile_collision_check_up
     ld c, a
     call GetTileValue
     pop bc
-    cp a, COLLIDABLE_TILES
-    jp c, \4
+    cp a, \4
+    jp c, \5
 
     ; Top Right Corner Collision Check
     push bc
@@ -33,19 +34,20 @@ MACRO tile_collision_check_up
     ld c, a
     call GetTileValue
     pop bc
-    cp a, COLLIDABLE_TILES
-    jp c, \4
+    cp a, \4
+    jp c, \5
 
-    jp \5
+    jp \6
 ENDM
 
 /*  Check for entity collision with tiles (down) 
     \1 - Entity PosY Address
     \2 - Entity PosX Address
     \3 - Collider Size
-    \4 - True Jump Address
-    \5 - False Jump Address */
-MACRO tile_collision_check_down
+    \4 - Collidable Tiles
+    \5 - True Jump Address
+    \6 - False Jump Address */
+MACRO tile_collision_check_down_immd
     ; Bottom Left Corner Collision Check
     push bc
     ld a, [\1]
@@ -56,8 +58,8 @@ MACRO tile_collision_check_down
     ld c, a
     call GetTileValue
     pop bc
-    cp a, COLLIDABLE_TILES
-    jp c, \4
+    cp a, \4
+    jp c, \5
 
     ; Bottom Right Corner Collision Check
     push bc
@@ -69,19 +71,20 @@ MACRO tile_collision_check_down
     ld c, a
     call GetTileValue
     pop bc
-    cp a, COLLIDABLE_TILES
-    jp c, \4
+    cp a, \4
+    jp c, \5
 
-    jp \5
+    jp \6
 ENDM
 
 /*  Check for entity collision with tiles (left) 
     \1 - Entity PosY Address
     \2 - Entity PosX Address
     \3 - Collider Size
-    \4 - True Jump Address
-    \5 - False Jump Address */
-MACRO tile_collision_check_left
+    \4 - Collidable Tiles
+    \5 - True Jump Address
+    \6 - False Jump Address */
+MACRO tile_collision_check_left_immd
     ; Top Left Corner Collision Check
     push bc
     ld a, [\1]
@@ -92,8 +95,8 @@ MACRO tile_collision_check_left
     ld c, a
     call GetTileValue
     pop bc
-    cp a, COLLIDABLE_TILES
-    jp c, \4
+    cp a, \4
+    jp c, \5
 
     ; Bottom Left Corner Collision Check
     push bc
@@ -105,19 +108,20 @@ MACRO tile_collision_check_left
     ld c, a
     call GetTileValue
     pop bc
-    cp a, COLLIDABLE_TILES
-    jp c, \4
+    cp a, \4
+    jp c, \5
 
-    jp \5
+    jp \6
 ENDM
 
 /*  Check for entity collision with tiles (right)
     \1 - Entity PosY Address
     \2 - Entity PosX Address
     \3 - Collider Size
-    \4 - True Jump Address
-    \5 - False Jump Address */
-MACRO tile_collision_check_right
+    \4 - Collidable Tiles
+    \5 - True Jump Address
+    \6 - False Jump Address */
+MACRO tile_collision_check_right_immd
     ; Top Right Corner Collision Check
     push bc
     ld a, [\1]
@@ -128,8 +132,8 @@ MACRO tile_collision_check_right
     ld c, a
     call GetTileValue
     pop bc
-    cp a, COLLIDABLE_TILES
-    jp c, \4
+    cp a, \4
+    jp c, \5
 
     ; Bottom Right Corner Collision Check
     push bc
@@ -141,10 +145,10 @@ MACRO tile_collision_check_right
     ld c, a
     call GetTileValue
     pop bc
-    cp a, COLLIDABLE_TILES
-    jp c, \4
+    cp a, \4
+    jp c, \5
 
-    jp \5
+    jp \6
 ENDM
 
 
@@ -155,7 +159,8 @@ ENDM
     hl - Entity PosY Address
     de - Entity PosX Address
     \1 - Collider Size
-    \2 - True Jump Address */
+    \2 - Collidable Tiles
+    \3 - True Jump Address */
 MACRO tile_collision_check_up_reg
     ; Top Left Corner Collision Check
     push bc
@@ -167,8 +172,8 @@ MACRO tile_collision_check_up_reg
     ld c, a
     call GetTileValue
     pop bc
-    cp a, COLLIDABLE_TILES
-    jp c, \2
+    cp a, \2
+    jp c, \3
 
     ; Top Right Corner Collision Check
     push bc
@@ -180,8 +185,8 @@ MACRO tile_collision_check_up_reg
     ld c, a
     call GetTileValue
     pop bc
-    cp a, COLLIDABLE_TILES
-    jp c, \2
+    cp a, \2
+    jp c, \3
 
     ;jp \3
 ENDM
@@ -190,7 +195,8 @@ ENDM
     hl - Entity PosY Address
     de - Entity PosX Address
     \1 - Collider Size
-    \2 - True Jump Address */
+    \2 - Collidable Tiles
+    \3 - True Jump Address */
 MACRO tile_collision_check_down_reg
     ; Bottom Left Corner Collision Check
     push bc
@@ -202,8 +208,8 @@ MACRO tile_collision_check_down_reg
     ld c, a
     call GetTileValue
     pop bc
-    cp a, COLLIDABLE_TILES
-    jp c, \2
+    cp a, \2
+    jp c, \3
 
     ; Bottom Right Corner Collision Check
     push bc
@@ -215,8 +221,8 @@ MACRO tile_collision_check_down_reg
     ld c, a
     call GetTileValue
     pop bc
-    cp a, COLLIDABLE_TILES
-    jp c, \2
+    cp a, \2
+    jp c, \3
 
     ;jp \3
 ENDM
@@ -225,7 +231,8 @@ ENDM
     hl - Entity PosY Address
     de - Entity PosX Address
     \1 - Collider Size
-    \2 - True Jump Address */
+    \2 - Collidable Tiles
+    \3 - True Jump Address */
 MACRO tile_collision_check_left_reg
     ; Top Left Corner Collision Check
     push bc
@@ -237,8 +244,8 @@ MACRO tile_collision_check_left_reg
     ld c, a
     call GetTileValue
     pop bc
-    cp a, COLLIDABLE_TILES
-    jp c, \2
+    cp a, \2
+    jp c, \3
 
     ; Bottom Left Corner Collision Check
     push bc
@@ -250,15 +257,16 @@ MACRO tile_collision_check_left_reg
     ld c, a
     call GetTileValue
     pop bc
-    cp a, COLLIDABLE_TILES
-    jp c, \2
+    cp a, \2
+    jp c, \3
 ENDM
 
 /*  Check for entity collision with tiles (right)
     hl - Entity PosY Address
     de - Entity PosX Address
     \1 - Collider Size
-    \2 - True Jump Address */
+    \2 - Collidable Tiles
+    \3 - True Jump Address */
 MACRO tile_collision_check_right_reg
     ; Top Right Corner Collision Check
     push bc
@@ -270,8 +278,8 @@ MACRO tile_collision_check_right_reg
     ld c, a
     call GetTileValue
     pop bc
-    cp a, COLLIDABLE_TILES
-    jp c, \2
+    cp a, \2
+    jp c, \3
 
     ; Bottom Right Corner Collision Check
     push bc
@@ -283,8 +291,8 @@ MACRO tile_collision_check_right_reg
     ld c, a
     call GetTileValue
     pop bc
-    cp a, COLLIDABLE_TILES
-    jp c, \2
+    cp a, \2
+    jp c, \3
 
     ;jp \3
 ENDM

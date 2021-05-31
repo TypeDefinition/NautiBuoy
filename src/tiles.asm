@@ -2,7 +2,7 @@ DEF NUM_COLS EQU $20
 DEF NUM_ROWS EQU $20
 
 ; Collidable Tiles: A tile is assumed to be collidable if it's value is less than 16.
-DEF COLLIDABLE_TILES EQU $10
+DEF CHARACTER_COLLIDABLE_TILES EQU $10
 
 SECTION "Game Level Tiles", WRAM0
 GameLevelTiles::

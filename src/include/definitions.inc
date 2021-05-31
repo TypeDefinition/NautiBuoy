@@ -43,7 +43,10 @@ DEF DIR_RIGHT EQU 3
 
 ; Tiles
 DEF TILE_SIZE EQU 8
-DEF COLLIDABLE_TILES EQU $10 ; Collidable Tiles: A tile is assumed to be collidable if it's value is less than 16.
+DEF CHARACTER_COLLIDABLE_TILES EQU $10 ; Collidable Tiles: A tile is assumed to be collidable by characters if it's value is less than 16.
+DEF BULLET_COLLIDABLE_TILES EQU $09 ; Collidable Tiles: A tile is assumed to be collidable by bullets if it's value is less than 9.
+DEF BULLET_DESTRUCTIBLE_TILES EQU $01 ; Collidable Tiles: A tile is assumed to be collidable by bullets if it's value is less than 1.
+DEF BOMB_DESTRUCTIBLE_TILES EQU $02 ; Collidable Tiles: A tile is assumed to be collidable by bullets if it's value is less than 2.
 
 ; Velocity
 DEF VELOCITY_VSLOW EQU $0040
