@@ -1,7 +1,10 @@
 INCLUDE "./src/include/hardware.inc"
+INCLUDE "./src/include/util.inc"
 
 DEF NUM_COLS EQU $20
 DEF NUM_ROWS EQU $20
+
+DEF MAX_DIRTY_TILES EQU $10
 
 ; Collidable Tiles: A tile is assumed to be collidable if it's value is less than 16.
 DEF CHARACTER_COLLIDABLE_TILES EQU $10
@@ -11,7 +14,7 @@ GameLevelTiles::
     ds 1024
 .end::
 
-SECTION "Dirty Tiles", WRAM0
+SECTION "Dirty Tiles", WRAM0[$C000]
 /* Contains an array of tiles to update in the VRAM.
     Each tile to update is represented using 4 bytes.
     Tile Index: 2 bytes
@@ -21,13 +24,18 @@ SECTION "Dirty Tiles", WRAM0
     4 bytes is used so that the memory address of each dirty tile
     can be calculated by doing DirtyTiles + Offset, where Offset can be
     calculated by DirtyTilesCounter << 2. This cannot be done using 3 bytes. */
-DirtyTiles::
-    ds 64
-.end
-DirtyTilesCounter::
+DirtyTilesCounter:
     ds 1
+DirtyTiles:
+    ds (MAX_DIRTY_TILES << 2)
+.end
 
 SECTION "Tile Functions", ROM0
+ResetDirtyTiles::
+    mem_set_small DirtyTilesCounter, 0, 1
+    mem_set_small DirtyTiles, 0, DirtyTiles.end - DirtyTiles
+    ret
+
 ; Get the index of the tile, given a Y and X position.
 ; @ bc: Return Value
 ; @ d: PosY
@@ -130,12 +138,14 @@ UpdateDirtyTiles::
     push hl
 
     ld hl, DirtyTiles
+    
+    ; d = Num Dirty Tiles
     ld a, [DirtyTilesCounter]
     ld d, a
 .loop
     ld a, d
     cp a, $00
-    jr z, .end
+    jp z, .end
 
     ; bc = Dirty Tile Index
     ld a, [hli]
@@ -154,7 +164,7 @@ UpdateDirtyTiles::
     pop hl
 
     dec d
-    jr .loop
+    jp .loop
 .end
     xor a
     ld [DirtyTilesCounter], a
@@ -168,7 +178,6 @@ UpdateDirtyTiles::
 ; @ a: New Tile Value
 ; @ bc: Tile Index
 SetTile::
-    call AddDirtyTile
     push af
     push hl
     ld hl, GameLevelTiles
@@ -176,4 +185,5 @@ SetTile::
     ld [hl], a
     pop hl
     pop af
+    call AddDirtyTile
     ret

@@ -58,6 +58,7 @@ Initialise::
     call UpdatePlayerShadowOAM
 
     call ResetAllBullets
+    call ResetDirtyTiles
  
     call hOAMDMA ; transfer sprite data to OAM
 

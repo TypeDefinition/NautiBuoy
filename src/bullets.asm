@@ -7,7 +7,7 @@ INCLUDE "./src/include/movement.inc"
 INCLUDE "./src/include/tile_collision.inc"
 
 
-DEF NUM_BULLETS EQU $04
+DEF NUM_BULLETS EQU $10
 
 SECTION "Bullets Data", WRAM0
 wBulletObjects::
@@ -65,67 +65,91 @@ BulletTileCollisionCheck:
     ; h = Destroy Bullet Flag.
     ld h, 0
 
-.up
+.topLeft
     push de
+
     ld a, d
     sub a, BULLET_COLLIDER_SIZE
     ld d, a
-    call GetTileIndex
-    call GetTileValue
-    pop de
 
-    call BulletDestroyTile
-    cp a, BULLET_COLLIDABLE_TILES
-    jr nc, .down
-    inc h
-.down
-    push de
-    ld a, d
-    add a, BULLET_COLLIDER_SIZE - 1
-    ld d, a
-    call GetTileIndex
-    call GetTileValue
-    pop de
-
-    call BulletDestroyTile
-
-    cp a, BULLET_COLLIDABLE_TILES
-    jr nc, .left
-    inc h
-.left
-    push de
     ld a, e
     sub a, BULLET_COLLIDER_SIZE
     ld e, a
+
     call GetTileIndex
     call GetTileValue
-    pop de
-
     call BulletDestroyTile
 
+    pop de
+
     cp a, BULLET_COLLIDABLE_TILES
-    jr nc, .right
+    jr nc, .bottomLeft
     inc h
-.right
+ .bottomLeft
     push de
+
+    ld a, d
+    add a, BULLET_COLLIDER_SIZE - 1
+    ld d, a
+
+    ld a, e
+    sub a, BULLET_COLLIDER_SIZE
+    ld e, a
+
+    call GetTileIndex
+    call GetTileValue
+    call BulletDestroyTile
+
+    pop de
+
+    cp a, BULLET_COLLIDABLE_TILES
+    jr nc, .topRight
+    inc h
+.topRight
+    push de
+
+    ld a, d
+    sub a, BULLET_COLLIDER_SIZE
+    ld d, a
+
     ld a, e
     add a, BULLET_COLLIDER_SIZE - 1
     ld e, a
+    
     call GetTileIndex
     call GetTileValue
+    call BulletDestroyTile
+
     pop de
 
+    cp a, BULLET_COLLIDABLE_TILES
+    jr nc, .bottomRight
+    inc h
+.bottomRight
+    push de
+    
+    ld a, d
+    add a, BULLET_COLLIDER_SIZE - 1
+    ld d, a
+
+    ld a, e
+    add a, BULLET_COLLIDER_SIZE - 1
+    ld e, a
+    
+    call GetTileIndex
+    call GetTileValue
     call BulletDestroyTile
+
+    pop de
 
     cp a, BULLET_COLLIDABLE_TILES
     jr nc, .end
     inc h
-
     ; Destroy the bullet if the bullet destoyed flag is set.
 .end
     ld a, h
-    cp a, $00
     pop hl
+    cp a, $00
     jr z, .bulletNotDestroyed
     ld [hl], FLAG_INACTIVE
 .bulletNotDestroyed
@@ -305,7 +329,7 @@ UpdateBullets::
     ld a, [hl]
     bit BIT_FLAG_ACTIVE, a ; check if alive
     jr z, .loopEnd
-    ; call BulletTileCollisionCheck
+    call BulletTileCollisionCheck
 
     ; Translation
 .translationStart
