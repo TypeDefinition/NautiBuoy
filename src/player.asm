@@ -205,8 +205,8 @@ UpdatePlayerAttack::
     Make it alive, set pos x, pos y
 */
     ld hl, wBulletObjects
-    ld b, PLAYER_BULLER_NUMBER
-    call GetNonActiveBullet
+    ld b, PLAYER_BULLET_NUMBER
+    call GetInactiveBullet
     
     ld a, [hl]
     bit BIT_FLAG_ACTIVE, a

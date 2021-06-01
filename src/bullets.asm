@@ -7,7 +7,7 @@ INCLUDE "./src/include/movement.inc"
 INCLUDE "./src/include/tile_collision.inc"
 
 
-DEF TOTAL_BULLET_ENTITY = 16
+DEF NUM_BULLETS EQU $04
 
 SECTION "Bullets Data", WRAM0
 wBulletObjects::
@@ -31,176 +31,172 @@ w_BulletObjectPlayerEnd:: ; reserve the first 3 bullets just for the player
 wBulletObjectEnd:
 
 SECTION "Bullets", ROM0
-
-/* reset all bullet data */
-ResetAllBullets::
-    mem_set_small wBulletObjects, 0, wBulletObjectEnd - wBulletObjects
+/* Local Functions */
+; Destroy A Tile
+; @ bc: Tile Index
+BulletDestroyTile:
+    push af
+    cp a, BULLET_DESTRUCTIBLE_TILES
+    ld a, EMPTY_TILE
+    call c, SetTile
+    pop af
     ret
 
-/*  Searches and returns a non-active bullet within a certain limit
-
-    hl - starting address
-    b - number of bullets
-
-    return hl - starting address of available bullet, if no available bullets, return the last bullet
-    WARNING: after calling this function, need to check if active anyway, there's no null check...
-*/
-GetNonActiveBullet::
-.startLoop
-    ld a, [hl]
-    bit BIT_FLAG_ACTIVE, a ; check if alive
-    jr z, .endLoop ; if not alive return and end loop
-    
-    dec b ; decrement and check
-    ld a, b
-    cp a, 0
-    jr z, .endLoop
-
-    ld d, 0
-    ld e, sizeof_Bullet
-    add hl, de ; go to next bullet address
-
-    jr .startLoop
-
-.endLoop
-    ret
-
-
-/*  Update all alive bullets movement and collision */
-UpdateBullets::
-    ld hl, wBulletObjects
-    ld b, 0
-    ld c, TOTAL_BULLET_ENTITY
-    push bc ; store counter in reg b
-
-.startLoop
-    pop bc
-    ld a, c
-    cp 0 ; check if end of loop
-    jp z, .end
-
-    ld b, 0
-    dec c ; dec counter
+; Check for bullet collision with a tile.
+; If collided with BULLET_DESTRUCTIBLE_TILES, the tile is destroyed.
+; If collided with BULLET_COLLIDABLE_TILES, the bullet is destroyed.
+; @ hl: Bullet Memory Address
+BulletTileCollisionCheck:
+    push af
     push bc
-
-    ld a, [hl]
-    bit BIT_FLAG_ACTIVE, a ; check if alive
-    jr nz, .bulletMovement
-
-    ; bullet not alive
-    ld c, sizeof_Bullet ; based on number of bytes the bullet has
-    add hl, bc ; offset to get the next bullet
-    jr .startLoop
-   
-/* Check its direction and update pos */
-.bulletMovement
-    push hl ; for getting back the original startiong address info
-    
-    inc hl ; skip the flag
-
-    ld a, [hli] ; get direction
-    push af ; to get the dir again later
-    
-    ; get velocity, store in register bc
-    ld a, [hli] ; get first part of velocity
-    ld b, a
-    ld a, [hli] ; get second part of velocity
-    ld c, a
-
-    ; store the address of posX here
-    ld d, h
-    ld e, l
-    inc de
-    inc de ; incerement by 2 to get the pos x
-
-    pop af ; get back the direction
-
-    ; hl: Entity PosY Address
-    ; de: Entity PosX Address
-.dirUp
-    cp a, DIR_UP
-    jr nz, .dirDown
-    
-    ; Check Top Left
-    ld a, [de]
     push de
-    sub a, BULLET_COLLIDER_SIZE
-    ld e, a
+    push hl
+
+    ; d = PosY
+    ; e = PosX
+    ld de, Bullet_PosY
+    add hl, de
+    ld a, [hli]
+    ld d, a
+    inc hl
     ld a, [hl]
+    ld e, a
+
+    ; h = Destroy Bullet Flag.
+    ld h, 0
+
+.up
+    push de
+    ld a, d
     sub a, BULLET_COLLIDER_SIZE
     ld d, a
     call GetTileIndex
     call GetTileValue
     pop de
 
-    push af
-    cp a, BULLET_DESTRUCTIBLE_TILES
-    ld a, EMPTY_TILE
-    call c, SetTile
-    pop af
-
-    ; Check Top Right
-    ld a, [de]
+    call BulletDestroyTile
+    cp a, BULLET_COLLIDABLE_TILES
+    jr nc, .down
+    inc h
+.down
     push de
+    ld a, d
     add a, BULLET_COLLIDER_SIZE - 1
-    ld e, a
-    ld a, [hl]
-    sub a, BULLET_COLLIDER_SIZE
     ld d, a
     call GetTileIndex
     call GetTileValue
     pop de
 
-    push af
-    cp a, BULLET_DESTRUCTIBLE_TILES
-    ld a, EMPTY_TILE
-    call c, SetTile
-    pop af
+    call BulletDestroyTile
 
     cp a, BULLET_COLLIDABLE_TILES
-    jp c, .destroyBullet
+    jr nc, .left
+    inc h
+.left
+    push de
+    ld a, e
+    sub a, BULLET_COLLIDER_SIZE
+    ld e, a
+    call GetTileIndex
+    call GetTileValue
+    pop de
 
-    ; update up pos
-    interpolate_pos_dec_reg
-    ld bc, BulletSprites.upSprite
-    jp .updateShadowOAM
+    call BulletDestroyTile
 
-.dirDown
-    cp a, DIR_DOWN
-    jr nz, .dirLeft
-    ; bullet_tile_collision_check_down BULLET_COLLIDER_SIZE, BULLET_DESTRUCTIBLE_TILES, .destroyBullet, BULLET_COLLIDABLE_TILES, .destroyBullet
-    ; update down pos
-    interpolate_pos_inc_reg
-    ld bc, BulletSprites.downSprite
-    jp .updateShadowOAM
+    cp a, BULLET_COLLIDABLE_TILES
+    jr nc, .right
+    inc h
+.right
+    push de
+    ld a, e
+    add a, BULLET_COLLIDER_SIZE - 1
+    ld e, a
+    call GetTileIndex
+    call GetTileValue
+    pop de
 
-.dirLeft
-    cp a, DIR_LEFT
-    jr nz, .dirRight
-    ; bullet_tile_collision_check_left BULLET_COLLIDER_SIZE, BULLET_DESTRUCTIBLE_TILES, .destroyBullet, BULLET_COLLIDABLE_TILES, .destroyBullet
-    ; update the left pos
-    ld h, d ; de stored the address of posX, transfer it
-    ld l, e
-    interpolate_pos_dec_reg
-    ld bc, BulletSprites.leftSprite
-    jr .updateShadowOAM
+    call BulletDestroyTile
 
-.dirRight ; only direction left, no need do dir check
-    ; bullet_tile_collision_check_right BULLET_COLLIDER_SIZE, BULLET_DESTRUCTIBLE_TILES, .destroyBullet, BULLET_COLLIDABLE_TILES, .destroyBullet
-    ; update the right pos
-    ld h, d ; de stored the address of posX, transfer it
-    ld l, e
-    interpolate_pos_inc_reg
-    ld bc, BulletSprites.rightSprite
-    jr .updateShadowOAM
+    cp a, BULLET_COLLIDABLE_TILES
+    jr nc, .end
+    inc h
 
-.destroyBullet ; when collided, make it inactive, go next loop
+    ; Destroy the bullet if the bullet destoyed flag is set.
+.end
+    ld a, h
+    cp a, $00
     pop hl
+    jr z, .bulletNotDestroyed
     ld [hl], FLAG_INACTIVE
-    jr .endUpdateDir
+.bulletNotDestroyed
+    pop de
+    pop bc
+    pop af
+    ret
 
-.updateShadowOAM
-    pop hl ; get starting address
+; Translate a bullet.
+; @ bc: Velocity
+; @ hl: Bullet Memory Address
+TranslateBulletUp:
+    ; hl = PosY
+    push hl
+    push de
+    ld de, Bullet_PosY
+    add hl, de
+    interpolate_pos_dec_reg
+    pop de
+    pop hl
+    ret
+
+; Translate a bullet.
+; @ bc: Velocity
+; @ hl: Bullet Memory Address
+TranslateBulletDown:
+    ; hl = PosY
+    push hl
+    push de
+    ld de, Bullet_PosY
+    add hl, de
+    interpolate_pos_inc_reg
+    pop de
+    pop hl
+    ret
+
+; Translate a bullet.
+; @ bc: Velocity
+; @ hl: Bullet Memory Address
+TranslateBulletLeft:
+    ; hl = PosX
+    push hl
+    push de
+    ld de, Bullet_PosX
+    add hl, de
+    interpolate_pos_dec_reg
+    pop de
+    pop hl
+    ret
+
+; Translate a bullet.
+; @ bc: Velocity
+; @ hl: Bullet Memory Address
+TranslateBulletRight:
+    ; hl = PosX
+    push hl
+    push de
+    ld de, Bullet_PosX
+    add hl, de
+    interpolate_pos_inc_reg
+    pop de
+    pop hl
+    ret
+
+; Update Bullet Shadow OAM
+; @ bc: Bullet Sprite
+; @ hl: Bullet Memory Address
+UpdateBulletShadowOAM:
+    push af
+    push bc
+    push de
     push hl
 
     ld d, 0
@@ -251,14 +247,125 @@ UpdateBullets::
     ld a, h
     ld a, [wCurrentShadowOAMPtr + 1]
 
-    pop hl ; go back to original hl
+    pop hl
+    pop de
+    pop bc
+    pop af
 
-.endUpdateDir
-    ; go to next loop
-    ld b, 0
-    ld c, sizeof_Bullet ; based on number of bytes the bullet has
-    add hl, bc ; add the offset to get the next bullet
-    jp .startLoop ; have to use jump, address out of reach
+    ret
+
+/* Global Functions */
+; Reset all bullet data.
+ResetAllBullets::
+    mem_set_small wBulletObjects, 0, wBulletObjectEnd - wBulletObjects
+    ret
+
+/*  Searches and returns the memory address of an inactive bullet.
+    @ hl: Memory Address of 1st Bullet
+    @ b: Number of Bullets to Search
+    @ hl: Return 
+    return hl - starting address of available bullet, if no available bullets, return the last bullet
+    WARNING: after calling this function, need to check if active anyway, there's no null check...
+*/
+GetInactiveBullet::
+.loop
+    ld a, b
+    cp a, 0
+    jr z, .end
+
+    ld a, [hl]
+    bit BIT_FLAG_ACTIVE, a ; check if alive
+    jr z, .end ; if not alive return and end loop
+    
+    ld d, 0
+    ld e, sizeof_Bullet
+    add hl, de ; go to next bullet address
+
+    dec b ; decrease number of bullets
+    jr .loop
+.end
+    ret
+
+; Update all alive bullets movement and collision.
+UpdateBullets::
+    push af
+    push bc
+    push de
+    push hl
+
+    ld b, NUM_BULLETS
+    ld hl, wBulletObjects
+    
+.loopStart
+    ld a, b
+    cp a, 0 ; check if end of loop
+    jp z, .end
+
+    ; Collision
+    ld a, [hl]
+    bit BIT_FLAG_ACTIVE, a ; check if alive
+    jr z, .loopEnd
+    ; call BulletTileCollisionCheck
+
+    ; Translation
+.translationStart
+    ld a, [hl]
+    bit BIT_FLAG_ACTIVE, a ; check if alive
+    jr z, .loopEnd
+
+    ; bc = Velocity
+    push hl
+    push de
+    ld de, Bullet_Velocity
+    add hl, de
+    ld a, [hli]
+    ld b, a
+    ld a, [hl]
+    ld c, a
+    pop de
+    pop hl
+
+    ; a = Direction
+    push hl
+    inc hl
+    ld a, [hl]
+    pop hl
+
+    push bc
+.translateUp
+    cp a, DIR_UP
+    jr nz, .translateDown
+    call TranslateBulletUp
+    ld bc, BulletSprites.upSprite
+    jr .translationEnd
+.translateDown
+    cp a, DIR_DOWN
+    jr nz, .translateLeft
+    call TranslateBulletDown
+    ld bc, BulletSprites.downSprite
+    jr .translationEnd
+.translateLeft
+    cp a, DIR_LEFT
+    jr nz, .translateRight
+    call TranslateBulletLeft
+    ld bc, BulletSprites.leftSprite
+    jr .translationEnd
+.translateRight
+    call TranslateBulletRight
+    ld bc, BulletSprites.rightSprite
+.translationEnd
+    call UpdateBulletShadowOAM
+    pop bc
+
+.loopEnd
+    ld de, sizeof_Bullet ; based on number of bytes the bullet has
+    add hl, de ; offset to get the next bullet
+    dec b ; dec counter
+    jr .loopStart
 
 .end
+    pop hl
+    pop de
+    pop bc
+    pop af
     ret
