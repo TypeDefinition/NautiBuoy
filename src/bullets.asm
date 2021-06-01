@@ -30,7 +30,6 @@ w_BulletObjectPlayerEnd:: ; reserve the first 3 bullets just for the player
     dstruct Bullet, wBullet15
 wBulletObjectEnd:
 
-
 SECTION "Bullets", ROM0
 
 /* reset all bullet data */
@@ -116,10 +115,51 @@ UpdateBullets::
 
     pop af ; get back the direction
 
+    ; hl: Entity PosY Address
+    ; de: Entity PosX Address
 .dirUp
     cp a, DIR_UP
     jr nz, .dirDown
-    tile_collision_check_up_reg 0, BULLET_COLLIDABLE_TILES, .collided ; hl address of posy, de address of posX
+    
+    ; Check Top Left
+    ld a, [de]
+    push de
+    sub a, BULLET_COLLIDER_SIZE
+    ld e, a
+    ld a, [hl]
+    sub a, BULLET_COLLIDER_SIZE
+    ld d, a
+    call GetTileIndex
+    call GetTileValue
+    pop de
+
+    push af
+    cp a, BULLET_DESTRUCTIBLE_TILES
+    ld a, EMPTY_TILE
+    call c, SetTile
+    pop af
+
+    ; Check Top Right
+    ld a, [de]
+    push de
+    add a, BULLET_COLLIDER_SIZE - 1
+    ld e, a
+    ld a, [hl]
+    sub a, BULLET_COLLIDER_SIZE
+    ld d, a
+    call GetTileIndex
+    call GetTileValue
+    pop de
+
+    push af
+    cp a, BULLET_DESTRUCTIBLE_TILES
+    ld a, EMPTY_TILE
+    call c, SetTile
+    pop af
+
+    cp a, BULLET_COLLIDABLE_TILES
+    jp c, .destroyBullet
+
     ; update up pos
     interpolate_pos_dec_reg
     ld bc, BulletSprites.upSprite
@@ -127,26 +167,17 @@ UpdateBullets::
 
 .dirDown
     cp a, DIR_DOWN
-    jr nz, .dirRight
-    tile_collision_check_down_reg 0, BULLET_COLLIDABLE_TILES, .collided ; hl address of posy, de address of posX
+    jr nz, .dirLeft
+    ; bullet_tile_collision_check_down BULLET_COLLIDER_SIZE, BULLET_DESTRUCTIBLE_TILES, .destroyBullet, BULLET_COLLIDABLE_TILES, .destroyBullet
     ; update down pos
     interpolate_pos_inc_reg
     ld bc, BulletSprites.downSprite
     jp .updateShadowOAM
 
-.dirRight
-    cp a, DIR_RIGHT
-    jr nz, .dirLeft
-    tile_collision_check_right_reg 0, BULLET_COLLIDABLE_TILES, .collided
-    ; update the right pos
-    ld h, d ; de stored the address of posX, transfer it
-    ld l, e
-    interpolate_pos_inc_reg
-    ld bc, BulletSprites.rightSprite
-    jr .updateShadowOAM
-
-.dirLeft ; only direction, no need do dir check
-    tile_collision_check_left_reg 0, BULLET_COLLIDABLE_TILES, .collided
+.dirLeft
+    cp a, DIR_LEFT
+    jr nz, .dirRight
+    ; bullet_tile_collision_check_left BULLET_COLLIDER_SIZE, BULLET_DESTRUCTIBLE_TILES, .destroyBullet, BULLET_COLLIDABLE_TILES, .destroyBullet
     ; update the left pos
     ld h, d ; de stored the address of posX, transfer it
     ld l, e
@@ -154,7 +185,16 @@ UpdateBullets::
     ld bc, BulletSprites.leftSprite
     jr .updateShadowOAM
 
-.collided ; when collided, make it inactive, go next loop
+.dirRight ; only direction left, no need do dir check
+    ; bullet_tile_collision_check_right BULLET_COLLIDER_SIZE, BULLET_DESTRUCTIBLE_TILES, .destroyBullet, BULLET_COLLIDABLE_TILES, .destroyBullet
+    ; update the right pos
+    ld h, d ; de stored the address of posX, transfer it
+    ld l, e
+    interpolate_pos_inc_reg
+    ld bc, BulletSprites.rightSprite
+    jr .updateShadowOAM
+
+.destroyBullet ; when collided, make it inactive, go next loop
     pop hl
     ld [hl], FLAG_INACTIVE
     jr .endUpdateDir
