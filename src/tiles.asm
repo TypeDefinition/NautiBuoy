@@ -23,10 +23,8 @@ SECTION "Dirty Tiles", WRAM0[$C000]
 
     4 bytes is used so that the memory address of each dirty tile
     can be calculated by doing DirtyTiles + Offset, where Offset can be
-    calculated by DirtyTilesIndex << 2. This cannot be done using 3 bytes. */
-CleanedTilesIndex:
-    ds 1
-DirtyTilesIndex:
+    calculated by NumDirtyTiles << 2. This cannot be done using 3 bytes. */
+NumDirtyTiles:
     ds 1
 DirtyTiles:
     ds (MAX_DIRTY_TILES << 2)
@@ -34,8 +32,7 @@ DirtyTiles:
 
 SECTION "Tile Functions", ROM0
 ResetDirtyTiles::
-    mem_set_small DirtyTilesIndex, 0, 1
-    mem_set_small CleanedTilesIndex, 0, 1
+    mem_set_small NumDirtyTiles, 0, 1
     mem_set_small DirtyTiles, 0, DirtyTiles.end - DirtyTiles
     ret
 
@@ -102,8 +99,8 @@ AddDirtyTile::
     ld hl, DirtyTiles
     ld d, a ; d = New Tile Value
 
-    ; Offset = [DirtyTilesIndex] << 2
-    ld a, [DirtyTilesIndex]
+    ; Offset = [NumDirtyTiles] << 2
+    ld a, [NumDirtyTiles]
     sla a
     sla a
     
@@ -124,79 +121,64 @@ AddDirtyTile::
     ld a, d
     ld [hl], a
 
-    ; DirtyTilesIndex = (DirtyTilesIndex + 1)%MAX_DIRTY_TILES
-    ld a, [DirtyTilesIndex]
+    ; NumDirtyTiles += 1
+    ld a, [NumDirtyTiles]
     inc a
-    cp a, MAX_DIRTY_TILES
-    jr nz, .noModulo
-    xor a
-.noModulo
-    ld [DirtyTilesIndex], a
+    ld [NumDirtyTiles], a
+    
 .end
     pop hl
     pop de
     pop af
     ret
 
-; Run through the list of dirty tiles, and update one of them into VRAM.
-; We do not have time to update more than 1 tile per frame.
+; Run through the list of dirty tiles, and update them into VRAM.
 ; As of now, this is operating during HBlank because we don't even have enough cycles in VBlank.
 UpdateDirtyTiles::
-    ; d = DirtyTilesIndex
-    ld a, [DirtyTilesIndex]
+    ; d = NumDirtyTiles
+    ld a, [NumDirtyTiles]
     ld d, a
 
-    ; e = CleanedTilesIndex
-    ld a, [CleanedTilesIndex]
-    ld e, a
-
-    ; If d == e, exit.
-    ld a, e
-    cp a, d
-    jr z, .end
-
-    ; hl = DirtyTiles[CleanTilesCounter*4]
-    ld b, 0
-    sla a
-    sla a
-    ld c, a
+    ; hl = Memory Address of Tile 0
     ld hl, DirtyTiles
-    add hl, bc
+
+.loop
+    ld a, d
+    cp a, $00
+    jr z, .end
 
     ; bc = Dirty Tile Index
     ld a, [hli]
     ld b, a
     ld a, [hli]
     ld c, a
-
     ; a = New Tile Value
     ld a, [hli]
     inc hl
 
-    ; Load new tile value
+    ; Load new tile value into VRAM.
     push hl
+
+    ; bc = Tile Address in VRAM
     ld hl, _SCRN0
     add hl, bc
+    ld b, h
+    ld c, l
+    
+    ld hl, rSTAT
+.waitVRAM
+    bit 1, [hl]
+    jr nz, .waitVRAM
+    ld [bc], a
 
-    ; b = New Tile Value
-    ld b, a
-.waitHBlank
-    ld a, [rSTAT]
-    and a, $03
-    cp a, $00
-    jr nz, .waitHBlank
-
-    ld a, b
-    ld [hl], a
     pop hl
 
-    ld a, e
-    inc a
-    cp a, MAX_DIRTY_TILES
-    jr nz, .end
-    xor a
+    ; Next loop
+    dec d
+    jr .loop
 .end
-    ld [CleanedTilesIndex], a
+    xor a
+    ld [NumDirtyTiles], a
     ret
 
 ; @ a: New Tile Value

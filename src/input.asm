@@ -58,7 +58,7 @@ UpdateInput::
     ldh [rP1], a     ; switch the key matrix
 
     ; Need some cycles before writing to P1 and reading the result, need wait for it to stabalize
-    call .burnCycles  ; burn 10 cycles with a call
+    call BurnCycles  ; burn 10 cycles with a call
 
     ; debouncing
     ldh a, [rP1]     ; ignore value while waiting for the key matrix to settle
@@ -66,5 +66,4 @@ UpdateInput::
     ldh a, [rP1]     ; store this read
 
     or $F0   ; We only want the last 4 bits. input returned: 0 means pressed, 1 means not press. 
-.burnCycles:
     ret

@@ -1,12 +1,12 @@
 INCLUDE "./src/include/hardware.inc"
 
+SECTION "Util Functions", ROM0
 /*  Copy data from one memory address to another, byte by byte.
     de - Source address
     bc - number of bytes to fill
     hl - destination address
     
     Registers Used: a, b, c, d, e, h, l */
-SECTION "MemCopy", ROM0
 MemCopy::
     push af
 
@@ -21,4 +21,7 @@ MemCopy::
 
     pop af
 
+    ret
+
+BurnCycles::
     ret
