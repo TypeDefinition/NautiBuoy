@@ -47,7 +47,7 @@ EnemySprites::
 
 /* Animation, sprite IDs for the enemy*/
 EnemyAnimation::
-.upAnimation::
+.upAnimation:: ; up and down has the same frames
     ; frame 1
     db 0
     db 0
@@ -59,19 +59,8 @@ EnemyAnimation::
     ; frame 3
     db 4
     db 4
-.downAnimation::
-    ; frame 1
-    db 0
-    db 0
-
-    ; frame 2
-    db 2
-    db 2
-
-    ; frame 3
-    db 4
-    db 4    
 .rightAnimation::
+    ; frame 1
     db 6
     db 8
 
@@ -83,6 +72,7 @@ EnemyAnimation::
     db 14
     db 16
 .leftAnimation::
+    ; frame 1
     db 8
     db 6
 
@@ -93,3 +83,16 @@ EnemyAnimation::
     ; frame 3
     db 16
     db 14
+.attackUpAnimation::
+    ; frame 1
+    db 8
+    db 6
+
+    ; frame 2
+    db 12
+    db 10
+
+    ; frame 3
+    db 16
+    db 14
+

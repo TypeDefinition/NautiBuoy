@@ -134,7 +134,7 @@ UpdateAllEnemies::
     - hl: the starting address of the enemy from PosYInterpolateTarget onwards
 */
 UpdateEnemyA:
-    push hl ; keep a copy of the address from PosYInterpolateTarget
+    push hl ; PUSH hl = address from PosYInterpolateTarget
 
     ld bc, ENEMY_DATA_UPDATE_FRAME_OFFSET
     add hl, bc ; offset hl get updateFrameCounter
@@ -144,19 +144,23 @@ UpdateEnemyA:
     ld [hli], a ; store the new value
     jr nc, .initSpriteDir ; no carry, means no need update the frames, just go update variables for OAM
 
-    push hl ; store address of updateFrameCounter
-    ld a, [hli] ; get second part of updateFrameCounter
+    push hl ; PUSH HL = updateFrameCounter address
+    ld a, [hli] ; a = int part of updateFrameCounter
+    push hl ; PUSH HL = curr animation frame address
+
     adc a, 0 ; add the carry
+    ld d, a ; reg d = int part of updateFrameCounter
     cp a, ENEMY_TYPEA_ATTACK_FRAME
-    ld d, a ; reg d = updateFrameCounter
-    jr nz, .updateAnimationFrames
+    jr nz, .updateAnimationFrames ; check if reach attack frame. a >= ENEMY_TYPEA_ATTACK_FRAME is reached
 
     ; reach attack state, update variables
     ld a, ENEMY_TYPEA_ATTACK_ANIM_FRAMES
     inc hl ; skip curr frame
     ld [hl], a ; init max frame to be the attack frames
+    ld e, ENEMY_TYPEA_ATTACK_ANIM_OFFSET
 
 .updateAnimationFrames
+    pop hl ; POP hl = curr animation frame address
     ld a, [hli] ; get curr animation frame
     inc a ; go next frame
     ld b, a ; b stores curr frame
@@ -169,26 +173,26 @@ UpdateEnemyA:
     ld b, a ; reset curr frame if reach max frame
     
     ; check if in attack mode
-    ld a, d
+    ld a, d ; reg a = updateFrameCounter
     cp a, ENEMY_TYPEA_ATTACK_FRAME
-    jr nc, .continueAnimation ; if < than just continue
+    jr nc, .continueAnimation ; if a < ENEMY_TYPEA_ATTACK_FRAME then just continue
 
     ld a, ENEMY_TYPEA_WALK_FRAMES
     ld [hl], a ; reset back to idling
     ld d, 0 ; updateFrameCounter = 0
+    ld e, 0 ; animation offset = 0
 
 .continueAnimation
     ; d = updateFrameCounter, b = currFrame, e = animation offset
-    pop hl ; get updateFrameCounter
+    pop hl ; POP hl = updateFrameCounter address
     ld a, d 
-    ld [hli], a
+    ld [hli], a ; store updateFrameCounter
 
     ld a, b
     ld [hl], a ; store curr frame
 
 .initSpriteDir
-    pop hl ; get the original address
-    push hl
+    pop hl ; POP HL = address from PosYInterpolateTarget
 
     ld bc, ENEMY_DATA_DIR_OFFSET
     add hl, bc ; offset hl by 6 to get the direction
@@ -204,7 +208,7 @@ UpdateEnemyA:
     cp a, DIR_DOWN
     jr nz, .rightDir
     ld de, EnemySprites.downSprite
-    ld bc, EnemyAnimation.downAnimation
+    ld bc, EnemyAnimation.upAnimation
     jr .endDir
 
 .rightDir
@@ -218,26 +222,10 @@ UpdateEnemyA:
     ld de, EnemySprites.leftSprite
     ld bc, EnemyAnimation.leftAnimation
 
-.endDir 
-
-
+.endDir
     call UpdateEnemySpriteOAM
 
-
-
-;.finishAttack 
-    ; after updating curranimation frame, x2 and add to animation address de
-    ; push de the animation address
-    ; use the hl address of enemy to get x and y first, init to de
-    ; hl used for the wshadowOAM instead
-    ; after putting value of de to pos x and y and add the bc offset
-    ; then initialise the last part flag, and do it again for the other sprite part
-    ; pop back de
-    ; get the tile id, init it to the correct addresses
-    
-
 .endUpdateEnemyA
-    pop hl
     ret
 
 /* Update for enemy type B */
@@ -253,6 +241,7 @@ HitEnemy::
     ; if health < 0, mens dead, set the variable to dead
     ret
 
+/* Attack */
 EnemyShoot::
     ;.attack
     /* TODO:: TEMP CODES:: HL = starting address of PosYInterpolateTarget */
