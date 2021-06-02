@@ -369,6 +369,12 @@ UpdatePlayerShadowOAM::
     ld a, [de] ; get flags
     ld [hli], a
 
+    ; update the current address of from hl to the wCurrentShadowOAMPtr
+    ld a, l
+    ld [wCurrentShadowOAMPtr], a
+    ld a, h
+    ld a, [wCurrentShadowOAMPtr + 1]
+
 .updateSpriteID
     ; grab the sprite ID from the current animation frame to render
     ld a, [wPlayer_CurrAnimationFrame]
@@ -390,23 +396,13 @@ UpdatePlayerShadowOAM::
 
     ; update sprite ID to OAM
     pop hl ; get the original hl from the shadowOAM
-    ld d, 0
-    ld e, 2
+    ld de, 2
     add hl, de ; offset by 2 to go to the sprite ID address
     ld [hl], b
 
     ld e, 4
     add hl, de ; offset by 4 to go to the second half sprite ID address
     ld [hl], c
-
-    ld e, 2
-    add hl, de ; offset by 2 to reach the next entity y pos
-
-    ; update the current address of from hl to the wCurrentShadowOAMPtr
-    ld a, l
-    ld [wCurrentShadowOAMPtr], a
-    ld a, h
-    ld a, [wCurrentShadowOAMPtr + 1]
 
     ; end
     pop de

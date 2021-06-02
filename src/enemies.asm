@@ -6,6 +6,7 @@ INCLUDE "./src/include/util.inc"
 
 DEF ENEMY_DATA_DIR_OFFSET EQU 6 ; offset from PosYInterpolateTarget to Direction
 DEF ENEMY_DATA_UPDATE_FRAME_OFFSET EQU 10 ; offset from PosYInterpolateTarget to UpdateFrameCounter
+DEF ENEMY_DATA_CURR_FRAME_OFFSET EQU 12 ; offset from PosYInterpolateTarget to currAnimationFrame
 
 SECTION "Enemies Data", WRAM0
 wEnemiesData::
@@ -310,12 +311,23 @@ UpdateEnemySpriteOAM::
     set_romx_bank 2 ; bank for sprites is in bank 2
 
     ; TODO:: HL NEEDS TO BE THE Y POS
-    ld hl, wEnemy0_PosY
+    ld hl, wEnemy0_PosYInterpolateTarget
+    push hl ; PUSH HL = enemy address
+
+    push bc ; PUSH BC, temp push
+    ld bc, ENEMY_DATA_CURR_FRAME_OFFSET
+    add hl, bc
+    ld a, [hl] ; get curr frame
+    pop bc ; POP BC
+    
+    pop hl ; POP HL = get back original enemy address
+    push af ; PUSH AF = store curr frame
+
+    inc hl ; go to y pos
 
     ; TODO:: bc stores animation address, de stores sprite info address
-    ;ld de, EnemySprites.upSprite
     ld bc, EnemyAnimation.upAnimation
-    push bc
+    push bc ; PUSH bc =  animation data
 
     ; Convert position from world space to screen space.
     ld a, [wShadowSCData]
@@ -333,11 +345,12 @@ UpdateEnemySpriteOAM::
     sub a, c
     ld c, a ; store x screen pos at c
 
-    ; get the current address of shadow OAM to hl
+    ; hl = shadow OAM 
     ld a, [wCurrentShadowOAMPtr]
     ld l, a
     ld a, [wCurrentShadowOAMPtr + 1]
     ld h, a
+    push hl ; PUSH HL = shadow OAM 
 
     ; start initialising to shadow OAM
     ld a, [de] ; get the sprite offset y
@@ -350,9 +363,7 @@ UpdateEnemySpriteOAM::
     ld [hli], a ; init screen x pos
     inc de ; inc to get flags
 
-    ld a, 0
-    ld [hli], a ; TODO, sprite ID
-    ;inc hl ; skip the sprite ID first
+    inc hl ; skip the sprite ID first
 
     ld a, [de] ; get flags
     ld [hli], a
@@ -369,9 +380,7 @@ UpdateEnemySpriteOAM::
     ld [hli], a ; init screen x pos
     inc de
 
-    ld a, 0
-    ld [hli], a ; TODO, sprite ID
-    ;inc hl ; skip the sprite id first
+    inc hl ; skip the sprite id first
 
     ld a, [de] ; get flags
     ld [hli], a
@@ -383,10 +392,26 @@ UpdateEnemySpriteOAM::
     ld a, [wCurrentShadowOAMPtr + 1]
     
     ; update animation
-    pop bc
-    ret 
+    pop hl ; pop hl = starting address of shadow OAM
+    pop bc ; pop bc = animation address
+    pop af ; pop a = curr animation frame
 
-/*
-EnemyShoot:
-    
-    ret */
+    sla a ; curr animation frame x 2
+    add a, c
+    ld c, a
+    xor a ; a = 0
+    adc a, b ; add offset to animation address: bc + a
+    ld b, a
+
+    ld de, 2
+    add hl, de ; ; offset by 2 to go to the sprite ID address
+    ld a, [bc]
+    ld [hl], a ; store first sprite ID
+    inc bc
+
+    ld e, 4
+    add hl, de ; ; offset by 4 to go to the sprite ID address
+    ld a, [bc]
+    ld [hl], a ; store second sprite ID
+
+    ret 
