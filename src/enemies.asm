@@ -4,7 +4,8 @@ INCLUDE "./src/include/entities.inc"
 INCLUDE "./src/include/definitions.inc"
 INCLUDE "./src/include/util.inc"
 
-
+DEF ENEMY_DATA_DIR_OFFSET EQU 6 ; offset from PosYInterpolateTarget to Direction
+DEF ENEMY_DATA_UPDATE_FRAME_OFFSET EQU 10 ; offset from PosYInterpolateTarget to UpdateFrameCounter
 
 SECTION "Enemies Data", WRAM0
 wEnemiesData::
@@ -134,13 +135,13 @@ UpdateAllEnemies::
 UpdateEnemyA:
     push hl ; keep a copy of the address from PosYInterpolateTarget
 
-    ld bc, 10
-    add hl, bc ; offset hl by 10 to get the updateFrameCounter
+    ld bc, ENEMY_DATA_UPDATE_FRAME_OFFSET
+    add hl, bc ; offset hl get updateFrameCounter
 
     ld a, [hl] ; get first part of updateFrameCounter
     add a, ENEMY_TYPEA_ANIMATION_UPDATE
     ld [hli], a ; store the new value
-    jr c, .initSpriteDir ; no carry, means no need update the frames, just go update variables for OAM
+    jr nc, .initSpriteDir ; no carry, means no need update the frames, just go update variables for OAM
 
     push hl ; store address of updateFrameCounter
     ld a, [hli] ; get second part of updateFrameCounter
@@ -188,8 +189,8 @@ UpdateEnemyA:
     pop hl ; get the original address
     push hl
 
-    ld bc, 7
-    add hl, bc ; offset hl by 7 to get the direction
+    ld bc, ENEMY_DATA_DIR_OFFSET
+    add hl, bc ; offset hl by 6 to get the direction
     ld a, [hl] ; check direction of enemy and init sprite data
 .upDir
     cp a, DIR_UP

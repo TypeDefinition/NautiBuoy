@@ -20,5 +20,5 @@ LevelOneEnemyData::
     db 6 * 8 ; x
     db DIR_UP
     db ENEMY_TYPEA_HEALTH
-    dw VELOCITY_SLOW
+    dw VELOCITY_SLOW ; stored in little endian
 .endLevelOneEnemyData::
