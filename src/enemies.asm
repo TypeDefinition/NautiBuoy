@@ -80,6 +80,8 @@ InitEnemiesAndPlaceOnMap::
     ld [hli], a ; set second part of velocity
     inc bc
 
+    inc hl ; skip updateFrameCounter
+    inc hl ; skip updateFrameCounter
     inc hl ; skip CurrAnimationFrame = 0
 
     ld a, ENEMY_TYPEA_WALK_FRAMES ; TEMP CODES, initialised this properly
@@ -114,31 +116,150 @@ UpdateAllEnemies::
     jr nz, .enemyTypeB
     call UpdateEnemyA ; call correct update for enemy
 .enemyTypeB
+    cp a, TYPE_ENEMYB
+    jr nz, .endOfLoop
     call UpdateEnemyB ; call correct update for enemy
-
-    
-
 
 .endOfLoop
     ret
 
 
 /*  Update for enemy type A 
+    Behavior:
+        - Stays in 1 spot and shoot based on direction
+        - mostly based on animation
     Parameters:
     - hl: the starting address of the enemy from PosYInterpolateTarget onwards
 */
 UpdateEnemyA:
+    push hl ; keep a copy of the address from PosYInterpolateTarget
 
-    ; be able to find player 
-    ; if player on the same screen
-    ; same line, then start facing to player and try shoot?
-    ; just be able to shoot first maybe?
+    ld bc, 10
+    add hl, bc ; offset hl by 10 to get the updateFrameCounter
 
-.attack
+    ld a, [hl] ; get first part of updateFrameCounter
+    add a, ENEMY_TYPEA_ANIMATION_UPDATE
+    ld [hli], a ; store the new value
+    jr c, .initSpriteDir ; no carry, means no need update the frames, just go update variables for OAM
+
+    push hl ; store address of updateFrameCounter
+    ld a, [hli] ; get second part of updateFrameCounter
+    adc a, 0 ; add the carry
+    cp a, ENEMY_TYPEA_ATTACK_FRAME
+    ld d, a ; reg d = updateFrameCounter
+    jr nz, .updateAnimationFrames
+
+    ; reach attack state, update variables
+    ld a, ENEMY_TYPEA_ATTACK_ANIM_FRAMES
+    inc hl ; skip curr frame
+    ld [hl], a ; init max frame to be the attack frames
+
+.updateAnimationFrames
+    ld a, [hli] ; get curr animation frame
+    inc a ; go next frame
+    ld b, a ; b stores curr frame
+
+    ld a, [hl] ; get max frames 
+    cp a, b
+    jr nz, .continueAnimation ; check if reach max frame
+
+    xor a
+    ld b, a ; reset curr frame if reach max frame
+    
+    ; check if in attack mode
+    ld a, d
+    cp a, ENEMY_TYPEA_ATTACK_FRAME
+    jr nc, .continueAnimation ; if < than just continue
+
+    ld a, ENEMY_TYPEA_WALK_FRAMES
+    ld [hl], a ; reset back to idling
+    ld d, 0 ; updateFrameCounter = 0
+
+.continueAnimation
+    ; d = updateFrameCounter, b = currFrame, e = animation offset
+    pop hl ; get updateFrameCounter
+    ld a, d 
+    ld [hli], a
+
+    ld a, b
+    ld [hl], a ; store curr frame
+
+.initSpriteDir
+    pop hl ; get the original address
+    push hl
+
+    ld bc, 7
+    add hl, bc ; offset hl by 7 to get the direction
+    ld a, [hl] ; check direction of enemy and init sprite data
+.upDir
+    cp a, DIR_UP
+    jr nz, .downDir
+    ld de, EnemySprites.upSprite
+    ld bc, EnemyAnimation.upAnimation
+    jr .endDir
+
+.downDir
+    cp a, DIR_DOWN
+    jr nz, .rightDir
+    ld de, EnemySprites.downSprite
+    ld bc, EnemyAnimation.downAnimation
+    jr .endDir
+
+.rightDir
+    cp a, DIR_RIGHT
+    jr nz, .leftDir
+    ld de, EnemySprites.rightSprite
+    ld bc, EnemyAnimation.rightAnimation
+    jr .endDir
+
+.leftDir
+    ld de, EnemySprites.leftSprite
+    ld bc, EnemyAnimation.leftAnimation
+
+.endDir 
+
+
+    call UpdateEnemySpriteOAM
+
+
+
+;.finishAttack 
+    ; after updating curranimation frame, x2 and add to animation address de
+    ; push de the animation address
+    ; use the hl address of enemy to get x and y first, init to de
+    ; hl used for the wshadowOAM instead
+    ; after putting value of de to pos x and y and add the bc offset
+    ; then initialise the last part flag, and do it again for the other sprite part
+    ; pop back de
+    ; get the tile id, init it to the correct addresses
+    
+
+.endUpdateEnemyA
+    pop hl
+    ret
+
+/* Update for enemy type B */
+UpdateEnemyB:
+    ret
+
+
+/* Call this when enemy has been hit */
+HitEnemy::
+    ; should be passing in the address of the enemy here
+    ; should also be passing the amount of damage dealth
+    ; deduct health
+    ; if health < 0, mens dead, set the variable to dead
+    ret
+
+EnemyShoot::
+    ;.attack
     /* TODO:: TEMP CODES:: HL = starting address of PosYInterpolateTarget */
-    inc hl ; skip PosYInterpolateTarget
+ /*   inc hl ; skip PosYInterpolateTarget
     ld d, h
     ld e, l ; transfer hl, address of enemy to de
+
+    ; hl - address of bullet
+    ; de - address of enemy
 
     ld hl, w_BulletObjectPlayerEnd
     ld b, ENEMY_TYPEA_BULLET_NUM
@@ -175,33 +296,7 @@ UpdateEnemyA:
     inc de 
 
     ld a, [de]  ; pos X second byte
-    ld [hl], a ; set second byte of pos X for bullet
-
-.finishAttack
-    ; after updating curranimation frame, x2 and add to animation address de
-    ; push de the animation address
-    ; use the hl address of enemy to get x and y first, init to de
-    ; hl used for the wshadowOAM instead
-    ; after putting value of de to pos x and y and add the bc offset
-    ; then initialise the last part flag, and do it again for the other sprite part
-    ; pop back de
-    ; get the tile id, init it to the correct addresses
-    call UpdateEnemySpriteOAM
-
-
-    ret
-
-/* Update for enemy type B */
-UpdateEnemyB:
-    ret
-
-
-/* Call this when enemy has been hit */
-HitEnemy::
-    ; should be passing in the address of the enemy here
-    ; should also be passing the amount of damage dealth
-    ; deduct health
-    ; if health < 0, mens dead, set the variable to dead
+    ld [hl], a ; set second byte of pos X for bullet */
     ret
 
 /*  Render and set enemy OAM data and animation 
@@ -217,7 +312,7 @@ UpdateEnemySpriteOAM::
     ld hl, wEnemy0_PosY
 
     ; TODO:: bc stores animation address, de stores sprite info address
-    ld de, EnemySprites.upSprite
+    ;ld de, EnemySprites.upSprite
     ld bc, EnemyAnimation.upAnimation
     push bc
 
@@ -286,41 +381,11 @@ UpdateEnemySpriteOAM::
     ld a, h
     ld a, [wCurrentShadowOAMPtr + 1]
     
-
+    ; update animation
     pop bc
     ret 
 
-    /*
-.attack
-    call GetNonActiveBullet 
-
-    ld a, [hl]
-    bit BIT_FLAG_ACTIVE, a ; check if alive
-    jr z, .finishAttack ; if not available bullets just finish attack
-
-    ; set the variables
-    ld a, FLAG_ACTIVE | FLAG_ENEMY
-    ld [hli], a ; its alive
-
-    ld a, [wPlayer_Direction]
-    ld [hli], a ; direction
-
-    ; TODO:: SET VELOCITY FOR BULLET BASED ON TYPE LATER
-    ld a, $02
-    ld [hli], a ; velocity
-    xor a
-    ld [hli], a ; second part of velocity
-
-    ld a, [wPlayer_PosY] 
-    ld [hli], a ; pos Y
+/*
+EnemyShoot:
     
-    ld a, [wPlayer_PosY + 1] 
-    ld [hli], a ; load the other half of posY
-
-    ld a, [wPlayer_PosX]
-    ld [hli], a ; pos x
-
-    ld a, [wPlayer_PosX + 1] 
-    ld [hli], a ; load the other half of posX
-
-.finishAttack */
+    ret */

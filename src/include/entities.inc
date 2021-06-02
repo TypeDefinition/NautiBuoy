@@ -28,6 +28,7 @@ DEF ENTITIES_INC EQU 1
         bytes 1, Direction
         bytes 1, HP
         words 1, Velocity
+        words 1, UpdateFrameCounter ; Little endian, helps keep track of frames for states
         bytes 1, CurrAnimationFrame
         bytes 1, CurrStateMaxAnimFrame  ; Update this based on states
     end_struct
