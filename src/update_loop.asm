@@ -11,12 +11,16 @@ UpdateLoop::
     call UpdatePlayerMovement
     call UpdatePlayerAttack
     call UpdatePlayerCamera
+    call UpdatePlayerShadowOAM ; TODO:: update shadow OAM data here
 
+    /*  HUGE PROBLEM FOR RENDERING the order
+        TODO::
+        for example, enemy starts shooting, so enemy should happen before bullet render
+        but then, bullet update, shoot checks collision, enemies destroyed, need to update enemy but it can only happen next frame
+    */
+
+    call UpdateAllEnemies    
     call UpdateBullets
-
-    ; TODO:: update shadow OAM data here
-    ; temp code, might move this somewhere else
-    call UpdatePlayerShadowOAM
 
     ; Dirty tiles get updated during HBlank.
     call UpdateDirtyTiles
