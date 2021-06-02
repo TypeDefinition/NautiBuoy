@@ -4,7 +4,7 @@ DEF MOVEMENT_INC EQU 1
 /*  Interpolate the position of an entity decreasingly.
     \1 - Entity Pos Address
     \2 - Entity Velocity Address */
-MACRO interpolate_pos_dec
+MACRO interpolate_pos_dec_immd
     push af
     push bc
     push hl
@@ -41,7 +41,7 @@ ENDM
 /*  Interpolate the position of an entity increasingly.
     \1 - Entity Pos Address
     \2 - Entity Velocity Address */
-MACRO interpolate_pos_inc
+MACRO interpolate_pos_inc_immd
     push af
     push bc
     push hl

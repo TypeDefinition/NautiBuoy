@@ -57,25 +57,25 @@ InterpolatePlayerPosition::
 .upStart
     cp a, DIR_UP
     jr nz, .upEnd
-    interpolate_pos_dec wPlayer_PosY, wPlayer_Velocity
+    interpolate_pos_dec_immd wPlayer_PosY, wPlayer_Velocity
     jp .end
 .upEnd
 .downStart
     cp a, DIR_DOWN
     jr nz, .downEnd
-    interpolate_pos_inc wPlayer_PosY, wPlayer_Velocity
+    interpolate_pos_inc_immd wPlayer_PosY, wPlayer_Velocity
     jp .end
 .downEnd
 .leftStart
     cp a, DIR_LEFT
     jr nz, .leftEnd
-    interpolate_pos_dec wPlayer_PosX, wPlayer_Velocity
+    interpolate_pos_dec_immd wPlayer_PosX, wPlayer_Velocity
     jp .end
 .leftEnd
 .rightStart
     cp a, DIR_RIGHT
     jr nz, .rightEnd
-    interpolate_pos_inc wPlayer_PosX, wPlayer_Velocity
+    interpolate_pos_inc_immd wPlayer_PosX, wPlayer_Velocity
     jp .end
 .rightEnd
 .end

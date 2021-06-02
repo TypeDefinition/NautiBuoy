@@ -11,6 +11,23 @@ SECTION "Entry Point", ROM0[$0100]
     jp Initialise ; Leave this tiny space.
 
 SECTION "Initialisation", ROM0
+LCDOff::
+    push af
+    ; Shut off the LCD.
+    xor a; ld a, 0
+    ld [rLCDC], a
+    pop af
+    ret
+
+LCDOn::
+    push af
+    ; Turn screen on, display background
+    ; WARNING/TEMP: might change one of the 9800 to use tilemap 9c00, unsure what effects putting both to 9800 will cause for UI. default is 9800 
+    ld a, LCDCF_ON | LCDCF_WIN9800 | LCDCF_WINOFF | LCDCF_BG9800 | LCDCF_OBJ16 | LCDCF_OBJON | LCDCF_BGON ; we want to set back LCDC bit 7 to 1
+    ld [rLCDC], a ; turn on the screen
+    pop af
+    ret
+
 Initialise::
     ld sp, $E000 ; Initialise our stack pointer to the end of the work RAM.
 
@@ -36,8 +53,7 @@ Initialise::
         Bit 7: LCD Control Operation (0 = Off, 1 = On) */
 
     ; Shut off the LCD.
-    xor a; ld a, 0
-    ld [rLCDC], a
+    call LCDOff
 
     call ResetOAM
     call ResetShawdowOAM
@@ -75,10 +91,7 @@ Initialise::
     ld [rNR52], a
     
     ; Turn screen on, display background
-    ; WARNING/TEMP: might change one of the 9800 to use tilemap 9c00, unsure what effects putting both to 9800 will cause for UI. default is 9800 
-    ld a, LCDCF_ON | LCDCF_WIN9800 | LCDCF_WINOFF | LCDCF_BG9800 | LCDCF_OBJ16 | LCDCF_OBJON | LCDCF_BGON ; we want to set back LCDC bit 7 to 1
-    ld [rLCDC], a ; turn on the screen
-
+    call LCDOn
 
     ld a, IEF_VBLANK ; Enable Interrupts
     ld [rIE], a

@@ -18,6 +18,9 @@ UpdateLoop::
     ; temp code, might move this somewhere else
     call UpdatePlayerShadowOAM
 
+    ; Dirty tiles get updated during HBlank.
+    call UpdateDirtyTiles
+
     halt ; Save power, wait for vblank interrupt
 
     jr UpdateLoop
