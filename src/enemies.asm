@@ -149,10 +149,11 @@ UpdateEnemyA:
     ld a, [hl] ; get first part of updateFrameCounter
     add a, ENEMY_TYPEA_ANIMATION_UPDATE
     ld [hli], a ; store the new value
-    jr nc, .checkEnemyState ; no carry, means no need update the frames, just go update variables for OAM
+    ld a, [hl] ; a = int part of updateFrameCounter
+    ld d, a ; d = int part of updateFrameCounter
+    jr nc, .initSpriteDir ; no carry, means no need update the frames, just go update variables for OAM
 
     ; update frames
-    ld a, [hl] ; a = int part of updateFrameCounter
     adc a, 0 ; add the carry
 
     cp a, ENEMY_TYPEA_ATTACK_FRAME
@@ -207,57 +208,75 @@ UpdateEnemyA:
     ld a, b
     ld [hl], a ; store curr frame
 
-.checkEnemyState
+.initSpriteDir
+    ; d = updateFrameCounter
     pop hl ; POP HL = address from PosYInterpolateTarget
     push hl ; PUSH HL = address from PosYInterpolateTarget
 
-    ; get current state 
-    ld bc, ENEMY_DATA_UPDATE_FRAME_OFFSET + 1
-    add hl, bc
-    ld a, [hl] ; a = UpdateFrameCounter, int part
-    ld c, 0
-    cp a, ENEMY_TYPEA_ATTACK_STATE_FRAME
-    jr c, .initSpriteDir ; check if in attack state
-    ld c, ENEMY_TYPEA_ATTACK_ANIM_OFFSET 
-
-.initSpriteDir
-    ; c = animation state offset
-    pop hl ; POP HL = address from PosYInterpolateTarget
-
-    ld de, ENEMY_DATA_DIR_OFFSET
-    add hl, de ; offset hl by 6 to get the direction
+    ld bc, ENEMY_DATA_DIR_OFFSET
+    add hl, bc ; offset hl by 6 to get the direction
     ld a, [hl] ; check direction of enemy and init sprite data
 .upDir
     cp a, DIR_UP
     jr nz, .downDir
-    ld hl, EnemyAnimation.upAnimation
+
+    ld a, d ; a = updateFrameCounter
     ld de, EnemySprites.upSprite
+
+    ; check state and init proper animation
+    cp a, ENEMY_TYPEA_ATTACK_STATE_FRAME
+    jr nc, .upDirAttack
+    ld bc, EnemyAnimation.upAnimation
+    jr .endDir
+.upDirAttack
+    ld bc, EnemyAnimation.attackUpAnimation
     jr .endDir
 
 .downDir
     cp a, DIR_DOWN
     jr nz, .rightDir
-    ld hl, EnemyAnimation.upAnimation ; down uses same frames as up
+
+    ld a, d ; a = updateFrameCounter
     ld de, EnemySprites.downSprite
+
+    ; check state and init proper animation
+    cp a, ENEMY_TYPEA_ATTACK_STATE_FRAME
+    jr nc, .upDirAttack ; down have the same animation as up
+    ld bc, EnemyAnimation.upAnimation
     jr .endDir
 
 .rightDir
     cp a, DIR_RIGHT
     jr nz, .leftDir
-    ld hl, EnemyAnimation.rightAnimation
+
+    ld a, d ; a = updateFrameCounter
     ld de, EnemySprites.rightSprite
+
+    ; check state and init proper animation
+    cp a, ENEMY_TYPEA_ATTACK_STATE_FRAME
+    jr nc, .rightDirAttack
+    ld bc, EnemyAnimation.rightAnimation
+    jr .endDir
+.rightDirAttack
+    ld bc, EnemyAnimation.attackRightAnimation
     jr .endDir
 
 .leftDir
-    ld hl, EnemyAnimation.leftAnimation
+    ld a, d ; a = updateFrameCounter
     ld de, EnemySprites.leftSprite
 
-.endDir
-    ld b, 0
-    add hl, bc ; add animation offset
-    ld b, h
-    ld c, l ; bc = hl
+    ; check state and init proper animation
+    cp a, ENEMY_TYPEA_ATTACK_STATE_FRAME
+    jr nc, .leftDirAttack
+    ld bc, EnemyAnimation.leftAnimation
+    jr .endDir
+.leftDirAttack
+    ld bc, EnemyAnimation.attackLeftAnimation
+    jr .endDir
 
+
+.endDir
+    pop hl ; POP HL = address from PosYInterpolateTarget
     call UpdateEnemySpriteOAM
 
 .endUpdateEnemyA

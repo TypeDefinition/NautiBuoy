@@ -83,4 +83,28 @@ EnemyAnimation::
     ; frame 3
     db $1A
     db $1A
+.attackRightAnimation::
+    ; frame 1
+    db $26
+    db $28
+
+    ; frame 2
+    db $2A
+    db $2C
+
+    ; frame 3
+    db $26
+    db $28
+.attackLeftAnimation::
+    ; frame 1
+    db $28
+    db $26
+
+    ; frame 2
+    db $2C
+    db $2A
+
+    ; frame 1
+    db $28
+    db $26
 
