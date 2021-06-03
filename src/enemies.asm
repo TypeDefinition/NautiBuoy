@@ -136,20 +136,38 @@ UpdateAllEnemies::
 UpdateEnemyA:
     push hl ; PUSH hl = address from PosYInterpolateTarget
 
-    ld bc, ENEMY_DATA_UPDATE_FRAME_OFFSET
-    add hl, bc ; offset hl = updateFrameCounter
+    ld de, ENEMY_DATA_DIR_OFFSET
+    add hl, de ; get direction
+    ld a, [hl]
+    ld c, a ; c = direction
+
+    pop hl ; POP hl = address from PosYInterpolateTarget
+    push hl ; PUSH hl = address from PosYInterpolateTarget
+    ld de, ENEMY_DATA_UPDATE_FRAME_OFFSET
+    add hl, de ; offset hl = updateFrameCounter
 
     ld a, [hl] ; get first part of updateFrameCounter
     add a, ENEMY_TYPEA_ANIMATION_UPDATE
     ld [hli], a ; store the new value
     jr nc, .checkEnemyState ; no carry, means no need update the frames, just go update variables for OAM
 
+    ; update frames
+    ld a, [hl] ; a = int part of updateFrameCounter
+    adc a, 0 ; add the carry
+
+    cp a, ENEMY_TYPEA_ATTACK_FRAME
+    jr nz, .attackFinish
+    pop de ; POP de = address from PosYInterpolateTarget
+    push de ; PUSH de = address from PosYInterpolateTarget
+    call EnemyShoot ; for attacking 
+
+.attackFinish
+
+    ld d, a ; reg d = int part of updateFrameCounter
     push hl ; PUSH HL = updateFrameCounter address
-    ld a, [hli] ; a = int part of updateFrameCounter
+    inc hl
     push hl ; PUSH HL = curr animation frame address
 
-    adc a, 0 ; add the carry
-    ld d, a ; reg d = int part of updateFrameCounter
     cp a, ENEMY_TYPEA_ATTACK_STATE_FRAME
     jr nz, .updateAnimationFrames ; check if reach attack frame. a >= ENEMY_TYPEA_ATTACK_STATE_FRAME is reached
 
@@ -158,7 +176,6 @@ UpdateEnemyA:
     ld [hli], a ; currFrame = -1
     ld a, ENEMY_TYPEA_ATTACK_ANIM_MAX_FRAMES
     ld [hl], a ; init max frame to be the attack frames
-    call EnemyShoot
 
 .updateAnimationFrames
     pop hl ; POP hl = curr animation frame address
@@ -259,17 +276,19 @@ HitEnemy::
     ; if health < 0, mens dead, set the variable to dead
     ret
 
-/* Attack */
+/*  Attack 
+    de - starting address of PosYInterpolateTarget
+    c - direction
+*/
 EnemyShoot::
-    ;.attack
-    /* TODO:: TEMP CODES:: HL = starting address of PosYInterpolateTarget */
-    ld hl, wEnemy0_PosYInterpolateTarget
-    inc hl ; skip PosYInterpolateTarget
-    ld d, h
-    ld e, l ; transfer hl, address of enemy to de
+    push af
+    push bc
+    push de
+    push hl
 
-    ; hl - address of bullet
-    ; de - address of enemy
+    inc de
+
+    ; hl - address of bullet, de - address of enemy
 
     ld hl, w_BulletObjectPlayerEnd
     ld b, ENEMY_TYPEA_BULLET_NUM
@@ -283,7 +302,7 @@ EnemyShoot::
     ld a, FLAG_ACTIVE | FLAG_ENEMY
     ld [hli], a ; its alive
 
-    ld a, DIR_UP ; TODO:: change this, reg c is available
+    ld a, c ; a = c = dir
     ld [hli], a ; load direction
 
     ; TODO:: SET VELOCITY FOR BULLET BASED ON TYPE LATER
@@ -309,6 +328,11 @@ EnemyShoot::
     ld [hl], a ; set second byte of pos X for bullet */
 
 .finishAttack
+
+    pop hl
+    pop de
+    pop bc
+    pop af
     ret
 
 /*  Render and set enemy OAM data and animation 

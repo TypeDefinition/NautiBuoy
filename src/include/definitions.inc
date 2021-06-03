@@ -67,7 +67,8 @@ DEF ENEMY_TYPEA_HEALTH EQU 30
 DEF ENEMY_TYPEA_WALK_FRAMES EQU 2
 DEF ENEMY_TYPEA_ATTACK_ANIM_MAX_FRAMES EQU 3
 DEF ENEMY_TYPEA_ANIMATION_UPDATE EQU $08 ; 16, takes 16 frames for next animation frame, abt 4fps
-DEF ENEMY_TYPEA_ATTACK_STATE_FRAME EQU 7 ; frame to start playing attack anim and shoot
+DEF ENEMY_TYPEA_ATTACK_STATE_FRAME EQU 7 ; frame to start playing attack anim
+DEF ENEMY_TYPEA_ATTACK_FRAME EQU 8 ; frame to shoot
 DEF ENEMY_TYPEA_ATTACK_ANIM_OFFSET EQU 12 ; offset from normal anim data to attack anim data
 
     ENDC ; DEFINITIONS_INC
