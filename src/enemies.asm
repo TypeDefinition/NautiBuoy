@@ -150,14 +150,15 @@ UpdateEnemyA:
 
     adc a, 0 ; add the carry
     ld d, a ; reg d = int part of updateFrameCounter
-    cp a, ENEMY_TYPEA_ATTACK_FRAME
-    jr nz, .updateAnimationFrames ; check if reach attack frame. a >= ENEMY_TYPEA_ATTACK_FRAME is reached
+    cp a, ENEMY_TYPEA_ATTACK_STATE_FRAME
+    jr nz, .updateAnimationFrames ; check if reach attack frame. a >= ENEMY_TYPEA_ATTACK_STATE_FRAME is reached
 
     ; reach attack state, update variables
     ld a, -1
     ld [hli], a ; currFrame = -1
     ld a, ENEMY_TYPEA_ATTACK_ANIM_MAX_FRAMES
     ld [hl], a ; init max frame to be the attack frames
+    call EnemyShoot
 
 .updateAnimationFrames
     pop hl ; POP hl = curr animation frame address
@@ -173,8 +174,8 @@ UpdateEnemyA:
     
     ; check if in attack mode
     ld a, d ; reg a = updateFrameCounter
-    cp a, ENEMY_TYPEA_ATTACK_FRAME
-    jr c, .continueAnimation ; if a < ENEMY_TYPEA_ATTACK_FRAME then just continue
+    cp a, ENEMY_TYPEA_ATTACK_STATE_FRAME
+    jr c, .continueAnimation ; if a < ENEMY_TYPEA_ATTACK_STATE_FRAME then just continue
 
     ld a, ENEMY_TYPEA_WALK_FRAMES
     ld [hl], a ; reset back to idling
@@ -198,7 +199,7 @@ UpdateEnemyA:
     add hl, bc
     ld a, [hl] ; a = UpdateFrameCounter, int part
     ld c, 0
-    cp a, ENEMY_TYPEA_ATTACK_FRAME
+    cp a, ENEMY_TYPEA_ATTACK_STATE_FRAME
     jr c, .initSpriteDir ; check if in attack state
     ld c, ENEMY_TYPEA_ATTACK_ANIM_OFFSET 
 
@@ -334,8 +335,6 @@ UpdateEnemySpriteOAM::
 
     inc hl ; go to y pos
 
-    ; TODO:: bc stores animation address, de stores sprite info address
-    ;ld bc, EnemyAnimation.upAnimation
     push bc ; PUSH bc =  animation address data
 
     ; Convert position from world space to screen space.

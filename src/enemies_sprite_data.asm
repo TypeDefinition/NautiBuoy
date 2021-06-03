@@ -49,50 +49,38 @@ EnemySprites::
 EnemyAnimation::
 .upAnimation:: ; up and down has the same frames
     ; frame 1
-    db 0
-    db 0
+    db $16
+    db $16
 
     ; frame 2
-    db 2
-    db 2
-
-    ; frame 3
-    db 4
-    db 4
+    db $18
+    db $18
 .rightAnimation::
     ; frame 1
-    db 6
-    db 8
+    db $1E
+    db $20
 
     ; frame 2
-    db 10
-    db 12
-
-    ; frame 3
-    db 14
-    db 16
+    db $22
+    db $24
 .leftAnimation::
     ; frame 1
-    db 8
-    db 6
+    db $20
+    db $1E
 
     ; frame 2
-    db 12
-    db 10
-
-    ; frame 3
-    db 16
-    db 14
+    db $24
+    db $22
 .attackUpAnimation::
     ; frame 1
-    db 8
-    db 6
+    db $1A
+    db $1A
 
     ; frame 2
-    db 12
-    db 10
+    db $1C
+    db $1C
 
     ; frame 3
-    db 16
-    db 14
+    db $1A
+    db $1A
 
