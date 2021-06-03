@@ -5,7 +5,7 @@ INCLUDE "./src/include/definitions.inc"
 INCLUDE "./src/include/util.inc"
 
 DEF ENEMY_DATA_DIR_OFFSET EQU 6 ; offset from PosYInterpolateTarget to Direction
-DEF ENEMY_DATA_UPDATE_FRAME_OFFSET EQU 10 ; offset from PosYInterpolateTarget to UpdateFrameCounter
+DEF ENEMY_DATA_UPDATE_FRAME_OFFSET EQU 10 ; offset from PosYInterpolateTarget to UpdateFrameCounter first part, fraction
 DEF ENEMY_DATA_CURR_FRAME_OFFSET EQU 12 ; offset from PosYInterpolateTarget to currAnimationFrame
 
 SECTION "Enemies Data", WRAM0
@@ -142,8 +142,7 @@ UpdateEnemyA:
     ld a, [hl] ; get first part of updateFrameCounter
     add a, ENEMY_TYPEA_ANIMATION_UPDATE
     ld [hli], a ; store the new value
-    ld c, 0 ; animation offset = 0
-    jr nc, .initSpriteDir ; no carry, means no need update the frames, just go update variables for OAM
+    jr nc, .checkEnemyState ; no carry, means no need update the frames, just go update variables for OAM
 
     push hl ; PUSH HL = updateFrameCounter address
     ld a, [hli] ; a = int part of updateFrameCounter
@@ -152,17 +151,13 @@ UpdateEnemyA:
     adc a, 0 ; add the carry
     ld d, a ; reg d = int part of updateFrameCounter
     cp a, ENEMY_TYPEA_ATTACK_FRAME
-    jr c, .updateAnimationFrames ; check if reach attack frame. a >= ENEMY_TYPEA_ATTACK_FRAME is reached
+    jr nz, .updateAnimationFrames ; check if reach attack frame. a >= ENEMY_TYPEA_ATTACK_FRAME is reached
 
-    jr nz, .attackAnimUpdateAfter ; if already in attack, skip the first intialising
     ; reach attack state, update variables
     ld a, -1
-    ld [hli], a ; currFrame = 0
+    ld [hli], a ; currFrame = -1
     ld a, ENEMY_TYPEA_ATTACK_ANIM_MAX_FRAMES
     ld [hl], a ; init max frame to be the attack frames
-
-.attackAnimUpdateAfter
-    ld c, ENEMY_TYPEA_ATTACK_ANIM_OFFSET
 
 .updateAnimationFrames
     pop hl ; POP hl = curr animation frame address
@@ -174,8 +169,7 @@ UpdateEnemyA:
     cp a, b
     jr nz, .continueAnimation ; check if reach max frame
 
-    xor a
-    ld b, a ; reset curr frame if reach max frame
+    ld b, 0 ; reset curr frame if reach max frame
     
     ; check if in attack mode
     ld a, d ; reg a = updateFrameCounter
@@ -185,10 +179,9 @@ UpdateEnemyA:
     ld a, ENEMY_TYPEA_WALK_FRAMES
     ld [hl], a ; reset back to idling
     ld d, 0 ; updateFrameCounter = 0
-    ld c, 0 ; animation offset = 0
 
 .continueAnimation
-    ; d = updateFrameCounter, b = currFrame, c = animation offset
+    ; d = updateFrameCounter, b = currFrame
     pop hl ; POP hl = updateFrameCounter address
     ld a, d 
     ld [hli], a ; store updateFrameCounter
@@ -196,8 +189,21 @@ UpdateEnemyA:
     ld a, b
     ld [hl], a ; store curr frame
 
+.checkEnemyState
+    pop hl ; POP HL = address from PosYInterpolateTarget
+    push hl ; PUSH HL = address from PosYInterpolateTarget
+
+    ; get current state 
+    ld bc, ENEMY_DATA_UPDATE_FRAME_OFFSET + 1
+    add hl, bc
+    ld a, [hl] ; a = UpdateFrameCounter, int part
+    ld c, 0
+    cp a, ENEMY_TYPEA_ATTACK_FRAME
+    jr c, .initSpriteDir ; check if in attack state
+    ld c, ENEMY_TYPEA_ATTACK_ANIM_OFFSET 
+
 .initSpriteDir
-    ; c = animation offset
+    ; c = animation state offset
     pop hl ; POP HL = address from PosYInterpolateTarget
 
     ld de, ENEMY_DATA_DIR_OFFSET
