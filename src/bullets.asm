@@ -302,8 +302,7 @@ GetInactiveBullet::
     cp a, 0
     jr z, .end
 
-    ld d, 0
-    ld e, sizeof_Bullet
+    ld de, sizeof_Bullet
     add hl, de ; go to next bullet address
 
     jr .loop
