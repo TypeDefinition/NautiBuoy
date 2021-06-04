@@ -141,23 +141,24 @@ UpdateEnemyA:
     pop hl ; POP hl = enemy address
     push hl ; PUSH hl = enemy address
     ld de, Character_UpdateFrameCounter
-    add hl, de ; offset hl = updateFrameCounter
+    add hl, de
 
-    ld a, [hl] ; get first part of updateFrameCounter
+    ld a, [hl] ; first part of updateFrameCounter
     add a, ENEMY_TYPEA_ANIMATION_UPDATE
     ld [hli], a ; store the new value
     ld a, [hl] ; a = int part of updateFrameCounter
     ld d, a ; d = int part of updateFrameCounter
-    jr nc, .endUpdateEnemyA ; no carry, means no need update the frames, just go update variables for OAM
+    jr nc, .endUpdateEnemyA
 
     ; update frames
     adc a, 0 ; add the carry
 
-    cp a, ENEMY_TYPEA_ATTACK_FRAME ; check if need shoot
+    cp a, ENEMY_TYPEA_ATTACK_FRAME ; check if shoot
     jr nz, .attackFinish
     pop de ; POP de = enemy address
     push de ; PUSH de = enemy address
-    call EnemyShoot ; for attacking 
+
+    call EnemyShoot
 
 .attackFinish
     ld d, a ; reg d = int part of updateFrameCounter
@@ -165,8 +166,8 @@ UpdateEnemyA:
     inc hl
     push hl ; PUSH HL = curr animation frame address
 
-    cp a, ENEMY_TYPEA_ATTACK_STATE_FRAME
-    jr nz, .updateAnimationFrames ; check if reach attack frame. a >= ENEMY_TYPEA_ATTACK_STATE_FRAME is reached
+    cp a, ENEMY_TYPEA_ATTACK_STATE_FRAME ; check if go attack state
+    jr nz, .updateAnimationFrames
 
     ; reach attack state, update variables
     ld a, -1
@@ -189,7 +190,7 @@ UpdateEnemyA:
     ; check if in attack mode
     ld a, d ; reg a = updateFrameCounter
     cp a, ENEMY_TYPEA_ATTACK_STATE_FRAME
-    jr c, .continueAnimation ; if a < ENEMY_TYPEA_ATTACK_STATE_FRAME then just continue
+    jr c, .continueAnimation
 
     ld a, ENEMY_TYPEA_WALK_FRAMES
     ld [hl], a ; reset back to idling
@@ -221,10 +222,10 @@ InitEnemyASprite:
     add hl, de ; offset hl = updateFrameCounter
 
     ld a, [hl] ; get int part of updateFrameCounter
-    ld d, a ; 
+    ld d, a ; reg d = updateFrameCounter
 
     ld bc, Character_Direction
-    add hl, bc ; offset hl by 6 to get the direction
+    add hl, bc 
     ld a, [hl] ; check direction of enemy and init sprite data
 .upDir
     cp a, DIR_UP
@@ -233,9 +234,8 @@ InitEnemyASprite:
     ld a, d ; a = updateFrameCounter
     ld de, EnemyASprites.upSprite
 
-    ; check state and init proper animation
-    cp a, ENEMY_TYPEA_ATTACK_STATE_FRAME
-    jr nc, .upDirAttack
+    cp a, ENEMY_TYPEA_ATTACK_STATE_FRAME ; check state and init proper animation
+    jr nc, .upDirAttack 
     ld bc, EnemyAAnimation.upAnimation
     jr .endDir
 .upDirAttack
@@ -249,8 +249,7 @@ InitEnemyASprite:
     ld a, d ; a = updateFrameCounter
     ld de, EnemyASprites.downSprite
 
-    ; check state and init proper animation
-    cp a, ENEMY_TYPEA_ATTACK_STATE_FRAME
+    cp a, ENEMY_TYPEA_ATTACK_STATE_FRAME  ; check state and init proper animation
     jr nc, .upDirAttack ; down have the same animation as up
     ld bc, EnemyAAnimation.upAnimation
     jr .endDir
@@ -262,8 +261,7 @@ InitEnemyASprite:
     ld a, d ; a = updateFrameCounter
     ld de, EnemyASprites.rightSprite
 
-    ; check state and init proper animation
-    cp a, ENEMY_TYPEA_ATTACK_STATE_FRAME
+    cp a, ENEMY_TYPEA_ATTACK_STATE_FRAME ; check state and init proper animation
     jr nc, .rightDirAttack
     ld bc, EnemyAAnimation.rightAnimation
     jr .endDir
@@ -275,8 +273,7 @@ InitEnemyASprite:
     ld a, d ; a = updateFrameCounter
     ld de, EnemyASprites.leftSprite
 
-    ; check state and init proper animation
-    cp a, ENEMY_TYPEA_ATTACK_STATE_FRAME
+    cp a, ENEMY_TYPEA_ATTACK_STATE_FRAME ; check state and init proper animation
     jr nc, .leftDirAttack
     ld bc, EnemyAAnimation.leftAnimation
     jr .endDir
