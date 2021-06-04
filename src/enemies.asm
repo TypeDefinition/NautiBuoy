@@ -3,6 +3,8 @@ INCLUDE "./src/include/structs.inc"
 INCLUDE "./src/include/entities.inc"
 INCLUDE "./src/include/definitions.inc"
 INCLUDE "./src/include/util.inc"
+INCLUDE "./src/include/movement.inc"
+INCLUDE "./src/include/tile_collision.inc"
 
 SECTION "Enemies Data", WRAM0
 wEnemiesData::
@@ -110,13 +112,13 @@ UpdateAllEnemies::
     ;inc hl ; no need the flags
 
 .enemyTypeA
-    cp a, TYPE_ENEMYA
+    cp a, TYPE_ENEMYA ; TODO:: COMPARE BITS, NOT CP
     jr nz, .enemyTypeB
     call UpdateEnemyA ; call correct update for enemy
     jr .endOfLoop
 .enemyTypeB
-    cp a, TYPE_ENEMYB
-    jr nz, .endOfLoop
+    ;cp a, TYPE_ENEMYB
+    ;jr nz, .endOfLoop
     call UpdateEnemyB ; call correct update for enemy
 
 .endOfLoop
@@ -292,21 +294,89 @@ InitEnemyASprite:
         - moves and when player on same line (x/y axis), enemy spins after player
         - when in shell/spinning mode, enemy is invulnerable to bullets 
     Parameters:
-    - hl: the starting address of the enemy from PosYInterpolateTarget onwards
+    - hl: the starting address of the enemy
 */
 UpdateEnemyB:
     ; need to make sure player is on same line before using spin attack
-    ; 
     ; must have some sort of collision
     ; if hit wall, go the opposite direction
     ; up <-> down, right <-> left
     ; if player on same line, and within screen
 
-    ; settle moving first, animation and fight mode later
+    ; settle moving first
 
+    push hl ; PUSH HL = enemy starting address
+    ld de, Character_Velocity
+    add hl, de
+    ld a, [hli]
+    ld c, a
+    ld a, [hl]
+    ld b, a ; bc = velocity, note the velocity in data is stored in little endian
+    pop hl ; POP HL = enemy starting address
+    push hl ; PUSH HL = enemy starting address
+
+    ld de, Character_Direction
+    add hl, de
+    ld a, [hl]
+
+    pop hl ; POP HL = enemy starting address
+    ;push hl ; PUSH HL = enemy starting address
+    ld de, Character_PosY
+    add hl, de ; hl = pos Y address
+
+    ld d, h
+    ld e, l
+    inc de
+    inc de
+    inc de
+
+    ; bc = velocity, hl = posY address, de = posX address
+.upDirMove
+    cp a, DIR_UP
+    jr nz, .downDirMove
+
+    tile_collision_check_up_reg ENEMY_COLLIDER_SIZE, CHARACTER_COLLIDABLE_TILES, .collideDirUp, .moveUp
+.moveUp
+    interpolate_pos_dec_reg
+    jr .endDirMove
+      
+.collideDirUp ; move down instead if collide
+    ;interpolate_pos_inc_reg
+
+    ;pop hl ; POP HL = enemy starting address
+ /*   ld de, Character_Direction 
+    add hl, de
+    ld a, DIR_DOWN 
+    ld [hl], a */
+    jr .endDirMove
+
+.downDirMove
+    cp a, DIR_DOWN
+    jr nz, .rightDirMove
+    interpolate_pos_inc_reg
+    ;pop hl
+    jr .endDirMove
+
+.rightDirMove
+    ld h, d 
+    ld l, e ; hl = posX address
+    cp a, DIR_RIGHT
+    jr nz, .leftDirMove
+    interpolate_pos_inc_reg
+    ;pop hl
+    jr .endDirMove
+
+.leftDirMove
+    interpolate_pos_dec_reg
+    ;pop hl
+
+.endDirMove
+
+    ; init new direction
 
 .endUpdateEnemyB
     ld hl, wEnemy0_Flags
+    ;pop hl
     call InitEnemyASprite
     ret
 

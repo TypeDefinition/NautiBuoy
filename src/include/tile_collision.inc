@@ -327,4 +327,164 @@ MACRO bullet_tile_collision_check_right
     jp c, \5
 ENDM
 
+/*  Check for entity collision with tiles (up) 
+    hl - Entity PosY Address
+    de - Entity PosX Address
+    \1 - Collider Size
+    \2 - Collidable Tiles
+    \3 - True Jump Address
+    \4 - False Jump Address */
+MACRO tile_collision_check_up_reg
+    ; Top Left Corner Collision Check
+    push de
+    push bc
+    ld a, [de]
+    sub a, \1
+    ld e, a
+    ld a, [hl]
+    sub a, (TILE_SIZE + \1)
+    ld d, a
+    call GetTileIndex
+    call GetTileValue
+    pop bc
+    pop de
+    cp a, \2
+    jp c, \3
+
+    ; Top Right Corner Collision Check
+    push de
+    push bc
+    ld a, [de]
+    add a, \1 - 1
+    ld e, a
+    ld a, [hl]
+    sub a, (TILE_SIZE + \1)
+    ld d, a
+    call GetTileIndex
+    call GetTileValue
+    pop bc
+    pop de
+    cp a, \2
+    jp c, \3
+
+    jp \4
+ENDM
+
+/*  Check for entity collision with tiles (down) 
+    hl - Entity PosY Address
+    de - Entity PosX Address
+    \3 - Collider Size
+    \4 - Collidable Tiles
+    \5 - True Jump Address
+    \6 - False Jump Address */
+MACRO tile_collision_check_down_reg
+    ; Bottom Left Corner Collision Check
+    push de
+    ld a, [hl]
+    add a, (TILE_SIZE + \3 - 1)
+    ld d, a
+    ld a, [de]
+    sub a, \3
+    ld e, a
+    call GetTileIndex
+    call GetTileValue
+    pop de
+    cp a, \4
+    jp c, \5
+
+    ; Bottom Right Corner Collision Check
+    push de
+    ld a, [hl]
+    add a, (TILE_SIZE + \3 - 1)
+    ld d, a
+    ld a, [de]
+    add a, \3 - 1
+    ld e, a
+    call GetTileIndex
+    call GetTileValue
+    pop de
+    cp a, \4
+    jp c, \5
+
+    jp \6
+ENDM
+
+/*  Check for entity collision with tiles (left)
+    hl - Entity PosY Address
+    de - Entity PosX Address
+    \3 - Collider Size
+    \4 - Collidable Tiles
+    \5 - True Jump Address
+    \6 - False Jump Address */
+MACRO tile_collision_check_left_reg
+    ; Top Left Corner Collision Check
+    push de
+    ld a, [hl]
+    sub a, \3
+    ld d, a
+    ld a, [de]
+    sub a, (TILE_SIZE + \3)
+    ld e, a
+    call GetTileIndex
+    call GetTileValue
+    pop de
+    cp a, \4
+    jp c, \5
+
+    ; Bottom Left Corner Collision Check
+    push de
+    ld a, [hl]
+    add a, \3 - 1
+    ld d, a
+    ld a, [de]
+    sub a, (TILE_SIZE + \3)
+    ld e, a
+    call GetTileIndex
+    call GetTileValue
+    pop de
+    cp a, \4
+    jp c, \5
+
+    jp \6
+ENDM
+
+/*  Check for entity collision with tiles (right)
+    hl - Entity PosY Address
+    de - Entity PosX Address
+    \3 - Collider Size
+    \4 - Collidable Tiles
+    \5 - True Jump Address
+    \6 - False Jump Address */
+    MACRO tile_collision_check_right_reg
+    ; Top Right Corner Collision Check
+    push de
+    ld a, [hl]
+    sub a, \3
+    ld d, a
+    ld a, [de]
+    add a, (TILE_SIZE + \3 - 1)
+    ld e, a
+    call GetTileIndex
+    call GetTileValue
+    pop de
+    cp a, \4
+    jp c, \5
+
+    ; Bottom Right Corner Collision Check
+    push de
+    ld a, [hl]
+    add a, \3 - 1
+    ld d, a
+    ld a, [de]
+    add a, (TILE_SIZE + \3 - 1)
+    ld e, a
+    call GetTileIndex
+    call GetTileValue
+    pop de
+    cp a, \4
+    jp c, \5
+
+    jp \6
+ENDM
+
     ENDC ; TILE_COLLISION_INC
