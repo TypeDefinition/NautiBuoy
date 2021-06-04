@@ -320,7 +320,7 @@ UpdateEnemyB:
     ld a, [hl]
 
     pop hl ; POP HL = enemy starting address
-    ;push hl ; PUSH HL = enemy starting address
+    push hl ; PUSH HL = enemy starting address
     ld de, Character_PosY
     add hl, de ; hl = pos Y address
 
@@ -341,13 +341,17 @@ UpdateEnemyB:
     jr .endDirMove
       
 .collideDirUp ; move down instead if collide
-    ;interpolate_pos_inc_reg
+    pop de ; POP de = enemy starting address
+    push de ; PUSH de = enemy starting address
+    ld a, e
+    add a, Character_Direction
+    ld e, a
+    xor a
+    adc a, d
+    ld d, a ; de = enemy dir address
 
-    ;pop hl ; POP HL = enemy starting address
- /*   ld de, Character_Direction 
-    add hl, de
     ld a, DIR_DOWN 
-    ld [hl], a */
+    ld [de], a 
     jr .endDirMove
 
 .downDirMove
@@ -371,6 +375,7 @@ UpdateEnemyB:
     ;pop hl
 
 .endDirMove
+    pop hl ; POP HL = enemy starting address
 
     ; init new direction
 
