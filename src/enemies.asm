@@ -117,6 +117,7 @@ UpdateAllEnemies::
     cp a, TYPE_ENEMYA
     jr nz, .enemyTypeB
     call UpdateEnemyA ; call correct update for enemy
+    jr .endOfLoop
 .enemyTypeB
     cp a, TYPE_ENEMYB
     jr nz, .endOfLoop
@@ -234,15 +235,15 @@ InitEnemyASprite:
     jr nz, .downDir
 
     ld a, d ; a = updateFrameCounter
-    ld de, EnemySprites.upSprite
+    ld de, EnemyASprites.upSprite
 
     ; check state and init proper animation
     cp a, ENEMY_TYPEA_ATTACK_STATE_FRAME
     jr nc, .upDirAttack
-    ld bc, EnemyAnimation.upAnimation
+    ld bc, EnemyAAnimation.upAnimation
     jr .endDir
 .upDirAttack
-    ld bc, EnemyAnimation.attackUpAnimation
+    ld bc, EnemyAAnimation.attackUpAnimation
     jr .endDir
 
 .downDir
@@ -250,12 +251,12 @@ InitEnemyASprite:
     jr nz, .rightDir
 
     ld a, d ; a = updateFrameCounter
-    ld de, EnemySprites.downSprite
+    ld de, EnemyASprites.downSprite
 
     ; check state and init proper animation
     cp a, ENEMY_TYPEA_ATTACK_STATE_FRAME
     jr nc, .upDirAttack ; down have the same animation as up
-    ld bc, EnemyAnimation.upAnimation
+    ld bc, EnemyAAnimation.upAnimation
     jr .endDir
 
 .rightDir
@@ -263,28 +264,28 @@ InitEnemyASprite:
     jr nz, .leftDir
 
     ld a, d ; a = updateFrameCounter
-    ld de, EnemySprites.rightSprite
+    ld de, EnemyASprites.rightSprite
 
     ; check state and init proper animation
     cp a, ENEMY_TYPEA_ATTACK_STATE_FRAME
     jr nc, .rightDirAttack
-    ld bc, EnemyAnimation.rightAnimation
+    ld bc, EnemyAAnimation.rightAnimation
     jr .endDir
 .rightDirAttack
-    ld bc, EnemyAnimation.attackRightAnimation
+    ld bc, EnemyAAnimation.attackRightAnimation
     jr .endDir
 
 .leftDir
     ld a, d ; a = updateFrameCounter
-    ld de, EnemySprites.leftSprite
+    ld de, EnemyASprites.leftSprite
 
     ; check state and init proper animation
     cp a, ENEMY_TYPEA_ATTACK_STATE_FRAME
     jr nc, .leftDirAttack
-    ld bc, EnemyAnimation.leftAnimation
+    ld bc, EnemyAAnimation.leftAnimation
     jr .endDir
 .leftDirAttack
-    ld bc, EnemyAnimation.attackLeftAnimation
+    ld bc, EnemyAAnimation.attackLeftAnimation
     jr .endDir
 
 .endDir
@@ -295,7 +296,8 @@ InitEnemyASprite:
 /* Update for enemy type B
     Behavior:
         - Spin to win
-        - mostly based on animation
+        - moves and when player on same line (x/y axis), enemy spins after player
+        - when in shell/spinning mode, enemy is invulnerable to bullets 
     Parameters:
     - hl: the starting address of the enemy from PosYInterpolateTarget onwards
 */
@@ -306,10 +308,13 @@ UpdateEnemyB:
     ; if hit wall, go the opposite direction
     ; up <-> down, right <-> left
     ; if player on same line, and within screen
-    ; 
+
+    ; settle moving first, animation and fight mode later
 
 
 .endUpdateEnemyB
+    ld hl, wEnemy0_PosYInterpolateTarget
+    call InitEnemyASprite
     ret
 
 

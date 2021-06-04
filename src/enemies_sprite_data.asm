@@ -3,7 +3,7 @@ INCLUDE "./src/include/hardware.inc"
 SECTION "Enemy Sprite Data", ROMX, BANK[2]
 
 /* Data for enemy sprites, not inclusive of sprite ID */
-EnemySprites::
+EnemyASprites::
 .upSprite::
     db 8 ; y
     db 0 ; x
@@ -46,7 +46,7 @@ EnemySprites::
 
 
 /* Animation, sprite IDs for the enemy*/
-EnemyAnimation::
+EnemyAAnimation::
 .upAnimation:: ; up and down has the same frames
     ; frame 1
     db $16
