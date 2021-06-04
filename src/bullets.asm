@@ -293,19 +293,19 @@ ResetAllBullets::
 */
 GetInactiveBullet::
 .loop
-    ld a, b
-    cp a, 0
-    jr z, .end
-
     ld a, [hl]
     bit BIT_FLAG_ACTIVE, a ; check if alive
     jr z, .end ; if not alive return and end loop
     
+    dec b ; decrement and check
+    ld a, b
+    cp a, 0
+    jr z, .end
+
     ld d, 0
     ld e, sizeof_Bullet
     add hl, de ; go to next bullet address
 
-    dec b ; decrease number of bullets
     jr .loop
 .end
     ret
