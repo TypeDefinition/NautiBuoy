@@ -328,54 +328,60 @@ UpdateEnemyB:
     ld e, l
     inc de
     inc de
-    inc de
+    inc de ; de = posX address
 
     ; bc = velocity, hl = posY address, de = posX address
 .upDirMove
     cp a, DIR_UP
     jr nz, .downDirMove
-
-    tile_collision_check_up_reg ENEMY_COLLIDER_SIZE, CHARACTER_COLLIDABLE_TILES, .collideDirUp, .moveUp
+    tile_collision_check_up_reg ENEMY_COLLIDER_SIZE, CHARACTER_COLLIDABLE_TILES, .collideOnWall, .moveUp
 .moveUp
     interpolate_pos_dec_reg
-    jr .endDirMove
-      
-.collideDirUp ; move down instead if collide
-    pop de ; POP de = enemy starting address
-    push de ; PUSH de = enemy starting address
-    ld a, e
-    add a, Character_Direction
-    ld e, a
-    xor a
-    adc a, d
-    ld d, a ; de = enemy dir address
-
-    ld a, DIR_DOWN 
-    ld [de], a 
-    jr .endDirMove
+    jp .endDirMove
 
 .downDirMove
     cp a, DIR_DOWN
     jr nz, .rightDirMove
+    tile_collision_check_down_reg ENEMY_COLLIDER_SIZE, CHARACTER_COLLIDABLE_TILES, .collideOnWall, .moveDown
+.moveDown
     interpolate_pos_inc_reg
-    ;pop hl
-    jr .endDirMove
+    jp .endDirMove
 
 .rightDirMove
-    ld h, d 
-    ld l, e ; hl = posX address
     cp a, DIR_RIGHT
     jr nz, .leftDirMove
+    tile_collision_check_right_reg ENEMY_COLLIDER_SIZE, CHARACTER_COLLIDABLE_TILES, .collideOnWall, .moveRight
+.moveRight
+    ld h, d 
+    ld l, e ; hl = posX address
     interpolate_pos_inc_reg
-    ;pop hl
     jr .endDirMove
 
 .leftDirMove
+    tile_collision_check_left_reg ENEMY_COLLIDER_SIZE, CHARACTER_COLLIDABLE_TILES, .collideOnWall, .moveLeft
+.moveLeft
+    ld h, d 
+    ld l, e ; hl = posX address
     interpolate_pos_dec_reg
-    ;pop hl
+    jr .endDirMove
+
+.collideOnWall ; move the opposite direction
+    pop hl ; POP HL = enemy starting address
+    push hl ; PUSH HL = enemy starting address
+    ld de, Character_Direction
+    add hl, de
+
+    ; invert last bit to get opposite direction
+    ld d, %00000001
+    ld a, [hl]
+    xor a, d ; invert last bit
+    
+    ld [hl], a 
+    jr .endDirMove
 
 .endDirMove
     pop hl ; POP HL = enemy starting address
+    
 
     ; init new direction
 
