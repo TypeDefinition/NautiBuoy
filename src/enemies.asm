@@ -4,10 +4,6 @@ INCLUDE "./src/include/entities.inc"
 INCLUDE "./src/include/definitions.inc"
 INCLUDE "./src/include/util.inc"
 
-DEF ENEMY_DATA_DIR_OFFSET EQU 6 ; offset from PosYInterpolateTarget to Direction
-DEF ENEMY_DATA_UPDATE_FRAME_OFFSET EQU 10 ; offset from PosYInterpolateTarget to UpdateFrameCounter first part, fraction
-DEF ENEMY_DATA_CURR_FRAME_OFFSET EQU 12 ; offset from PosYInterpolateTarget to currAnimationFrame
-
 SECTION "Enemies Data", WRAM0
 wEnemiesData::
     dstruct Character, wEnemy0
@@ -111,7 +107,7 @@ UpdateAllEnemies::
 .updateEnemy
     ;push hl
     and a, BIT_MASK_TYPE
-    inc hl ; no need the flags
+    ;inc hl ; no need the flags
 
 .enemyTypeA
     cp a, TYPE_ENEMYA
@@ -132,19 +128,19 @@ UpdateAllEnemies::
         - Stays in 1 spot and shoot based on direction
         - mostly based on animation
     Parameters:
-    - hl: the starting address of the enemy from PosYInterpolateTarget onwards
+    - hl: the starting address of the enemy 
 */
 UpdateEnemyA:
-    push hl ; PUSH hl = address from PosYInterpolateTarget
+    push hl ; PUSH hl = enemy address
 
-    ld de, ENEMY_DATA_DIR_OFFSET
+    ld de, Character_Direction
     add hl, de ; get direction
     ld a, [hl]
     ld c, a ; c = direction
 
-    pop hl ; POP hl = address from PosYInterpolateTarget
-    push hl ; PUSH hl = address from PosYInterpolateTarget
-    ld de, ENEMY_DATA_UPDATE_FRAME_OFFSET
+    pop hl ; POP hl = enemy address
+    push hl ; PUSH hl = enemy address
+    ld de, Character_UpdateFrameCounter
     add hl, de ; offset hl = updateFrameCounter
 
     ld a, [hl] ; get first part of updateFrameCounter
@@ -159,8 +155,8 @@ UpdateEnemyA:
 
     cp a, ENEMY_TYPEA_ATTACK_FRAME ; check if need shoot
     jr nz, .attackFinish
-    pop de ; POP de = address from PosYInterpolateTarget
-    push de ; PUSH de = address from PosYInterpolateTarget
+    pop de ; POP de = enemy address
+    push de ; PUSH de = enemy address
     call EnemyShoot ; for attacking 
 
 .attackFinish
@@ -209,25 +205,25 @@ UpdateEnemyA:
     ld [hl], a ; store curr frame
 
 .endUpdateEnemyA
-    pop hl ; POP hl = address from PosYInterpolateTarget
+    pop hl ; POP hl = enemy address
     call InitEnemyASprite
 
     ret
 
 
 /*  Init enemy A sprite
-    hl - enemy address from PosYInterpolateTarget
+    hl - enemy address 
 */
 InitEnemyASprite:
-    push hl ; PUSH hl = address from PosYInterpolateTarget
+    push hl ; PUSH hl = enemy address
 
-    ld de, ENEMY_DATA_UPDATE_FRAME_OFFSET + 1
+    ld de, Character_UpdateFrameCounter + 1
     add hl, de ; offset hl = updateFrameCounter
 
     ld a, [hl] ; get int part of updateFrameCounter
     ld d, a ; 
 
-    ld bc, ENEMY_DATA_DIR_OFFSET
+    ld bc, Character_Direction
     add hl, bc ; offset hl by 6 to get the direction
     ld a, [hl] ; check direction of enemy and init sprite data
 .upDir
@@ -289,7 +285,7 @@ InitEnemyASprite:
     jr .endDir
 
 .endDir
-    pop hl ; POP HL = address from PosYInterpolateTarget
+    pop hl ; POP HL = enemy address
     call UpdateEnemySpriteOAM
     ret
 
@@ -313,7 +309,7 @@ UpdateEnemyB:
 
 
 .endUpdateEnemyB
-    ld hl, wEnemy0_PosYInterpolateTarget
+    ld hl, wEnemy0_Flags
     call InitEnemyASprite
     ret
 
@@ -327,7 +323,7 @@ HitEnemy::
     ret
 
 /*  Attack 
-    de - starting address of PosYInterpolateTarget
+    de - enemy address
     c - direction
 */
 EnemyShoot::
@@ -336,7 +332,8 @@ EnemyShoot::
     push de
     push hl
 
-    inc de
+    inc de ; skip flags
+    inc de ; skip posYinterpolateTarget
 
     ; hl - address of bullet, de - address of enemy
     ld hl, w_BulletObjectPlayerEnd
@@ -386,7 +383,7 @@ EnemyShoot::
 
 /*  Render and set enemy OAM data and animation 
     Parameters:
-        - hl: address of enemy pos Y
+        - hl: address of enemy
         - bc: address of enemy animation data
         - de: address of enemy sprite data
 */
@@ -398,7 +395,7 @@ UpdateEnemySpriteOAM::
     push hl ; PUSH HL = enemy address
 
     push bc ; PUSH BC = temp push
-    ld bc, ENEMY_DATA_CURR_FRAME_OFFSET
+    ld bc, Character_CurrAnimationFrame
     add hl, bc
     ld a, [hl] ; get curr frame
     pop bc ; POP BC = temp push
@@ -406,7 +403,8 @@ UpdateEnemySpriteOAM::
     pop hl ; POP HL = enemy address
     push af ; PUSH AF = curr animation frame
 
-    inc hl ; go to y pos
+    inc hl ; skip flags
+    inc hl ; skip PosYInterpolateTarget go to y pos
 
     push bc ; PUSH bc =  animation address data
 
