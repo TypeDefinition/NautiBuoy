@@ -146,7 +146,7 @@ UpdateEnemyA:
     add hl, de
 
     ld a, [hl] ; first part of updateFrameCounter
-    add a, ENEMY_TYPEA_ANIMATION_UPDATE
+    add a, ENEMY_TYPEA_ANIMATION_UPDATE_SPEED
     ld [hli], a ; store the new value
     ld a, [hl] ; a = int part of updateFrameCounter
     ld d, a ; d = int part of updateFrameCounter
@@ -298,13 +298,9 @@ InitEnemyASprite:
 */
 UpdateEnemyB:
     ; need to make sure player is on same line before using spin attack
-    ; must have some sort of collision
-    ; if hit wall, go the opposite direction
-    ; up <-> down, right <-> left
     ; if player on same line, and within screen
 
-    ; settle moving first
-
+    ; movement behaviour, goes in opposite direction when hit wall
     push hl ; PUSH HL = enemy starting address
     ld de, Character_Velocity
     add hl, de
@@ -381,10 +377,43 @@ UpdateEnemyB:
 
 .endDirMove
     pop hl ; POP HL = enemy starting address
+
+    ; check if player on same line?
+    ; if player not on same line, set the counter to 0
+    ; if player on same line, do not reset counter
+    ; once counter reaches a certain number, go to attack mode, chase after player, dir set to player
+    ; also need change speed
+
+    ; TODO:: might want to change animation speed when in attack mode?
+    ; if more than ENEMY_TYPEB_ATTACK_STATE_FRAME its in attack mode
+    ld de, Character_UpdateFrameCounter
+    add hl, de
+    ld a, [hl]
+    add a, ENEMY_TYPEB_ANIMATION_UPDATE
+    ld [hli], a
+    jr nc, .endUpdateEnemyB
+
+    ; update frames
+    ld a, [hli] ; a = int part of UpdateFrameCounter
+    adc a, 0
+
+    ; from here check what state it is
+    ; if player not nearby, then just set the frame to 0
+    ; if player is nearby, start couting frames baby, dont reset shit
+    ; more than 0 then reset the frames, if not leave it
+
+    cp a, ENEMY_TYPEB_ATTACK_STATE_FRAME
+    jr nz, .updateAnimationFrames
+    ; set the new velocity
+    ; set the direction to go towards -> towards where the player is
+
+    cp a, ENEMY_TYPEB_ATTACK_STATE_STOP_FRAME
+    jr nz, .updateAnimationFrames
+    ; reset back the velocity
+    ; reset the updateFrameCounter properly to rest mode
+
+.updateAnimationFrames
     
-
-    ; init new direction
-
 .endUpdateEnemyB
     ld hl, wEnemy0_Flags
     ;pop hl

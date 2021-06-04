@@ -66,9 +66,19 @@ DEF ENEMY_TYPEA_BULLET_NUM EQU 1
 DEF ENEMY_TYPEA_HEALTH EQU 30
 DEF ENEMY_TYPEA_WALK_FRAMES EQU 2
 DEF ENEMY_TYPEA_ATTACK_ANIM_MAX_FRAMES EQU 3
-DEF ENEMY_TYPEA_ANIMATION_UPDATE EQU $08 ; 16, takes 16 frames for next animation frame, abt 4fps
+DEF ENEMY_TYPEA_ANIMATION_UPDATE_SPEED EQU $08 ; 16, takes 16 frames for next animation frame, abt 4fps
 DEF ENEMY_TYPEA_ATTACK_STATE_FRAME EQU 7 ; frame to start playing attack anim
 DEF ENEMY_TYPEA_ATTACK_FRAME EQU 8 ; frame to shoot
 DEF ENEMY_TYPEA_ATTACK_ANIM_OFFSET EQU 12 ; offset from normal anim data to attack anim data
+
+; Enemy B Data
+DEF ENEMY_TYPEB_ANIMATION_UPDATE EQU $08
+; attack duration = ENEMY_TYPEB_ATTACK_STATE_STOP_FRAME - ENEMY_TYPEB_ATTACK_STATE_FRAME
+; as long frame >= ENEMY_TYPEB_ATTACK_STATE_FRAME, its attack state
+DEF ENEMY_TYPEB_ATTACK_STATE_FRAME EQU 3 ; frame to go attack state
+DEF ENEMY_TYPEB_ATTACK_STATE_STOP_FRAME EQU 17; frame to stop attack state. 
+DEF ENEMY_TYPEB_REST_STATE_FRAME EQU -3 ; number of frames to rest after attack state
+
+
 
     ENDC ; DEFINITIONS_INC
