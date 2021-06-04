@@ -151,19 +151,18 @@ UpdateEnemyA:
     ld [hli], a ; store the new value
     ld a, [hl] ; a = int part of updateFrameCounter
     ld d, a ; d = int part of updateFrameCounter
-    jr nc, .initSpriteDir ; no carry, means no need update the frames, just go update variables for OAM
+    jr nc, .endUpdateEnemyA ; no carry, means no need update the frames, just go update variables for OAM
 
     ; update frames
     adc a, 0 ; add the carry
 
-    cp a, ENEMY_TYPEA_ATTACK_FRAME
+    cp a, ENEMY_TYPEA_ATTACK_FRAME ; check if need shoot
     jr nz, .attackFinish
     pop de ; POP de = address from PosYInterpolateTarget
     push de ; PUSH de = address from PosYInterpolateTarget
     call EnemyShoot ; for attacking 
 
 .attackFinish
-
     ld d, a ; reg d = int part of updateFrameCounter
     push hl ; PUSH HL = updateFrameCounter address
     inc hl
@@ -197,9 +196,9 @@ UpdateEnemyA:
 
     ld a, ENEMY_TYPEA_WALK_FRAMES
     ld [hl], a ; reset back to idling
-    ld d, 0 ; updateFrameCounter = 0
+    ld d, 0 ; int part of updateFrameCounter = 0
 
-.continueAnimation
+.continueAnimation ; store the relevant animation info
     ; d = updateFrameCounter, b = currFrame
     pop hl ; POP hl = updateFrameCounter address
     ld a, d 
@@ -208,10 +207,24 @@ UpdateEnemyA:
     ld a, b
     ld [hl], a ; store curr frame
 
-.initSpriteDir
-    ; d = updateFrameCounter
-    pop hl ; POP HL = address from PosYInterpolateTarget
-    push hl ; PUSH HL = address from PosYInterpolateTarget
+.endUpdateEnemyA
+    pop hl ; POP hl = address from PosYInterpolateTarget
+    call InitEnemyASprite
+
+    ret
+
+
+/*  Init enemy A sprite
+    hl - enemy address from PosYInterpolateTarget
+*/
+InitEnemyASprite:
+    push hl ; PUSH hl = address from PosYInterpolateTarget
+
+    ld de, ENEMY_DATA_UPDATE_FRAME_OFFSET + 1
+    add hl, de ; offset hl = updateFrameCounter
+
+    ld a, [hl] ; get int part of updateFrameCounter
+    ld d, a ; 
 
     ld bc, ENEMY_DATA_DIR_OFFSET
     add hl, bc ; offset hl by 6 to get the direction
@@ -274,16 +287,29 @@ UpdateEnemyA:
     ld bc, EnemyAnimation.attackLeftAnimation
     jr .endDir
 
-
 .endDir
     pop hl ; POP HL = address from PosYInterpolateTarget
     call UpdateEnemySpriteOAM
-
-.endUpdateEnemyA
     ret
 
-/* Update for enemy type B */
+/* Update for enemy type B
+    Behavior:
+        - Spin to win
+        - mostly based on animation
+    Parameters:
+    - hl: the starting address of the enemy from PosYInterpolateTarget onwards
+*/
 UpdateEnemyB:
+    ; need to make sure player is on same line before using spin attack
+    ; 
+    ; must have some sort of collision
+    ; if hit wall, go the opposite direction
+    ; up <-> down, right <-> left
+    ; if player on same line, and within screen
+    ; 
+
+
+.endUpdateEnemyB
     ret
 
 
@@ -308,7 +334,6 @@ EnemyShoot::
     inc de
 
     ; hl - address of bullet, de - address of enemy
-
     ld hl, w_BulletObjectPlayerEnd
     ld b, ENEMY_TYPEA_BULLET_NUM
     call GetInactiveBullet ; get bullet address, store in hl
@@ -347,11 +372,11 @@ EnemyShoot::
     ld [hl], a ; set second byte of pos X for bullet */
 
 .finishAttack
-
     pop hl
     pop de
     pop bc
     pop af
+
     ret
 
 /*  Render and set enemy OAM data and animation 
@@ -364,7 +389,7 @@ UpdateEnemySpriteOAM::
     set_romx_bank 2 ; bank for sprites is in bank 2
 
     ; TODO:: HL NEEDS TO BE THE Y POS
-    ld hl, wEnemy0_PosYInterpolateTarget
+    ;ld hl, wEnemy0_PosYInterpolateTarget
     push hl ; PUSH HL = enemy address
 
     push bc ; PUSH BC = temp push
