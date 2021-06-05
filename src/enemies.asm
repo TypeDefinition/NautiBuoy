@@ -377,12 +377,7 @@ UpdateEnemyB:
 
 .endDirMove
     pop hl ; POP HL = enemy starting address
-
-    ; check if player on same line?
-    ; if player not on same line, set the counter to 0
-    ; if player on same line, do not reset counter
-    ; once counter reaches a certain number, go to attack mode, chase after player, dir set to player
-    ; also need change speed
+    push hl ; PUSH HL = enemy starting address
 
     ; TODO:: might want to change animation speed when in attack mode?
     ; if more than ENEMY_TYPEB_ATTACK_STATE_FRAME its in attack mode
@@ -394,32 +389,155 @@ UpdateEnemyB:
     jr nc, .endUpdateEnemyB
 
     ; update frames
-    ld a, [hli] ; a = int part of UpdateFrameCounter
+    ld a, [hl] ; a = int part of UpdateFrameCounter
     adc a, 0
+    ld d, a
 
-    ; from here check what state it is
+    ; cp a, 1
+    ; jr nz, .updateAnimationFrames
+
     ; if player not nearby, then just set the frame to 0
     ; if player is nearby, start couting frames baby, dont reset shit
     ; more than 0 then reset the frames, if not leave it
 
+    ; check if player should go attack mode
+    ; TODO:: set the direction to go towards -> towards where the player is
     cp a, ENEMY_TYPEB_ATTACK_STATE_FRAME
-    jr nz, .updateAnimationFrames
-    ; set the new velocity
-    ; set the direction to go towards -> towards where the player is
+    jr nz, .checkAttackStop
 
+    ld bc, VELOCITY_SLOW ; set the new velocity
+    ld e, ENEMY_TYPEB_WALK_MAX_FRAMES
+    jr .changeVelocityAndFrames
+
+.checkAttackStop ; check if attack should stop -> go rest mode
     cp a, ENEMY_TYPEB_ATTACK_STATE_STOP_FRAME
     jr nz, .updateAnimationFrames
-    ; reset back the velocity
-    ; reset the updateFrameCounter properly to rest mode
+
+    ld d, ENEMY_TYPEB_REST_STATE_FRAME
+    ld e, ENEMY_TYPEB_WALK_MAX_FRAMES
+    ld bc, VELOCITY_VSLOW
+
+.changeVelocityAndFrames
+    ; bc = velocity, d = int value of UpdateFrameCounter, e = max frames
+
+    pop hl ; POP HL = enemy starting address
+    push hl ; PUSH HL = enemy starting address
+    push bc ; PUSH BC = temp, velocity
+
+    ld bc, Character_Velocity
+    add hl, bc
+    pop bc ; POP BC = temp, velocity
+    ld a, c
+    ld [hli], a
+    ld a, b
+    ld [hli], a ; reset velocity, store in little endian
+
+    inc hl
+    inc hl
+    inc hl
+    ld [hl], e ; init new max frames
 
 .updateAnimationFrames
+    ; d = int value of UpdateFrameCounter
+
+    pop hl ; POP HL = enemy starting address
+    push hl ; PUSH HL = enemy starting address
+    ld bc, Character_UpdateFrameCounter + 1
+    add hl, bc
+    ld a, d 
+    ld [hli], a ; store updated value for UpdateFrameCounter
+
+    ld a, [hli] ; get current frames
+    inc a
+    ld b, a ; b = curr frame
+
+    ld a, [hl] ; get max frames 
+    cp a, b
+    jr nz, .continueUpdateAnimation ; check if reach max frame
+    ld b, 0 ; reset curr frame if reach max frame
+
+.continueUpdateAnimation
+    ; b = curr frame
+    dec hl
+    ld a, b
+    ld [hl], a
     
 .endUpdateEnemyB
-    ld hl, wEnemy0_Flags
-    ;pop hl
-    call InitEnemyASprite
+    pop hl ; POP HL = enemy starting address
+    call InitEnemyBSprite
     ret
 
+/* Init enemy B sprite and render */
+InitEnemyBSprite:
+    push hl ; PUSH hl = enemy address
+
+    ld de, Character_UpdateFrameCounter + 1
+    add hl, de ; offset hl = updateFrameCounter
+
+    ld a, [hl] ; get int part of updateFrameCounter
+    ld d, a ; reg d = updateFrameCounter
+
+    ld bc, Character_Direction
+    add hl, bc 
+    ld a, [hl] ; check direction of enemy and init sprite data
+.upDir
+    cp a, DIR_UP
+    jr nz, .downDir
+
+    ld a, d ; a = updateFrameCounter
+    ld de, EnemyASprites.upSprite
+
+    cp a, ENEMY_TYPEB_ATTACK_STATE_FRAME ; check state and init proper animation
+    jr nc, .upDirAttack
+    ld bc, EnemyAAnimation.upAnimation
+    jr .endDir
+.upDirAttack
+    ld bc, EnemyAAnimation.attackUpAnimation
+    jr .endDir
+
+.downDir
+    cp a, DIR_DOWN
+    jr nz, .rightDir
+
+    ld a, d ; a = updateFrameCounter
+    ld de, EnemyASprites.downSprite
+
+    cp a, ENEMY_TYPEB_ATTACK_STATE_FRAME  ; check state and init proper animation
+    jr nc, .upDirAttack ; down have the same animation as up
+    ld bc, EnemyAAnimation.upAnimation
+    jr .endDir
+
+.rightDir
+    cp a, DIR_RIGHT
+    jr nz, .leftDir
+
+    ld a, d ; a = updateFrameCounter
+    ld de, EnemyASprites.rightSprite
+
+    cp a, ENEMY_TYPEB_ATTACK_STATE_FRAME ; check state and init proper animation
+    jr nc, .rightDirAttack
+    ld bc, EnemyAAnimation.rightAnimation
+    jr .endDir
+.rightDirAttack
+    ld bc, EnemyAAnimation.attackRightAnimation
+    jr .endDir
+
+.leftDir
+    ld a, d ; a = updateFrameCounter
+    ld de, EnemyASprites.leftSprite
+
+    cp a, ENEMY_TYPEB_ATTACK_STATE_FRAME ; check state and init proper animation
+    jr nc, .leftDirAttack
+    ld bc, EnemyAAnimation.leftAnimation
+    jr .endDir
+.leftDirAttack
+    ld bc, EnemyAAnimation.attackLeftAnimation
+    jr .endDir
+
+.endDir
+    pop hl ; POP HL = enemy address
+    call UpdateEnemySpriteOAM
+    ret
 
 /* Call this when enemy has been hit */
 HitEnemy::
