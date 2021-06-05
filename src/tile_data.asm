@@ -12,3 +12,7 @@ BackgroundTiles::
 TestSprite::
     INCBIN "./tile_data/tempPlayer.2bpp"
 .end::
+
+EnemyTurtleSprite::
+    INCBIN "./tile_data/turtleEnemy.2bpp"
+.end::

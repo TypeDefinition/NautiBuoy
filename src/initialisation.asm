@@ -62,6 +62,7 @@ Initialise::
     set_romx_bank 2 ; Our tile data is in Bank 2, so we load that into ROMX.
     mem_copy BackgroundTiles, _VRAM9000, BackgroundTiles.end-BackgroundTiles
     mem_copy TestSprite, _VRAM8000, TestSprite.end-TestSprite
+    mem_copy EnemyTurtleSprite, _VRAM8000 + TestSprite.end - TestSprite, EnemyTurtleSprite.end - EnemyTurtleSprite
 
     ; Copy tile map into VRAM.
     set_romx_bank 3 ; Our tile maps are in Bank 3, so we load that into ROMX.
