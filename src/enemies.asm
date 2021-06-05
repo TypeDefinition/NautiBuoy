@@ -226,6 +226,8 @@ InitEnemyASprite:
     ld a, [hl] ; get int part of updateFrameCounter
     ld d, a ; reg d = updateFrameCounter
 
+    pop hl ; POP hl = enemy address
+    push hl ; PUSH hl = enemy address
     ld bc, Character_Direction
     add hl, bc 
     ld a, [hl] ; check direction of enemy and init sprite data
@@ -234,7 +236,6 @@ InitEnemyASprite:
     jr nz, .downDir
 
     ld a, d ; a = updateFrameCounter
-    ld de, EnemyASprites.upSprite
 
     cp a, ENEMY_TYPEA_ATTACK_STATE_FRAME ; check state and init proper animation
     jr nc, .upDirAttack 
@@ -249,11 +250,13 @@ InitEnemyASprite:
     jr nz, .rightDir
 
     ld a, d ; a = updateFrameCounter
-    ld de, EnemyASprites.downSprite
 
     cp a, ENEMY_TYPEA_ATTACK_STATE_FRAME  ; check state and init proper animation
-    jr nc, .upDirAttack ; down have the same animation as up
-    ld bc, EnemyAAnimation.upAnimation
+    jr nc, .downDirAttack 
+    ld bc, EnemyAAnimation.downAnimation
+    jr .endDir
+.downDirAttack
+    ld bc, EnemyAAnimation.attackDownAnimation
     jr .endDir
 
 .rightDir
@@ -261,7 +264,6 @@ InitEnemyASprite:
     jr nz, .leftDir
 
     ld a, d ; a = updateFrameCounter
-    ld de, EnemyASprites.rightSprite
 
     cp a, ENEMY_TYPEA_ATTACK_STATE_FRAME ; check state and init proper animation
     jr nc, .rightDirAttack
@@ -273,7 +275,6 @@ InitEnemyASprite:
 
 .leftDir
     ld a, d ; a = updateFrameCounter
-    ld de, EnemyASprites.leftSprite
 
     cp a, ENEMY_TYPEA_ATTACK_STATE_FRAME ; check state and init proper animation
     jr nc, .leftDirAttack
@@ -284,6 +285,8 @@ InitEnemyASprite:
     jr .endDir
 
 .endDir
+    ld de, EnemySpriteData.enemyASpriteData
+
     pop hl ; POP HL = enemy address
     call UpdateEnemySpriteOAM
     ret
@@ -485,7 +488,6 @@ InitEnemyBSprite:
     jr nz, .downDir
 
     ld a, d ; a = updateFrameCounter
-    ld de, EnemyASprites.upSprite
 
     cp a, ENEMY_TYPEB_ATTACK_STATE_FRAME ; check state and init proper animation
     jr nc, .upDirAttack
@@ -500,11 +502,13 @@ InitEnemyBSprite:
     jr nz, .rightDir
 
     ld a, d ; a = updateFrameCounter
-    ld de, EnemyASprites.downSprite
 
     cp a, ENEMY_TYPEB_ATTACK_STATE_FRAME  ; check state and init proper animation
-    jr nc, .upDirAttack ; down have the same animation as up
-    ld bc, EnemyAAnimation.upAnimation
+    jr nc, .downDirAttack 
+    ld bc, EnemyAAnimation.downAnimation
+    jr .endDir
+.downDirAttack
+    ld bc, EnemyAAnimation.attackDownAnimation
     jr .endDir
 
 .rightDir
@@ -512,7 +516,6 @@ InitEnemyBSprite:
     jr nz, .leftDir
 
     ld a, d ; a = updateFrameCounter
-    ld de, EnemyASprites.rightSprite
 
     cp a, ENEMY_TYPEB_ATTACK_STATE_FRAME ; check state and init proper animation
     jr nc, .rightDirAttack
@@ -524,7 +527,6 @@ InitEnemyBSprite:
 
 .leftDir
     ld a, d ; a = updateFrameCounter
-    ld de, EnemyASprites.leftSprite
 
     cp a, ENEMY_TYPEB_ATTACK_STATE_FRAME ; check state and init proper animation
     jr nc, .leftDirAttack
@@ -535,6 +537,8 @@ InitEnemyBSprite:
     jr .endDir
 
 .endDir
+    ld de, EnemySpriteData.enemyASpriteData
+
     pop hl ; POP HL = enemy address
     call UpdateEnemySpriteOAM
     ret
@@ -615,8 +619,6 @@ EnemyShoot::
 UpdateEnemySpriteOAM::
     set_romx_bank 2 ; bank for sprites is in bank 2
 
-    ; TODO:: HL NEEDS TO BE THE Y POS
-    ;ld hl, wEnemy0_PosYInterpolateTarget
     push hl ; PUSH HL = enemy address
 
     push bc ; PUSH BC = temp push
@@ -665,15 +667,12 @@ UpdateEnemySpriteOAM::
     ld a, [de] ; get the sprite offset x
     add c
     ld [hli], a ; init screen x pos
-    inc de ; inc to get flags
 
     inc hl ; skip the sprite ID first
-
-    ld a, [de] ; get flags
-    ld [hli], a
-    inc de
+    inc hl ; skip flags
 
     ; Init second half of enemy sprite to shadow OAM
+    inc de
     ld a, [de] ; get the sprite offset y
     add b
     ld [hli], a ; init screen y Pos
@@ -682,12 +681,10 @@ UpdateEnemySpriteOAM::
     ld a, [de] ; get the sprite offset x
     add c
     ld [hli], a ; init screen x pos
-    inc de
+    
 
-    inc hl ; skip the sprite id first
-
-    ld a, [de] ; get flags
-    ld [hli], a
+    inc hl ; skip sprite id 
+    inc hl ; skip flags
 
     ; update the current address of from hl to the wCurrentShadowOAMPtr
     ld a, l
@@ -700,7 +697,8 @@ UpdateEnemySpriteOAM::
     pop bc ; POP bc = animation address data
     pop af ; POP af = curr animation frame
 
-    sla a ; curr animation frame x 2
+    sla a 
+    sla a ; curr animation frame x 4
     add a, c
     ld c, a
     ld a, 0 ; a = 0
@@ -710,12 +708,18 @@ UpdateEnemySpriteOAM::
     ld de, 2
     add hl, de ; ; offset by 2 to go to the sprite ID address
     ld a, [bc]
-    ld [hl], a ; store first sprite ID
+    ld [hli], a ; store first sprite ID
+    inc bc
+    ld a, [bc]
+    ld [hl], a ; store first flag
     inc bc
 
-    ld e, 4
+    ld e, 3
     add hl, de ; ; offset by 4 to go to the sprite ID address
     ld a, [bc]
-    ld [hl], a ; store second sprite ID
+    ld [hli], a ; store second sprite ID
+    inc bc
+    ld a, [bc]
+    ld [hl], a ; store first flag
 
     ret 
