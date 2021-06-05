@@ -392,9 +392,13 @@ UpdateEnemyB:
     jr nc, .endUpdateEnemyB
 
     ; update frames
-    ld a, [hl] ; a = int part of UpdateFrameCounter
+    ld a, [hli] ; a = int part of UpdateFrameCounter
     adc a, 0
     ld d, a
+
+    ld a, [hli]
+    ld e, a ; e = curr frame
+    ld a, d
 
     ; cp a, 1
     ; jr nz, .updateAnimationFrames
@@ -405,11 +409,11 @@ UpdateEnemyB:
 
     ; check if player should go attack mode
     ; TODO:: set the direction to go towards -> towards where the player is
-/*    cp a, ENEMY_TYPEB_ATTACK_STATE_FRAME
+    cp a, ENEMY_TYPEB_ATTACK_STATE_FRAME
     jr nz, .checkAttackStop
 
     ld bc, VELOCITY_SLOW ; set the new velocity
-    ld e, ENEMY_TYPEB_WALK_MAX_FRAMES
+    ld e, ENEMY_TYPEB_ATTACK_ANIM_MAX_FRAMES
     jr .changeVelocityAndFrames
 
 .checkAttackStop ; check if attack should stop -> go rest mode
@@ -438,10 +442,12 @@ UpdateEnemyB:
     inc hl
     inc hl
     inc hl
-    ld [hl], e ; init new max frames */
+    ld [hl], e ; init new max frames 
+
+    ld e, -1 ; reset curr frame
 
 .updateAnimationFrames
-    ; d = int value of UpdateFrameCounter
+    ; e = curr frame, d = int value of UpdateFrameCounter
 
     pop hl ; POP HL = enemy starting address
     push hl ; PUSH HL = enemy starting address
@@ -450,19 +456,18 @@ UpdateEnemyB:
     ld a, d 
     ld [hli], a ; store updated value for UpdateFrameCounter
 
-    ld a, [hli] ; get current frames
-    inc a
-    ld b, a ; b = curr frame
+    inc e
+    inc hl
 
     ld a, [hl] ; get max frames 
-    cp a, b
+    cp a, e
     jr nz, .continueUpdateAnimation ; check if reach max frame
-    ld b, 0 ; reset curr frame if reach max frame
+    ld e, 0 ; reset curr frame if reach max frame
 
 .continueUpdateAnimation
-    ; b = curr frame
+    ; e = curr frame
     dec hl
-    ld a, b
+    ld a, e
     ld [hl], a
     
 .endUpdateEnemyB
@@ -492,7 +497,7 @@ InitEnemyBSprite:
     ld a, d ; a = updateFrameCounter
 
     cp a, ENEMY_TYPEB_ATTACK_STATE_FRAME ; check state and init proper animation
-    ;jr nc, .upDirAttack
+    jr nc, .upDirAttack
     ld bc, EnemyBAnimation.upAnimation
     jr .endDir
 .upDirAttack
@@ -506,7 +511,7 @@ InitEnemyBSprite:
     ld a, d ; a = updateFrameCounter
 
     cp a, ENEMY_TYPEB_ATTACK_STATE_FRAME  ; check state and init proper animation
-    ;jr nc, .downDirAttack 
+    jr nc, .downDirAttack 
     ld bc, EnemyBAnimation.downAnimation
     jr .endDir
 .downDirAttack
