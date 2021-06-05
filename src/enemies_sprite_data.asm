@@ -136,3 +136,132 @@ EnemyAAnimation::
     db $26
     db OAMF_PAL0 | OAMF_XFLIP
 
+
+/* Enemy B sprite animation */
+EnemyBAnimation::
+.upAnimation:: ; up and down has the same frames
+    ; frame 1
+    db $2E
+    db OAMF_PAL0
+    db $30
+    db OAMF_PAL0 | OAMF_XFLIP
+
+    ; frame 2
+    db $30
+    db OAMF_PAL0
+    db $2E
+    db OAMF_PAL0 | OAMF_XFLIP
+.downAnimation:: ; up and down has the same frames
+    ; frame 1
+    db $2E
+    db OAMF_PAL0 | OAMF_YFLIP
+    db $30
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_YFLIP
+
+    ; frame 2
+    db $30
+    db OAMF_PAL0 | OAMF_YFLIP
+    db $2E
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_YFLIP
+.rightAnimation::
+    ; frame 1
+    db $32
+    db OAMF_PAL0
+    db $34
+    db OAMF_PAL0
+
+    ; frame 2
+    db $32
+    db OAMF_PAL0 | OAMF_YFLIP
+    db $34
+    db OAMF_PAL0 | OAMF_YFLIP
+.leftAnimation::
+    ; frame 1
+    db $34
+    db OAMF_PAL0 | OAMF_XFLIP
+    db $32
+    db OAMF_PAL0 | OAMF_XFLIP
+
+    ; frame 2
+    db $34
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_YFLIP
+    db $32
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_YFLIP
+.attackUpAnimation::
+    ; frame 1
+    db $36
+    db OAMF_PAL0
+    db $36
+    db OAMF_PAL0 | OAMF_XFLIP
+
+    ; frame 2
+    db $38
+    db OAMF_PAL0
+    db $3A
+    db OAMF_PAL0
+
+    ; frame 3
+    db $36
+    db OAMF_PAL0 | OAMF_YFLIP
+    db $36
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_YFLIP
+
+    ; frame 2
+    db $3A
+    db OAMF_PAL0 | OAMF_XFLIP
+    db $38
+    db OAMF_PAL0 | OAMF_XFLIP
+.attackDownAnimation::
+    ; frame 1
+    db $1A
+    db OAMF_PAL0 | OAMF_YFLIP
+    db $1A
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_YFLIP
+
+    ; frame 2
+    db $1C
+    db OAMF_PAL0 | OAMF_YFLIP
+    db $1C
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_YFLIP
+
+    ; frame 3
+    db $1A
+    db OAMF_PAL0 | OAMF_YFLIP
+    db $1A
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_YFLIP
+.attackRightAnimation::
+    ; frame 1
+    db $26
+    db OAMF_PAL0
+    db $28
+    db OAMF_PAL0
+
+    ; frame 2
+    db $2A
+    db OAMF_PAL0
+    db $2C
+    db OAMF_PAL0
+
+    ; frame 3
+    db $26
+    db OAMF_PAL0
+    db $28
+    db OAMF_PAL0
+.attackLeftAnimation::
+    ; frame 1
+    db $28
+    db OAMF_PAL0 | OAMF_XFLIP
+    db $26
+    db OAMF_PAL0 | OAMF_XFLIP
+
+    ; frame 2
+    db $2C
+    db OAMF_PAL0 | OAMF_XFLIP
+    db $2A
+    db OAMF_PAL0 | OAMF_XFLIP
+
+    ; frame 1
+    db $28
+    db OAMF_PAL0 | OAMF_XFLIP
+    db $26
+    db OAMF_PAL0 | OAMF_XFLIP
