@@ -28,6 +28,19 @@ LCDOn::
     pop af
     ret
 
+SoundOn::
+    ld a, $77
+    ld [rNR50], a
+    ld a, $FF
+    ld [rNR51], a
+    ld [rNR52], a
+    ret
+
+SoundOff::
+    xor a
+    ld [rNR52], a
+    ret
+
 Initialise::
     ld sp, $E000 ; Initialise our stack pointer to the end of the work RAM.
 
@@ -94,6 +107,9 @@ Initialise::
     
     ; Turn screen on, display background
     call LCDOn
+
+    ; Enable Sound
+    call SoundOn
 
     ld a, IEF_VBLANK ; Enable Interrupts
     ld [rIE], a
