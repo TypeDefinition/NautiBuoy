@@ -15,6 +15,24 @@ SECTION "Player Data", WRAM0
 
 /* Any logic/behavior/function related to player here */
 SECTION "Player", ROM0
+PlayAttackSFX:
+    ld a, %00010110
+    ld [rNR10], a
+
+    ld a, %01001000
+    ld [rNR11], a
+
+    ld a, %01110011
+    ld [rNR12], a
+
+    xor a
+    ld [rNR13], a
+
+    ld a, %11000011
+    ld [rNR14], a
+
+    ret
+
 InitialisePlayer::
     push af
 
@@ -237,6 +255,8 @@ UpdatePlayerAttack::
     ld a, [wPlayer_PosX + 1] 
     ld [hli], a ; load the other half of posX
     
+    call PlayAttackSFX
+
 .finishAttack
     ret
 
