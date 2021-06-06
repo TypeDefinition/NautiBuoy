@@ -19,7 +19,7 @@ PlayAttackSFX:
     ld a, %00010110
     ld [rNR10], a
 
-    ld a, %01111111
+    ld a, %01001000
     ld [rNR11], a
 
     ld a, %01110011

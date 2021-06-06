@@ -29,11 +29,12 @@ LCDOn::
     ret
 
 SoundOn::
+    ld a, $FF
+    ld [rNR52], a
+    ld [rNR51], a
     ld a, $77
     ld [rNR50], a
-    ld a, $FF
-    ld [rNR51], a
-    ld [rNR52], a
+    
     ret
 
 SoundOff::
