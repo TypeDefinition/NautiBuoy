@@ -389,7 +389,7 @@ UpdateEnemyB:
     ld a, [hl]
     add a, ENEMY_TYPEB_ANIMATION_UPDATE
     ld [hli], a
-    jr nc, .endUpdateEnemyB
+    jp nc, .endUpdateEnemyB
 
     ; update frames
     ld a, [hli] ; a = int part of UpdateFrameCounter
@@ -400,13 +400,108 @@ UpdateEnemyB:
     ld e, a ; e = curr frame
     ld a, d
 
-    ; cp a, 1
-    ; jr nz, .updateAnimationFrames
+.normalState ; check if player is same axis
+    ; e = curr frame, d = int value of UpdateFrameCounter
+    pop hl ; POP HL = enemy starting address
+    push hl ; PUSH HL = enemy starting address
 
-    ; if player not nearby, then just set the frame to 0
-    ; if player is nearby, start couting frames baby, dont reset shit
-    ; more than 0 then reset the frames, if not leave it
+    cp a, 1 
+    jr nz, .checkEnterAttackState
+    push de ; PUSH de = int value of UpdateFrameCounter & curr frame
+    
+    ld a, [wPlayer_PosYInterpolateTarget]
+    ld d, a
+    ld a, [wPlayer_PosXInterpolateTarget]
+    ld e, a
+    srl d ; convert to tile pos
+    srl d
+    srl d
+    srl e
+    srl e
+    srl e
 
+    inc hl
+    inc hl
+    ld a, [hli] ; get pos Y of enemy
+    ld b, a
+    inc hl
+    inc hl
+    ld a, [hl] ; get pos X of enemy
+    ld c, a
+    srl b ; convert to tile pos
+    srl b
+    srl b
+    srl c
+    srl c
+    srl c
+
+    ; bc = enemy tile pos, de = player tile pos, hl = pos X of enemy
+    ld a, b
+    cp a, d ; compare y axis
+    jr z, .playerOnSameYAxis
+    ld a, c
+    cp a, e ; compare x axis
+    jr z, .playerOnSameXAxis
+
+    ; player not on same axis
+    pop de ; POP de = int value of UpdateFrameCounter & curr frame
+    ld d, 0 ; currFrame = 0 for normal state
+    jr .updateAnimationFrames
+
+    ; change direction here to where player is
+    ; player has 2 frames to get out of the way
+
+.playerOnSameYAxis ; if they are on the same y axis, check x dir, left or right
+    ; initialise the enemy facing direction here
+    ld a, c
+    cp a, e ; compare x axis
+    jr nc, .playerLeftOfEnemy
+    ld d, DIR_RIGHT
+    jr .enemyFacePlayer
+
+.playerLeftOfEnemy
+    ld d, DIR_LEFT
+    jr .enemyFacePlayer
+
+.playerOnSameXAxis ; if they are on the same x axis, check y dir, up or down
+    ld a, b
+    cp a, d ; compare y axis
+    jr nc, .playerUpOfEnemy
+    ld d, DIR_DOWN
+    jr .enemyFacePlayer
+
+.playerUpOfEnemy
+    ld d, DIR_UP
+    jr .enemyFacePlayer
+
+.enemyFacePlayer ; if on same line, properly reset the position to fix to tile, x8 shift left 3 times
+    ; bc = enemy tile pos, d = direction, hl = address of pos X
+    sla b
+    sla b
+    sla b
+
+    sla c
+    sla c
+    sla c
+
+    ld a, c
+    ld [hli], a ; init x pos
+    inc hl
+    ld a, d
+    ld [hl], d ; init new dir
+
+    dec hl
+    dec hl
+    dec hl
+    dec hl
+    dec hl
+    ld a, b
+    ld [hl], a ; init y pos
+
+    pop de ; POP de = int value of UpdateFrameCounter & curr frame
+    jr .updateAnimationFrames 
+
+.checkEnterAttackState
     ; check if player should go attack mode
     ; TODO:: set the direction to go towards -> towards where the player is
     cp a, ENEMY_TYPEB_ATTACK_STATE_FRAME
