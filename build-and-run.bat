@@ -10,4 +10,6 @@ for /r ".\bin-int" %%i in (*.o); do call set "OBJFiles=%%OBJFiles%% %%~i"
 rgblink -o .\bin\gbgame.gb -n .\bin-int\symbols.sym -m .\bin\memory_data.map %OBJFiles%
 
 rgbfix -f lhg -p 255 .\bin\gbgame.gb
+
+REM START .\bgb\bgb64.exe .\bin\gbgame.gb
 START .\Emulicious\Emulicious.exe .\bin\gbgame.gb
