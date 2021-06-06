@@ -294,7 +294,7 @@ InitEnemyASprite:
 /* Update for enemy type B
     Behavior:
         - Spin to win
-        - moves and when player on same line (x/y axis), enemy spins after player
+        - moves and when player on same line (x/y axis), wait for a few frames then spin after player
         - when in shell/spinning mode, enemy is invulnerable to bullets 
     Parameters:
     - hl: the starting address of the enemy
@@ -383,7 +383,7 @@ UpdateEnemyB:
     push hl ; PUSH HL = enemy starting address
 
     ; TODO:: might want to change animation speed when in attack mode?
-    ; if more than ENEMY_TYPEB_ATTACK_STATE_FRAME its in attack mode
+    ; if more than ENEMY_TYPEB_ATTACK_STATE_FRAME its in attack mode, remember to offset
     ld de, Character_UpdateFrameCounter
     add hl, de
     ld a, [hl]
@@ -448,17 +448,12 @@ UpdateEnemyB:
     ld d, 0 ; currFrame = 0 for normal state
     jr .updateAnimationFrames
 
-    ; change direction here to where player is
-    ; player has 2 frames to get out of the way
-
-.playerOnSameYAxis ; if they are on the same y axis, check x dir, left or right
-    ; initialise the enemy facing direction here
+.playerOnSameYAxis ; if they are on the same y axis, check x dir, left or right. change direction
     ld a, c
     cp a, e ; compare x axis
     jr nc, .playerLeftOfEnemy
     ld d, DIR_RIGHT
     jr .enemyFacePlayer
-
 .playerLeftOfEnemy
     ld d, DIR_LEFT
     jr .enemyFacePlayer
@@ -469,7 +464,6 @@ UpdateEnemyB:
     jr nc, .playerUpOfEnemy
     ld d, DIR_DOWN
     jr .enemyFacePlayer
-
 .playerUpOfEnemy
     ld d, DIR_UP
     jr .enemyFacePlayer
@@ -501,9 +495,7 @@ UpdateEnemyB:
     pop de ; POP de = int value of UpdateFrameCounter & curr frame
     jr .updateAnimationFrames 
 
-.checkEnterAttackState
-    ; check if player should go attack mode
-    ; TODO:: set the direction to go towards -> towards where the player is
+.checkEnterAttackState ; check if should go attack mode
     cp a, ENEMY_TYPEB_ATTACK_STATE_FRAME
     jr nz, .checkAttackStop
 
@@ -515,7 +507,7 @@ UpdateEnemyB:
     cp a, ENEMY_TYPEB_ATTACK_STATE_STOP_FRAME
     jr nz, .updateAnimationFrames
 
-    ld d, ENEMY_TYPEB_REST_STATE_FRAME
+    ld d, -ENEMY_TYPEB_REST_STATE_FRAME
     ld e, ENEMY_TYPEB_WALK_MAX_FRAMES
     ld bc, VELOCITY_VSLOW 
 
@@ -591,12 +583,10 @@ InitEnemyBSprite:
 
     ld a, d ; a = updateFrameCounter
 
-    cp a, ENEMY_TYPEB_ATTACK_STATE_FRAME ; check state and init proper animation
-    jr nc, .upDirAttack
+    add a, ENEMY_TYPEB_REST_STATE_FRAME ; offset it
+    cp a, ENEMY_TYPEB_ATTACK_STATE_FRAME + ENEMY_TYPEB_REST_STATE_FRAME; check state and init proper animation
+    jr nc, .upDownDirAttack
     ld bc, EnemyBAnimation.upAnimation
-    jr .endDir
-.upDirAttack
-    ld bc, EnemyBAnimation.attackUpAnimation
     jr .endDir
 
 .downDir
@@ -605,11 +595,13 @@ InitEnemyBSprite:
 
     ld a, d ; a = updateFrameCounter
 
-    cp a, ENEMY_TYPEB_ATTACK_STATE_FRAME  ; check state and init proper animation
-    jr nc, .downDirAttack 
+    add a, ENEMY_TYPEB_REST_STATE_FRAME ; offset it
+    cp a, ENEMY_TYPEB_ATTACK_STATE_FRAME + ENEMY_TYPEB_REST_STATE_FRAME ; check state and init proper animation
+    jr nc, .upDownDirAttack 
     ld bc, EnemyBAnimation.downAnimation
     jr .endDir
-.downDirAttack
+
+.upDownDirAttack ; up and down have same attack animation
     ld bc, EnemyBAnimation.attackUpAnimation
     jr .endDir
 
@@ -619,24 +611,23 @@ InitEnemyBSprite:
 
     ld a, d ; a = updateFrameCounter
 
-    cp a, ENEMY_TYPEB_ATTACK_STATE_FRAME ; check state and init proper animation
-    jr nc, .rightDirAttack
+    add a, ENEMY_TYPEB_REST_STATE_FRAME ; offset it
+    cp a, ENEMY_TYPEB_ATTACK_STATE_FRAME + ENEMY_TYPEB_REST_STATE_FRAME ; check state and init proper animation
+    jr nc, .leftRightDirAttack
     ld bc, EnemyBAnimation.rightAnimation
-    jr .endDir
-.rightDirAttack
-    ld bc, EnemyBAnimation.attackRightAnimation
     jr .endDir
 
 .leftDir
     ld a, d ; a = updateFrameCounter
 
-    cp a, ENEMY_TYPEB_ATTACK_STATE_FRAME ; check state and init proper animation
-    jr nc, .leftDirAttack
+    add a, ENEMY_TYPEB_REST_STATE_FRAME ; offset it
+    cp a, ENEMY_TYPEB_ATTACK_STATE_FRAME + ENEMY_TYPEB_REST_STATE_FRAME; check state and init proper animation
+    jr nc, .leftRightDirAttack
     ld bc, EnemyBAnimation.leftAnimation
     jr .endDir
-.leftDirAttack
+
+.leftRightDirAttack ; right and left have same attack animation
     ld bc, EnemyBAnimation.attackRightAnimation
-    jr .endDir
 
 .endDir
     ld de, EnemySpriteData.enemyBSpriteData

@@ -72,12 +72,12 @@ DEF ENEMY_TYPEA_ATTACK_FRAME EQU 8 ; frame to shoot
 DEF ENEMY_TYPEA_ATTACK_ANIM_OFFSET EQU 12 ; offset from normal anim data to attack anim data
 
 ; Enemy B Data
-DEF ENEMY_TYPEB_ANIMATION_UPDATE EQU $08
+DEF ENEMY_TYPEB_ANIMATION_UPDATE EQU $10
 ; attack duration = ENEMY_TYPEB_ATTACK_STATE_STOP_FRAME - ENEMY_TYPEB_ATTACK_STATE_FRAME
 ; as long frame >= ENEMY_TYPEB_ATTACK_STATE_FRAME, its attack state
-DEF ENEMY_TYPEB_ATTACK_STATE_FRAME EQU 3 ; frame to go attack state
+DEF ENEMY_TYPEB_ATTACK_STATE_FRAME EQU 3 ; frame to go attack state after enemy senses player on same line
 DEF ENEMY_TYPEB_ATTACK_STATE_STOP_FRAME EQU 17; frame to stop attack state. 
-DEF ENEMY_TYPEB_REST_STATE_FRAME EQU -3 ; number of frames to rest after attack state
+DEF ENEMY_TYPEB_REST_STATE_FRAME EQU 3 ; number of frames to rest after attack state
 DEF ENEMY_TYPEB_WALK_MAX_FRAMES EQU 2
 DEF ENEMY_TYPEB_ATTACK_ANIM_MAX_FRAMES EQU 4
 
