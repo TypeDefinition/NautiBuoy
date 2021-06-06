@@ -292,6 +292,8 @@ ResetAllBullets::
     WARNING: after calling this function, need to check if active anyway, there's no null check...
 */
 GetInactiveBullet::
+    push de
+
 .loop
     ld a, [hl]
     bit BIT_FLAG_ACTIVE, a ; check if alive
@@ -307,6 +309,7 @@ GetInactiveBullet::
 
     jr .loop
 .end
+    pop de
     ret
 
 ; Update all alive bullets movement and collision.
@@ -324,6 +327,8 @@ UpdateBullets::
     cp a, 0 ; check if end of loop
     jp z, .end
 
+    push bc ; push bc = loop counter
+
     ; Collision
     ld a, [hl]
     bit BIT_FLAG_ACTIVE, a ; check if alive
@@ -333,28 +338,28 @@ UpdateBullets::
     ; Translation
 .translationStart
     ld a, [hl]
-    bit BIT_FLAG_ACTIVE, a ; check if alive
+    bit BIT_FLAG_ACTIVE, a ; check if alive after collision
     jr z, .loopEnd
 
     ; bc = Velocity
-    push hl
-    push de
+    push hl ; PUSH HL = bullet address
+    push de ; push DE = value before
     ld de, Bullet_Velocity
     add hl, de
     ld a, [hli]
     ld b, a
     ld a, [hl]
     ld c, a
-    pop de
-    pop hl
+    pop de ; pop DE = value before
+    pop hl ; pop HL = bullet address
 
     ; a = Direction
-    push hl
+    push hl ; push HL = bullet address
     inc hl
     ld a, [hl]
-    pop hl
+    pop hl ; pop HL = bullet address
 
-    push bc
+    push bc ; push bc = velocity
 .translateUp
     cp a, DIR_UP
     jr nz, .translateDown
@@ -378,11 +383,12 @@ UpdateBullets::
     ld bc, BulletSprites.rightSprite
 .translationEnd
     call UpdateBulletShadowOAM
-    pop bc
+    pop bc ; pop bc = velocity
 
 .loopEnd
     ld de, sizeof_Bullet ; based on number of bytes the bullet has
     add hl, de ; offset to get the next bullet
+    pop bc ; pop bc = loop counter
     dec b ; dec counter
     jr .loopStart
 
