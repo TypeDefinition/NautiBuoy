@@ -183,7 +183,9 @@ EnemyShoot::
     ret
 
 
-/* Movement where you move in a direction and when hit wall, move the other way */
+/*  Movement where you move in a direction and when hit wall, move the other way 
+    hl: enemy starting address
+*/
 EnemyBounceOnWallMovement::
     ; movement behaviour, goes in opposite direction when hit wall
     push hl ; PUSH HL = enemy starting address
@@ -199,6 +201,7 @@ EnemyBounceOnWallMovement::
     ld de, Character_Direction
     add hl, de
     ld a, [hl]
+    and a, DIR_BIT_MASK ; only want the first 2 bits for move direction
 
     pop hl ; POP HL = enemy starting address
     push hl ; PUSH HL = enemy starting address

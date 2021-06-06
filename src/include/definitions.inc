@@ -33,12 +33,19 @@ DEF BIT_MASK_TYPE EQU %00011100 ; to do bit masking for power up type/enemy type
 
 
 ; Directions
-; can use bit to compare, frees up reg A, but takes 2 cycles and 2 bytes
 ; can use cp to compare, takes reg A, but takes only 1 cycle and 1 byte
 DEF DIR_UP EQU 0
 DEF DIR_DOWN EQU 1
 DEF DIR_LEFT EQU 2
 DEF DIR_RIGHT EQU 3
+DEF DIR_BIT_MASK EQU %00000011
+
+; Shoot directions, use bit to compare
+; for when the direction of shooting is different with direction entity is facing
+DEF SHOOT_DIR_UP EQU %00010000 ; bit 4 true
+DEF SHOOT_DIR_DOWN EQU %00100000 ; bit 5 tru
+DEF SHOOT_DIR_LEFT EQU %01000000 ; bit 6 true
+DEF SHOOT_DIR_RIGHT EQU %10000000 ; bit 7 true
 
 ; Tiles
 DEF TILE_SIZE EQU $08

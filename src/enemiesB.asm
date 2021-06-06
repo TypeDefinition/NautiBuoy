@@ -215,6 +215,7 @@ InitEnemyBSprite:
     ld bc, Character_Direction
     add hl, bc 
     ld a, [hl] ; check direction of enemy and init sprite data
+    and a, DIR_BIT_MASK
 .upDir
     cp a, DIR_UP
     jr nz, .downDir
