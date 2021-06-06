@@ -11,6 +11,13 @@ EnemySpriteData::
     ; right sprite of the enemy
     db 8 ; y
     db 8 ; x
+.enemyBSpriteData::
+    db 8 ; y
+    db 0 ; x
+
+    ; right sprite of the enemy
+    db 8 ; y
+    db 8 ; x
 
 
 /* Animation, sprite IDs for the enemy*/
@@ -187,81 +194,51 @@ EnemyBAnimation::
     db OAMF_PAL0 | OAMF_XFLIP | OAMF_YFLIP
     db $32
     db OAMF_PAL0 | OAMF_XFLIP | OAMF_YFLIP
-.attackUpAnimation::
-    ; frame 1
+.attackUpAnimation:: ; up and down same animation
+    ; frame 1, up
     db $36
     db OAMF_PAL0
     db $36
     db OAMF_PAL0 | OAMF_XFLIP
 
-    ; frame 2
+    ; frame 2, right
     db $38
     db OAMF_PAL0
     db $3A
     db OAMF_PAL0
 
-    ; frame 3
+    ; frame 3, down
     db $36
     db OAMF_PAL0 | OAMF_YFLIP
     db $36
     db OAMF_PAL0 | OAMF_XFLIP | OAMF_YFLIP
 
-    ; frame 2
+    ; frame 2, left
     db $3A
     db OAMF_PAL0 | OAMF_XFLIP
     db $38
     db OAMF_PAL0 | OAMF_XFLIP
-.attackDownAnimation::
-    ; frame 1
-    db $1A
-    db OAMF_PAL0 | OAMF_YFLIP
-    db $1A
-    db OAMF_PAL0 | OAMF_XFLIP | OAMF_YFLIP
-
-    ; frame 2
-    db $1C
-    db OAMF_PAL0 | OAMF_YFLIP
-    db $1C
-    db OAMF_PAL0 | OAMF_XFLIP | OAMF_YFLIP
-
-    ; frame 3
-    db $1A
-    db OAMF_PAL0 | OAMF_YFLIP
-    db $1A
-    db OAMF_PAL0 | OAMF_XFLIP | OAMF_YFLIP
 .attackRightAnimation::
-    ; frame 1
-    db $26
+    ; frame 1, right
+    db $38
     db OAMF_PAL0
-    db $28
+    db $3A
     db OAMF_PAL0
+    
+    ; frame 2, down
+    db $36
+    db OAMF_PAL0 | OAMF_YFLIP
+    db $36
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_YFLIP
 
-    ; frame 2
-    db $2A
-    db OAMF_PAL0
-    db $2C
-    db OAMF_PAL0
-
-    ; frame 3
-    db $26
-    db OAMF_PAL0
-    db $28
-    db OAMF_PAL0
-.attackLeftAnimation::
-    ; frame 1
-    db $28
+    ; frame 3, left
+    db $3A
     db OAMF_PAL0 | OAMF_XFLIP
-    db $26
+    db $38
     db OAMF_PAL0 | OAMF_XFLIP
 
-    ; frame 2
-    db $2C
-    db OAMF_PAL0 | OAMF_XFLIP
-    db $2A
-    db OAMF_PAL0 | OAMF_XFLIP
-
-    ; frame 1
-    db $28
-    db OAMF_PAL0 | OAMF_XFLIP
-    db $26
+    ; frame 4, up
+    db $36
+    db OAMF_PAL0
+    db $36
     db OAMF_PAL0 | OAMF_XFLIP

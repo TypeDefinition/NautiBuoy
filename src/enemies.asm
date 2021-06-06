@@ -525,26 +525,26 @@ InitEnemyBSprite:
     ld a, d ; a = updateFrameCounter
 
     cp a, ENEMY_TYPEB_ATTACK_STATE_FRAME ; check state and init proper animation
-    ;jr nc, .rightDirAttack
+    jr nc, .rightDirAttack
     ld bc, EnemyBAnimation.rightAnimation
     jr .endDir
 .rightDirAttack
-    ld bc, EnemyBAnimation.attackUpAnimation
+    ld bc, EnemyBAnimation.attackRightAnimation
     jr .endDir
 
 .leftDir
     ld a, d ; a = updateFrameCounter
 
     cp a, ENEMY_TYPEB_ATTACK_STATE_FRAME ; check state and init proper animation
-    ;jr nc, .leftDirAttack
+    jr nc, .leftDirAttack
     ld bc, EnemyBAnimation.leftAnimation
     jr .endDir
 .leftDirAttack
-    ld bc, EnemyBAnimation.attackUpAnimation
+    ld bc, EnemyBAnimation.attackRightAnimation
     jr .endDir
 
 .endDir
-    ld de, EnemySpriteData.enemyASpriteData
+    ld de, EnemySpriteData.enemyBSpriteData
 
     pop hl ; POP HL = enemy address
     call UpdateEnemySpriteOAM
