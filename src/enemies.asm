@@ -98,15 +98,19 @@ UpdateAllEnemies::
     and a, BIT_MASK_TYPE ; get the type only
     ;inc hl ; no need the flags
 
-.enemyTypeA
-    cp a, TYPE_ENEMYA ; TODO:: COMPARE BITS, NOT CP
+.enemyTypeA ; turret
+    cp a, TYPE_ENEMYA
     jr nz, .enemyTypeB
     call UpdateEnemyA ; call correct update for enemy
     jr .endOfLoop
-.enemyTypeB
-    ;cp a, TYPE_ENEMYB
-    ;jr nz, .endOfLoop
+.enemyTypeB ; turtle
+    cp a, TYPE_ENEMYB
+    jr nz, .enemyTypeC
     call UpdateEnemyB ; call correct update for enemy
+.enemyTypeC
+    cp a, TYPE_ENEMYC
+    jr nz, .endOfLoop
+    call UpdateEnemyC
 
 .endOfLoop
     ret
