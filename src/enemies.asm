@@ -3,6 +3,8 @@ INCLUDE "./src/include/structs.inc"
 INCLUDE "./src/include/entities.inc"
 INCLUDE "./src/include/definitions.inc"
 INCLUDE "./src/include/util.inc"
+INCLUDE "./src/include/movement.inc"
+INCLUDE "./src/include/tile_collision.inc"
 
 SECTION "Enemies Data", WRAM0
 wEnemiesData::
@@ -175,6 +177,87 @@ EnemyShoot::
     pop af
 
     ret
+
+
+/* Movement where you move in a direction and when hit wall, move the other way */
+EnemyBounceOnWallMovement::
+    ; movement behaviour, goes in opposite direction when hit wall
+    push hl ; PUSH HL = enemy starting address
+    ld de, Character_Velocity
+    add hl, de
+    ld a, [hli]
+    ld c, a
+    ld a, [hl]
+    ld b, a ; bc = velocity, note the velocity in data is stored in little endian
+    pop hl ; POP HL = enemy starting address
+    push hl ; PUSH HL = enemy starting address
+
+    ld de, Character_Direction
+    add hl, de
+    ld a, [hl]
+
+    pop hl ; POP HL = enemy starting address
+    push hl ; PUSH HL = enemy starting address
+    ld de, Character_PosY
+    add hl, de ; hl = pos Y address
+
+    ld d, h
+    ld e, l
+    inc de
+    inc de
+    inc de ; de = posX address
+
+    ; bc = velocity, hl = posY address, de = posX address
+.upDirMove
+    cp a, DIR_UP
+    jr nz, .downDirMove
+    tile_collision_check_up_reg ENEMY_COLLIDER_SIZE, CHARACTER_COLLIDABLE_TILES, .collideOnWall, .moveUp
+.moveUp
+    interpolate_pos_dec_reg
+    jp .end
+
+.downDirMove
+    cp a, DIR_DOWN
+    jr nz, .rightDirMove
+    tile_collision_check_down_reg ENEMY_COLLIDER_SIZE, CHARACTER_COLLIDABLE_TILES, .collideOnWall, .moveDown
+.moveDown
+    interpolate_pos_inc_reg
+    jp .end
+
+.rightDirMove
+    cp a, DIR_RIGHT
+    jr nz, .leftDirMove
+    tile_collision_check_right_reg ENEMY_COLLIDER_SIZE, CHARACTER_COLLIDABLE_TILES, .collideOnWall, .moveRight
+.moveRight
+    ld h, d 
+    ld l, e ; hl = posX address
+    interpolate_pos_inc_reg
+    jr .end
+
+.leftDirMove
+    tile_collision_check_left_reg ENEMY_COLLIDER_SIZE, CHARACTER_COLLIDABLE_TILES, .collideOnWall, .moveLeft
+.moveLeft
+    ld h, d 
+    ld l, e ; hl = posX address
+    interpolate_pos_dec_reg
+    jr .end
+
+.collideOnWall ; move the opposite direction
+    pop hl ; POP HL = enemy starting address
+    push hl ; PUSH HL = enemy starting address
+    ld de, Character_Direction
+    add hl, de
+
+    ; invert last bit to get opposite direction
+    ld d, %00000001
+    ld a, [hl]
+    xor a, d ; invert last bit
+    
+    ld [hl], a 
+.end
+    pop hl ; POP HL = enemy starting address
+    ret
+
 
 /*  Render and set enemy OAM data and animation 
     Parameters:
