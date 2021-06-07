@@ -33,12 +33,25 @@ DEF BIT_MASK_TYPE EQU %00011100 ; to do bit masking for power up type/enemy type
 
 
 ; Directions
-; can use bit to compare, frees up reg A, but takes 2 cycles and 2 bytes
 ; can use cp to compare, takes reg A, but takes only 1 cycle and 1 byte
 DEF DIR_UP EQU 0
 DEF DIR_DOWN EQU 1
 DEF DIR_LEFT EQU 2
 DEF DIR_RIGHT EQU 3
+DEF DIR_BIT_MASK EQU %00000011
+
+; Shoot directions, use bit to compare
+; for when the direction of shooting is different with direction entity is facing
+DEF SHOOT_DIR_UP EQU %00010000 ; bit 4 true
+DEF SHOOT_DIR_DOWN EQU %00100000 ; bit 5 tru
+DEF SHOOT_DIR_LEFT EQU %01000000 ; bit 6 true
+DEF SHOOT_DIR_RIGHT EQU %10000000 ; bit 7 true
+DEF SHOOT_DIR_BIT_MASK EQU %11110000
+
+DEF BIT_SHOOT_UP_CMP EQU 4 
+DEF BIT_SHOOT_DOWN_CMP EQU 5
+DEF BIT_SHOOT_LEFT_CMP EQU 6
+DEF BIT_SHOOT_RIGHT_CMP EQU 7
 
 ; Tiles
 DEF TILE_SIZE EQU $08
@@ -62,7 +75,7 @@ DEF PLAYER_WALK_FRAMES EQU 3
 DEF PLAYER_BULLET_NUMBER EQU 3
 
 ; Enemy DATA
-DEF ENEMY_TYPEA_BULLET_NUM EQU 1
+DEF ENEMY_TYPEA_BULLET_NUM EQU 10
 DEF ENEMY_TYPEA_HEALTH EQU 30
 DEF ENEMY_TYPEA_WALK_FRAMES EQU 2
 DEF ENEMY_TYPEA_ATTACK_ANIM_MAX_FRAMES EQU 3
@@ -72,14 +85,18 @@ DEF ENEMY_TYPEA_ATTACK_FRAME EQU 8 ; frame to shoot
 DEF ENEMY_TYPEA_ATTACK_ANIM_OFFSET EQU 12 ; offset from normal anim data to attack anim data
 
 ; Enemy B Data
-DEF ENEMY_TYPEB_ANIMATION_UPDATE EQU $08
+DEF ENEMY_TYPEB_ANIMATION_UPDATE EQU $10
 ; attack duration = ENEMY_TYPEB_ATTACK_STATE_STOP_FRAME - ENEMY_TYPEB_ATTACK_STATE_FRAME
 ; as long frame >= ENEMY_TYPEB_ATTACK_STATE_FRAME, its attack state
-DEF ENEMY_TYPEB_ATTACK_STATE_FRAME EQU 3 ; frame to go attack state
+DEF ENEMY_TYPEB_ATTACK_STATE_FRAME EQU 3 ; frame to go attack state after enemy senses player on same line
 DEF ENEMY_TYPEB_ATTACK_STATE_STOP_FRAME EQU 17; frame to stop attack state. 
-DEF ENEMY_TYPEB_REST_STATE_FRAME EQU -3 ; number of frames to rest after attack state
+DEF ENEMY_TYPEB_REST_STATE_FRAME EQU 3 ; number of frames to rest after attack state
 DEF ENEMY_TYPEB_WALK_MAX_FRAMES EQU 2
 DEF ENEMY_TYPEB_ATTACK_ANIM_MAX_FRAMES EQU 4
+
+; Enemy C data
+DEF ENEMY_TYPEC_ANIMATION_UPDATE_SPEED EQU $10
+DEF ENEMY_TYPEC_SHOOT_FRAME EQU 10 ; frame to shoot
 
 
     ENDC ; DEFINITIONS_INC

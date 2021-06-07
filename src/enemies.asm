@@ -18,19 +18,6 @@ wEnemiesData::
     dstruct Character, wEnemy7
 wEnemiesDataEnd::
 
-
-; just make it shoot/attack first?
-; and make it so if it got hit by bullet gets destroyed
-; and can be rendered
-; and aninmated
-; make it be able to shoot first
-
-; if got hit by bullet, bullet should check whether hit enemy
-; if enemy has been hit, make it dead
-; should no longer be rendered
-
-; i need a way to set the enemy pos based on the map too
-
 SECTION "Enemies", ROM0
 
 /*  Read data on where enemy should be and its type
@@ -108,446 +95,24 @@ UpdateAllEnemies::
 
 .updateEnemy
     ;push hl
-    and a, BIT_MASK_TYPE
+    and a, BIT_MASK_TYPE ; get the type only
     ;inc hl ; no need the flags
 
-.enemyTypeA
-    cp a, TYPE_ENEMYA ; TODO:: COMPARE BITS, NOT CP
+.enemyTypeA ; turret
+    cp a, TYPE_ENEMYA
     jr nz, .enemyTypeB
     call UpdateEnemyA ; call correct update for enemy
     jr .endOfLoop
-.enemyTypeB
-    ;cp a, TYPE_ENEMYB
-    ;jr nz, .endOfLoop
+.enemyTypeB ; turtle
+    cp a, TYPE_ENEMYB
+    jr nz, .enemyTypeC
     call UpdateEnemyB ; call correct update for enemy
+.enemyTypeC
+    cp a, TYPE_ENEMYC
+    jr nz, .endOfLoop
+    call UpdateEnemyC
 
 .endOfLoop
-    ret
-
-
-/*  Update for enemy type A 
-    Behavior:
-        - Stays in 1 spot and shoot based on direction
-        - mostly based on animation
-    Parameters:
-    - hl: the starting address of the enemy 
-*/
-UpdateEnemyA:
-    push hl ; PUSH hl = enemy address
-
-    ld de, Character_Direction
-    add hl, de ; get direction
-    ld a, [hl]
-    ld c, a ; c = direction
-
-    pop hl ; POP hl = enemy address
-    push hl ; PUSH hl = enemy address
-    ld de, Character_UpdateFrameCounter
-    add hl, de
-
-    ld a, [hl] ; first part of updateFrameCounter
-    add a, ENEMY_TYPEA_ANIMATION_UPDATE_SPEED
-    ld [hli], a ; store the new value
-    ld a, [hl] ; a = int part of updateFrameCounter
-    ld d, a ; d = int part of updateFrameCounter
-    jr nc, .endUpdateEnemyA
-
-    ; update frames
-    adc a, 0 ; add the carry
-
-    cp a, ENEMY_TYPEA_ATTACK_FRAME ; check if shoot
-    jr nz, .attackFinish
-    pop de ; POP de = enemy address
-    push de ; PUSH de = enemy address
-
-    call EnemyShoot
-
-.attackFinish
-    ld d, a ; reg d = int part of updateFrameCounter
-    push hl ; PUSH HL = updateFrameCounter address
-    inc hl
-    push hl ; PUSH HL = curr animation frame address
-
-    cp a, ENEMY_TYPEA_ATTACK_STATE_FRAME ; check if go attack state
-    jr nz, .updateAnimationFrames
-
-    ; reach attack state, update variables
-    ld a, -1
-    ld [hli], a ; currFrame = -1
-    ld a, ENEMY_TYPEA_ATTACK_ANIM_MAX_FRAMES
-    ld [hl], a ; init max frame to be the attack frames
-
-.updateAnimationFrames
-    pop hl ; POP hl = curr animation frame address
-    ld a, [hli] ; get curr animation frame
-    inc a ; go next frame
-    ld b, a ; b stores curr frame
-
-    ld a, [hl] ; get max frames 
-    cp a, b
-    jr nz, .continueAnimation ; check if reach max frame
-
-    ld b, 0 ; reset curr frame if reach max frame
-    
-    ; check if in attack mode
-    ld a, d ; reg a = updateFrameCounter
-    cp a, ENEMY_TYPEA_ATTACK_STATE_FRAME
-    jr c, .continueAnimation
-
-    ld a, ENEMY_TYPEA_WALK_FRAMES
-    ld [hl], a ; reset back to idling
-    ld d, 0 ; int part of updateFrameCounter = 0
-
-.continueAnimation ; store the relevant animation info
-    ; d = updateFrameCounter, b = currFrame
-    pop hl ; POP hl = updateFrameCounter address
-    ld a, d 
-    ld [hli], a ; store updateFrameCounter
-
-    ld a, b
-    ld [hl], a ; store curr frame
-
-.endUpdateEnemyA
-    pop hl ; POP hl = enemy address
-    call InitEnemyASprite
-
-    ret
-
-
-/*  Init enemy A sprite
-    hl - enemy address 
-*/
-InitEnemyASprite:
-    push hl ; PUSH hl = enemy address
-
-    ld de, Character_UpdateFrameCounter + 1
-    add hl, de ; offset hl = updateFrameCounter
-
-    ld a, [hl] ; get int part of updateFrameCounter
-    ld d, a ; reg d = updateFrameCounter
-
-    pop hl ; POP hl = enemy address
-    push hl ; PUSH hl = enemy address
-    ld bc, Character_Direction
-    add hl, bc 
-    ld a, [hl] ; check direction of enemy and init sprite data
-.upDir
-    cp a, DIR_UP
-    jr nz, .downDir
-
-    ld a, d ; a = updateFrameCounter
-
-    cp a, ENEMY_TYPEA_ATTACK_STATE_FRAME ; check state and init proper animation
-    jr nc, .upDirAttack 
-    ld bc, EnemyAAnimation.upAnimation
-    jr .endDir
-.upDirAttack
-    ld bc, EnemyAAnimation.attackUpAnimation
-    jr .endDir
-
-.downDir
-    cp a, DIR_DOWN
-    jr nz, .rightDir
-
-    ld a, d ; a = updateFrameCounter
-
-    cp a, ENEMY_TYPEA_ATTACK_STATE_FRAME  ; check state and init proper animation
-    jr nc, .downDirAttack 
-    ld bc, EnemyAAnimation.downAnimation
-    jr .endDir
-.downDirAttack
-    ld bc, EnemyAAnimation.attackDownAnimation
-    jr .endDir
-
-.rightDir
-    cp a, DIR_RIGHT
-    jr nz, .leftDir
-
-    ld a, d ; a = updateFrameCounter
-
-    cp a, ENEMY_TYPEA_ATTACK_STATE_FRAME ; check state and init proper animation
-    jr nc, .rightDirAttack
-    ld bc, EnemyAAnimation.rightAnimation
-    jr .endDir
-.rightDirAttack
-    ld bc, EnemyAAnimation.attackRightAnimation
-    jr .endDir
-
-.leftDir
-    ld a, d ; a = updateFrameCounter
-
-    cp a, ENEMY_TYPEA_ATTACK_STATE_FRAME ; check state and init proper animation
-    jr nc, .leftDirAttack
-    ld bc, EnemyAAnimation.leftAnimation
-    jr .endDir
-.leftDirAttack
-    ld bc, EnemyAAnimation.attackLeftAnimation
-    jr .endDir
-
-.endDir
-    ld de, EnemySpriteData.enemyASpriteData
-
-    pop hl ; POP HL = enemy address
-    call UpdateEnemySpriteOAM
-    ret
-
-/* Update for enemy type B
-    Behavior:
-        - Spin to win
-        - moves and when player on same line (x/y axis), enemy spins after player
-        - when in shell/spinning mode, enemy is invulnerable to bullets 
-    Parameters:
-    - hl: the starting address of the enemy
-*/
-UpdateEnemyB:
-    ; need to make sure player is on same line before using spin attack
-    ; if player on same line, and within screen
-
-    ; movement behaviour, goes in opposite direction when hit wall
-    push hl ; PUSH HL = enemy starting address
-    ld de, Character_Velocity
-    add hl, de
-    ld a, [hli]
-    ld c, a
-    ld a, [hl]
-    ld b, a ; bc = velocity, note the velocity in data is stored in little endian
-    pop hl ; POP HL = enemy starting address
-    push hl ; PUSH HL = enemy starting address
-
-    ld de, Character_Direction
-    add hl, de
-    ld a, [hl]
-
-    pop hl ; POP HL = enemy starting address
-    push hl ; PUSH HL = enemy starting address
-    ld de, Character_PosY
-    add hl, de ; hl = pos Y address
-
-    ld d, h
-    ld e, l
-    inc de
-    inc de
-    inc de ; de = posX address
-
-    ; bc = velocity, hl = posY address, de = posX address
-.upDirMove
-    cp a, DIR_UP
-    jr nz, .downDirMove
-    tile_collision_check_up_reg ENEMY_COLLIDER_SIZE, CHARACTER_COLLIDABLE_TILES, .collideOnWall, .moveUp
-.moveUp
-    interpolate_pos_dec_reg
-    jp .endDirMove
-
-.downDirMove
-    cp a, DIR_DOWN
-    jr nz, .rightDirMove
-    tile_collision_check_down_reg ENEMY_COLLIDER_SIZE, CHARACTER_COLLIDABLE_TILES, .collideOnWall, .moveDown
-.moveDown
-    interpolate_pos_inc_reg
-    jp .endDirMove
-
-.rightDirMove
-    cp a, DIR_RIGHT
-    jr nz, .leftDirMove
-    tile_collision_check_right_reg ENEMY_COLLIDER_SIZE, CHARACTER_COLLIDABLE_TILES, .collideOnWall, .moveRight
-.moveRight
-    ld h, d 
-    ld l, e ; hl = posX address
-    interpolate_pos_inc_reg
-    jr .endDirMove
-
-.leftDirMove
-    tile_collision_check_left_reg ENEMY_COLLIDER_SIZE, CHARACTER_COLLIDABLE_TILES, .collideOnWall, .moveLeft
-.moveLeft
-    ld h, d 
-    ld l, e ; hl = posX address
-    interpolate_pos_dec_reg
-    jr .endDirMove
-
-.collideOnWall ; move the opposite direction
-    pop hl ; POP HL = enemy starting address
-    push hl ; PUSH HL = enemy starting address
-    ld de, Character_Direction
-    add hl, de
-
-    ; invert last bit to get opposite direction
-    ld d, %00000001
-    ld a, [hl]
-    xor a, d ; invert last bit
-    
-    ld [hl], a 
-    jr .endDirMove
-
-.endDirMove
-    pop hl ; POP HL = enemy starting address
-    push hl ; PUSH HL = enemy starting address
-
-    ; TODO:: might want to change animation speed when in attack mode?
-    ; if more than ENEMY_TYPEB_ATTACK_STATE_FRAME its in attack mode
-    ld de, Character_UpdateFrameCounter
-    add hl, de
-    ld a, [hl]
-    add a, ENEMY_TYPEB_ANIMATION_UPDATE
-    ld [hli], a
-    jr nc, .endUpdateEnemyB
-
-    ; update frames
-    ld a, [hli] ; a = int part of UpdateFrameCounter
-    adc a, 0
-    ld d, a
-
-    ld a, [hli]
-    ld e, a ; e = curr frame
-    ld a, d
-
-    ; cp a, 1
-    ; jr nz, .updateAnimationFrames
-
-    ; if player not nearby, then just set the frame to 0
-    ; if player is nearby, start couting frames baby, dont reset shit
-    ; more than 0 then reset the frames, if not leave it
-
-    ; check if player should go attack mode
-    ; TODO:: set the direction to go towards -> towards where the player is
-    cp a, ENEMY_TYPEB_ATTACK_STATE_FRAME
-    jr nz, .checkAttackStop
-
-    ld bc, VELOCITY_SLOW ; set the new velocity
-    ld e, ENEMY_TYPEB_ATTACK_ANIM_MAX_FRAMES
-    jr .changeVelocityAndFrames
-
-.checkAttackStop ; check if attack should stop -> go rest mode
-    cp a, ENEMY_TYPEB_ATTACK_STATE_STOP_FRAME
-    jr nz, .updateAnimationFrames
-
-    ld d, ENEMY_TYPEB_REST_STATE_FRAME
-    ld e, ENEMY_TYPEB_WALK_MAX_FRAMES
-    ld bc, VELOCITY_VSLOW 
-
-.changeVelocityAndFrames
-    ; bc = velocity, d = int value of UpdateFrameCounter, e = max frames
-
-    pop hl ; POP HL = enemy starting address
-    push hl ; PUSH HL = enemy starting address
-    push bc ; PUSH BC = temp, velocity
-
-    ld bc, Character_Velocity
-    add hl, bc
-    pop bc ; POP BC = temp, velocity
-    ld a, c
-    ld [hli], a
-    ld a, b
-    ld [hli], a ; reset velocity, store in little endian
-
-    inc hl
-    inc hl
-    inc hl
-    ld [hl], e ; init new max frames 
-
-    ld e, -1 ; reset curr frame
-
-.updateAnimationFrames
-    ; e = curr frame, d = int value of UpdateFrameCounter
-
-    pop hl ; POP HL = enemy starting address
-    push hl ; PUSH HL = enemy starting address
-    ld bc, Character_UpdateFrameCounter + 1
-    add hl, bc
-    ld a, d 
-    ld [hli], a ; store updated value for UpdateFrameCounter
-
-    inc e
-    inc hl
-
-    ld a, [hl] ; get max frames 
-    cp a, e
-    jr nz, .continueUpdateAnimation ; check if reach max frame
-    ld e, 0 ; reset curr frame if reach max frame
-
-.continueUpdateAnimation
-    ; e = curr frame
-    dec hl
-    ld a, e
-    ld [hl], a
-    
-.endUpdateEnemyB
-    pop hl ; POP HL = enemy starting address
-    call InitEnemyBSprite
-    ret
-
-/* Init enemy B sprite and render */
-InitEnemyBSprite:
-    push hl ; PUSH hl = enemy address
-
-    ld de, Character_UpdateFrameCounter + 1
-    add hl, de ; offset hl = updateFrameCounter
-
-    ld a, [hl] ; get int part of updateFrameCounter
-    ld d, a ; reg d = updateFrameCounter
-
-    pop hl ; POP hl = enemy address
-    push hl ; PUSH hl = enemy address
-    ld bc, Character_Direction
-    add hl, bc 
-    ld a, [hl] ; check direction of enemy and init sprite data
-.upDir
-    cp a, DIR_UP
-    jr nz, .downDir
-
-    ld a, d ; a = updateFrameCounter
-
-    cp a, ENEMY_TYPEB_ATTACK_STATE_FRAME ; check state and init proper animation
-    jr nc, .upDirAttack
-    ld bc, EnemyBAnimation.upAnimation
-    jr .endDir
-.upDirAttack
-    ld bc, EnemyBAnimation.attackUpAnimation
-    jr .endDir
-
-.downDir
-    cp a, DIR_DOWN
-    jr nz, .rightDir
-
-    ld a, d ; a = updateFrameCounter
-
-    cp a, ENEMY_TYPEB_ATTACK_STATE_FRAME  ; check state and init proper animation
-    jr nc, .downDirAttack 
-    ld bc, EnemyBAnimation.downAnimation
-    jr .endDir
-.downDirAttack
-    ld bc, EnemyBAnimation.attackUpAnimation
-    jr .endDir
-
-.rightDir
-    cp a, DIR_RIGHT
-    jr nz, .leftDir
-
-    ld a, d ; a = updateFrameCounter
-
-    cp a, ENEMY_TYPEB_ATTACK_STATE_FRAME ; check state and init proper animation
-    ;jr nc, .rightDirAttack
-    ld bc, EnemyBAnimation.rightAnimation
-    jr .endDir
-.rightDirAttack
-    ld bc, EnemyBAnimation.attackUpAnimation
-    jr .endDir
-
-.leftDir
-    ld a, d ; a = updateFrameCounter
-
-    cp a, ENEMY_TYPEB_ATTACK_STATE_FRAME ; check state and init proper animation
-    ;jr nc, .leftDirAttack
-    ld bc, EnemyBAnimation.leftAnimation
-    jr .endDir
-.leftDirAttack
-    ld bc, EnemyBAnimation.attackUpAnimation
-    jr .endDir
-
-.endDir
-    ld de, EnemySpriteData.enemyASpriteData
-
-    pop hl ; POP HL = enemy address
-    call UpdateEnemySpriteOAM
     ret
 
 /* Call this when enemy has been hit */
@@ -616,6 +181,90 @@ EnemyShoot::
     pop af
 
     ret
+
+
+/*  Movement where you move in a direction and when hit wall, move the other way 
+    hl: enemy starting address
+*/
+EnemyBounceOnWallMovement::
+    ; movement behaviour, goes in opposite direction when hit wall
+    push hl ; PUSH HL = enemy starting address
+    ld de, Character_Velocity
+    add hl, de
+    ld a, [hli]
+    ld c, a
+    ld a, [hl]
+    ld b, a ; bc = velocity, note the velocity in data is stored in little endian
+    pop hl ; POP HL = enemy starting address
+    push hl ; PUSH HL = enemy starting address
+
+    ld de, Character_Direction
+    add hl, de
+    ld a, [hl]
+    and a, DIR_BIT_MASK ; only want the first 2 bits for move direction
+
+    pop hl ; POP HL = enemy starting address
+    push hl ; PUSH HL = enemy starting address
+    ld de, Character_PosY
+    add hl, de ; hl = pos Y address
+
+    ld d, h
+    ld e, l
+    inc de
+    inc de
+    inc de ; de = posX address
+
+    ; bc = velocity, hl = posY address, de = posX address
+.upDirMove
+    cp a, DIR_UP
+    jr nz, .downDirMove
+    tile_collision_check_up_reg ENEMY_COLLIDER_SIZE, CHARACTER_COLLIDABLE_TILES, .collideOnWall, .moveUp
+.moveUp
+    interpolate_pos_dec_reg
+    jp .end
+
+.downDirMove
+    cp a, DIR_DOWN
+    jr nz, .rightDirMove
+    tile_collision_check_down_reg ENEMY_COLLIDER_SIZE, CHARACTER_COLLIDABLE_TILES, .collideOnWall, .moveDown
+.moveDown
+    interpolate_pos_inc_reg
+    jp .end
+
+.rightDirMove
+    cp a, DIR_RIGHT
+    jr nz, .leftDirMove
+    tile_collision_check_right_reg ENEMY_COLLIDER_SIZE, CHARACTER_COLLIDABLE_TILES, .collideOnWall, .moveRight
+.moveRight
+    ld h, d 
+    ld l, e ; hl = posX address
+    interpolate_pos_inc_reg
+    jr .end
+
+.leftDirMove
+    tile_collision_check_left_reg ENEMY_COLLIDER_SIZE, CHARACTER_COLLIDABLE_TILES, .collideOnWall, .moveLeft
+.moveLeft
+    ld h, d 
+    ld l, e ; hl = posX address
+    interpolate_pos_dec_reg
+    jr .end
+
+.collideOnWall ; move the opposite direction
+    pop hl ; POP HL = enemy starting address
+    push hl ; PUSH HL = enemy starting address
+    ld de, Character_Direction
+    add hl, de
+
+    ; invert last bit to get opposite direction
+    ld d, %00000001
+    ld a, [hl]
+    xor a, d ; invert last bit
+    
+    ld [hl], a 
+.end
+    pop hl ; POP HL = enemy starting address
+    ret
+
 
 /*  Render and set enemy OAM data and animation 
     Parameters:
