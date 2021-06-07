@@ -1535,57 +1535,57 @@ P26:
  dn ___,0,$000
 
 duty_instruments:
-itSquareinst1: db 8,128,240,128
-itSquareinst2: db 8,128,240,128
-itSquareinst3: db 8,128,240,128
-itSquareinst4: db 8,128,240,128
-itSquareinst5: db 8,128,240,128
-itSquareinst6: db 8,192,240,128
-itSquareinst7: db 8,128,240,128
-itSquareinst8: db 7,0,242,128
-itSquareinst9: db 8,128,240,128
-itSquareinst10: db 8,128,240,128
-itSquareinst11: db 8,128,240,128
-itSquareinst12: db 8,128,240,128
-itSquareinst13: db 8,128,240,128
-itSquareinst14: db 8,128,240,128
-itSquareinst15: db 8,128,240,128
+itSquareinst1: db 8,128,48,128
+itSquareinst2: db 8,128,48,128
+itSquareinst3: db 8,128,48,128
+itSquareinst4: db 8,128,48,128
+itSquareinst5: db 8,128,48,128
+itSquareinst6: db 8,192,48,128
+itSquareinst7: db 8,128,48,128
+itSquareinst8: db 7,0,50,128
+itSquareinst9: db 8,128,48,128
+itSquareinst10: db 8,128,48,128
+itSquareinst11: db 8,128,48,128
+itSquareinst12: db 8,128,48,128
+itSquareinst13: db 8,128,48,128
+itSquareinst14: db 8,128,48,128
+itSquareinst15: db 8,128,48,128
 
 
 wave_instruments:
-itWaveinst1: db 0,32,0,128
-itWaveinst2: db 0,32,1,128
-itWaveinst3: db 0,32,2,128
-itWaveinst4: db 0,32,3,128
-itWaveinst5: db 0,32,4,128
-itWaveinst6: db 0,32,5,128
-itWaveinst7: db 0,32,6,128
-itWaveinst8: db 0,32,7,128
-itWaveinst9: db 0,32,8,128
-itWaveinst10: db 0,32,9,128
-itWaveinst11: db 0,32,10,128
-itWaveinst12: db 0,32,11,128
-itWaveinst13: db 0,32,12,128
-itWaveinst14: db 0,32,13,128
-itWaveinst15: db 0,32,14,128
+itWaveinst1: db 0,96,0,128
+itWaveinst2: db 0,96,1,128
+itWaveinst3: db 0,96,2,128
+itWaveinst4: db 0,96,3,128
+itWaveinst5: db 0,96,4,128
+itWaveinst6: db 0,96,5,128
+itWaveinst7: db 0,96,6,128
+itWaveinst8: db 0,96,7,128
+itWaveinst9: db 0,96,8,128
+itWaveinst10: db 0,96,9,128
+itWaveinst11: db 0,96,10,128
+itWaveinst12: db 0,96,11,128
+itWaveinst13: db 0,96,12,128
+itWaveinst14: db 0,96,13,128
+itWaveinst15: db 0,96,14,128
 
 
 noise_instruments:
-itNoiseinst1: db 240,0,0,0,0,0,0,0
-itNoiseinst2: db 240,0,0,0,0,0,0,0
-itNoiseinst3: db 241,104,0,0,0,0,0,0
-itNoiseinst4: db 145,119,0,0,0,0,0,0
-itNoiseinst5: db 242,41,0,0,0,0,0,0
-itNoiseinst6: db 240,0,0,0,0,0,0,0
-itNoiseinst7: db 240,40,0,0,0,0,0,0
-itNoiseinst8: db 240,0,0,0,0,0,0,0
-itNoiseinst9: db 240,0,0,0,0,0,0,0
-itNoiseinst10: db 240,0,0,0,0,0,0,0
-itNoiseinst11: db 240,0,0,0,0,0,0,0
-itNoiseinst12: db 240,0,0,0,0,0,0,0
-itNoiseinst13: db 240,0,0,0,0,0,0,0
-itNoiseinst14: db 240,0,0,0,0,0,0,0
-itNoiseinst15: db 240,0,0,0,0,0,0,0
+itNoiseinst1: db 48,0,0,0,0,0,0,0
+itNoiseinst2: db 32,0,0,0,0,0,0,0
+itNoiseinst3: db 33,104,0,0,0,0,0,0
+itNoiseinst4: db 33,119,0,0,0,0,0,0
+itNoiseinst5: db 34,41,0,0,0,0,0,0
+itNoiseinst6: db 32,0,0,0,0,0,0,0
+itNoiseinst7: db 32,40,0,0,0,0,0,0
+itNoiseinst8: db 32,0,0,0,0,0,0,0
+itNoiseinst9: db 32,0,0,0,0,0,0,0
+itNoiseinst10: db 32,0,0,0,0,0,0,0
+itNoiseinst11: db 32,0,0,0,0,0,0,0
+itNoiseinst12: db 48,0,0,0,0,0,0,0
+itNoiseinst13: db 48,0,0,0,0,0,0,0
+itNoiseinst14: db 32,0,0,0,0,0,0,0
+itNoiseinst15: db 48,0,0,0,0,0,0,0
 
 
 routines:

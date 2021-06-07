@@ -256,7 +256,7 @@ UpdatePlayerAttack::
     ld a, [wPlayer_PosX + 1] 
     ld [hli], a ; load the other half of posX
     
-    ; call PlayAttackSFX
+    call PlayAttackSFX
 
 .finishAttack
     ret

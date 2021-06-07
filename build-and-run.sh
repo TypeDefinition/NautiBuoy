@@ -9,5 +9,5 @@ find ./assets/sprites -type f -name '*.png' -exec sh -c 'rgbgfx -h -o ./tile_dat
 find ./src/ -type f -name '*.asm' -exec sh -c 'rgbasm -o ./bin-int/$(basename "{}" .asm).o $0' {} \;
 find ./bin-int/ -type f -name '*.o' -exec rgblink -o ./bin/gbgame.gb -n ./bin-int/symbols.sym -m ./bin/memory_data.map {} +
 rgbfix -f lhg -p 255 ./bin/gbgame.gb
-wine64 ./bgb/bgb64.exe ./bin/gbgame.gb
-# java -jar ./Emulicious/Emulicious.jar ./bin/gbgame.gb
+# wine64 ./bgb/bgb64.exe ./bin/gbgame.gb
+java -jar ./Emulicious/Emulicious.jar ./bin/gbgame.gb
