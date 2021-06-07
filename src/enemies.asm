@@ -71,8 +71,9 @@ InitEnemiesAndPlaceOnMap::
     inc hl ; skip updateFrameCounter
     inc hl ; skip CurrAnimationFrame = 0
 
-    ld a, ENEMY_TYPEA_WALK_FRAMES ; TODO:: TEMP CODES, initialised this properly
+    ld a, [bc]
     ld [hli], a ; set CurrStateMaxAnimFrame
+    inc bc
 
     dec d
     ld a, d
@@ -84,33 +85,48 @@ InitEnemiesAndPlaceOnMap::
 
 UpdateAllEnemies::
     ld hl, wEnemiesData
+    
+    ld a, [LevelOneEnemyData] ; get number of enemies in level
+    ld d, a
 
     ; TODO:: make update loop
-    ; check enemies type and then call the correct update
 
 .startOfLoop
+    push hl ; PUSH HL = enemy address
+    push de ; push DE = loop counter
+
     ld a, [hl]
     bit BIT_FLAG_ACTIVE, a ; check if alive
-    jr z, .endOfLoop ; TODO:: fix this, if not alive, for now end loop
+    jr z, .nextLoop ; TODO:: fix this, if not alive, for now end loop
 
 .updateEnemy
-    ;push hl
     and a, BIT_MASK_TYPE ; get the type only
-    ;inc hl ; no need the flags
 
 .enemyTypeA ; turret
     cp a, TYPE_ENEMYA
     jr nz, .enemyTypeB
     call UpdateEnemyA ; call correct update for enemy
-    jr .endOfLoop
 .enemyTypeB ; turtle
     cp a, TYPE_ENEMYB
     jr nz, .enemyTypeC
     call UpdateEnemyB ; call correct update for enemy
 .enemyTypeC
     cp a, TYPE_ENEMYC
-    jr nz, .endOfLoop
+    jr nz, .nextLoop
     call UpdateEnemyC
+
+.nextLoop
+    pop de ; POP de = loop counter
+    pop hl ; POP HL = enemy address
+    
+    dec d
+    ld a, d
+    cp a, 0
+    jr z, .endOfLoop
+
+    ld bc, sizeof_Character
+    add hl, bc
+    jr .startOfLoop
 
 .endOfLoop
     ret
