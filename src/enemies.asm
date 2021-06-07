@@ -71,7 +71,7 @@ InitEnemiesAndPlaceOnMap::
     inc hl ; skip updateFrameCounter
     inc hl ; skip CurrAnimationFrame = 0
 
-    ld a, ENEMY_TYPEA_WALK_FRAMES ; TEMP CODES, initialised this properly
+    ld a, ENEMY_TYPEA_WALK_FRAMES ; TODO:: TEMP CODES, initialised this properly
     ld [hli], a ; set CurrStateMaxAnimFrame
 
     dec d
@@ -123,9 +123,54 @@ HitEnemy::
     ; if health < 0, mens dead, set the variable to dead
     ret
 
+
+/*  For enemies shooting in directions it is not facing
+    hl - enemy address    
+*/
+EnemyShootDir::
+    push bc
+    push de
+    push hl
+
+    ld d, h ; de = enemy address
+    ld e, l
+
+    ld bc, Character_Direction
+    add hl, bc
+    ld a, [hl] ; get direction
+    and a, SHOOT_DIR_BIT_MASK 
+
+.shootUp
+    bit BIT_SHOOT_UP_CMP, a
+    jr z, .shootDown
+    ld c, DIR_UP
+    call EnemyShoot
+.shootDown
+    bit BIT_SHOOT_DOWN_CMP, a
+    jr z, .shootRight
+    ld c, DIR_DOWN
+    call EnemyShoot
+.shootRight
+    bit BIT_SHOOT_RIGHT_CMP, a
+    jr z, .shootLeft
+    ld c, DIR_RIGHT
+    call EnemyShoot
+.shootLeft
+    bit BIT_SHOOT_LEFT_CMP, a
+    jr z, .end
+    ld c, DIR_LEFT
+    call EnemyShoot 
+
+.end
+    pop hl
+    pop de
+    pop bc
+    
+    ret
+
 /*  Attack 
     de - enemy address
-    c - direction
+    c - direction the bullet will travel
 */
 EnemyShoot::
     push af

@@ -24,67 +24,55 @@ UpdateEnemyC::
     jr nc, .endUpdateEnemyC
 
     ; update frames
-    ld a, [hl] ; a = int part of updateFrameCounter
+    ld a, [hli] ; a = int part of updateFrameCounter
     adc a, 0 ; add the carry
-    ld d, a
+    ld d, a ; d = int part of updateFrameCounter
 
     cp a, ENEMY_TYPEC_SHOOT_FRAME
+    ld a, [hl] ; a = currFrame
+    ld e, a ; e = currFrame
     jr nz, .continue
 
     ; check shoot direction and just shoot
     pop hl ; POP hl = enemy starting address
     push hl ; PUSH hl = enemy starting address
-    ld d, h ; de = enemy address
-    ld e, l
-    ld bc, Character_Direction
-    add hl, bc
-    ld a, [hl] ; get direction
-    and a, SHOOT_DIR_BIT_MASK 
-
-.shootUp
-    bit BIT_SHOOT_UP_CMP, a
-    jr z, .shootDown
-    ld c, DIR_UP
-    ld de, wEnemy0_Flags
-    call EnemyShoot
-.shootDown
-    bit BIT_SHOOT_DOWN_CMP, a
-    jr z, .shootRight
-    ld c, DIR_DOWN
-    ld de, wEnemy0_Flags
-    call EnemyShoot
-.shootRight
-    bit BIT_SHOOT_RIGHT_CMP, a
-    jr z, .shootLeft
-    ld c, DIR_RIGHT
-    ld de, wEnemy0_Flags
-    call EnemyShoot
-.shootLeft
-    bit BIT_SHOOT_LEFT_CMP, a
-    jr z, .endShooting
-    ld c, DIR_LEFT
-    ld de, wEnemy0_Flags
-    call EnemyShoot 
+    call EnemyShootDir
 
 .endShooting
     ld d, 0 ; reset updateFrameCounter
+    ld e, 0
 
 .continue 
-    ; d = updateFrameCounter
+    ; d = updateFrameCounter, e = currFrame
     pop hl 
     push hl
 
     ld bc, Character_UpdateFrameCounter + 1
     add hl, bc
     ld a, d
-    ld [hl], a ; update new value to updateFrameCounter
+    ld [hli], a ; update new value to updateFrameCounter
 
-    ; TODO:: update current animation frames
+    ; update animation frames and check if more
+    inc hl
+    ld a, [hl] ; take max frames
+    ld b, a ; b = max frames
+
+    inc e
+    ld a, e
+    cp a, b ; check if reach max frame
+    jr nz, .updateCurrFrame
+    ld a, 0 ; reset current frames
+
+.updateCurrFrame
+    ; a = curr frame, hl = max frame address
+    dec hl
+    ld [hl], a ; update curr frame
 
 .endUpdateEnemyC
     pop hl ; POP HL = enemy starting address
     call InitEnemyCSprite
     ret
+
 
 /*  Init enemy C sprite
     hl - enemy address 
@@ -108,30 +96,28 @@ InitEnemyCSprite:
 .upDir
     cp a, DIR_UP
     jr nz, .downDir
-
-    ld bc, EnemyAAnimation.upAnimation
+    ld bc, EnemyCAnimation.upAnimation
     jr .endDir
 
 .downDir
     cp a, DIR_DOWN
     jr nz, .rightDir
-
-    ld bc, EnemyAAnimation.downAnimation
+    ld bc, EnemyCAnimation.upAnimation
     jr .endDir
 
 .rightDir
     cp a, DIR_RIGHT
     jr nz, .leftDir
-
-    ld bc, EnemyAAnimation.rightAnimation
+    ld bc, EnemyCAnimation.rightAnimation
     jr .endDir
 
 .leftDir
     ld a, d ; a = updateFrameCounter
-    ld bc, EnemyAAnimation.leftAnimation
+    ld bc, EnemyCAnimation.rightAnimation
+    jr .endDir
 
 .endDir
-    ld de, EnemySpriteData.enemyASpriteData
+    ld de, EnemySpriteData.enemyCSpriteData
 
     pop hl ; POP HL = enemy address
     call UpdateEnemySpriteOAM

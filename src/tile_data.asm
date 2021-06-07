@@ -16,3 +16,7 @@ TestSprite::
 EnemyTurtleSprite::
     INCBIN "./tile_data/turtleEnemy.2bpp"
 .end::
+
+EnemyCSprite::
+    INCBIN "./tile_data/enemyShootOneDir.2bpp"
+.end::

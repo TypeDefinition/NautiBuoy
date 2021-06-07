@@ -18,7 +18,13 @@ EnemySpriteData::
     ; right sprite of the enemy
     db 8 ; y
     db 8 ; x
+.enemyCSpriteData::
+    db 8 ; y
+    db 0 ; x
 
+    ; right sprite of the enemy
+    db 8 ; y
+    db 8 ; x
 
 /* Animation, sprite IDs for the enemy*/
 EnemyAAnimation::
@@ -241,4 +247,37 @@ EnemyBAnimation::
     db $36
     db OAMF_PAL0
     db $36
+    db OAMF_PAL0 | OAMF_XFLIP
+
+/* Animation, sprite IDs for the enemy C*/
+EnemyCAnimation::
+.upAnimation:: ; up and down has the same frames
+    ; frame 1
+    db $42
+    db OAMF_PAL0
+    db $44
+    db OAMF_PAL0
+
+    ; frame 2
+    db $46
+    db OAMF_PAL0
+    db $48
+    db OAMF_PAL0
+.rightAnimation::
+    ; frame 1
+    db $3C
+    db OAMF_PAL0
+    db $3C
+    db OAMF_PAL0 | OAMF_XFLIP
+
+    ; frame 2
+    db $3E
+    db OAMF_PAL0
+    db $3E
+    db OAMF_PAL0 | OAMF_XFLIP
+.attackUpAnimation::
+    ; frame 1
+    db $40
+    db OAMF_PAL0
+    db $40
     db OAMF_PAL0 | OAMF_XFLIP
