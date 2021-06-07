@@ -1,5 +1,6 @@
 INCLUDE "./src/include/hardware.inc"
 INCLUDE "./src/include/util.inc"
+include "./src/include/hUGE.inc"
 
 ; $0100 - $0103: Entry Point
 SECTION "Entry Point", ROM0[$0100]
@@ -29,17 +30,13 @@ LCDOn::
     ret
 
 SoundOn::
+    ld a, $80
+    ld [rAUDENA], a
     ld a, $FF
-    ld [rNR52], a
-    ld [rNR51], a
+    ld [rAUDTERM], a
     ld a, $77
-    ld [rNR50], a
-    
-    ret
+    ld [rAUDVOL], a
 
-SoundOff::
-    xor a
-    ld [rNR52], a
     ret
 
 Initialise::
@@ -111,6 +108,10 @@ Initialise::
 
     ; Enable Sound
     call SoundOn
+
+    ; Initialise BGM
+    ld hl, CombatBGM
+    call hUGE_init
 
     ld a, IEF_VBLANK ; Enable Interrupts
     ld [rIE], a

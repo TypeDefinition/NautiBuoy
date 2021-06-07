@@ -1,5 +1,6 @@
 INCLUDE "./src/include/structs.inc"
 INCLUDE "./src/include/hardware.inc"
+include "./src/include/hUGE.inc"
 
 SECTION "Update Loop", ROM0
 UpdateLoop::
@@ -24,6 +25,9 @@ UpdateLoop::
 
     ; Dirty tiles get updated during HBlank.
     call UpdateDirtyTiles
+
+    ; Update Sound
+    call _hUGE_dosound
 
     halt ; Save power, wait for vblank interrupt
 
