@@ -1,4 +1,4 @@
-SECTION "Collision Check", ROM0
+SECTION "Sprite Collision", ROM0
 /*  Collision detection using AABB.
     IMPORTANT: This function is working under the assumption
     that the collider size will be something reasonable where
