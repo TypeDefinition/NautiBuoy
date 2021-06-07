@@ -36,7 +36,6 @@ SoundOn::
     ld [rAUDTERM], a
     ld a, $77
     ld [rAUDVOL], a
-
     ret
 
 Initialise::
@@ -100,16 +99,14 @@ Initialise::
     ld [rSCY], a ; make the screen for scroll X and Y start at 0
     ld [rSCX], a
     
-    ; Shut sound down
-    ld [rNR52], a
-    
     ; Turn screen on, display background
     call LCDOn
 
     ; Enable Sound
     call SoundOn
-
+    
     ; Initialise BGM
+    set_romx_bank 5
     ld hl, CombatBGM
     call hUGE_init
 

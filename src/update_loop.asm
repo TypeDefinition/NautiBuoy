@@ -1,6 +1,7 @@
 INCLUDE "./src/include/structs.inc"
 INCLUDE "./src/include/hardware.inc"
 include "./src/include/hUGE.inc"
+include "./src/include/util.inc"
 
 SECTION "Update Loop", ROM0
 UpdateLoop::
@@ -27,6 +28,7 @@ UpdateLoop::
     call UpdateDirtyTiles
 
     ; Update Sound
+    set_romx_bank 5
     call _hUGE_dosound
 
     halt ; Save power, wait for vblank interrupt

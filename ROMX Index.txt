@@ -1,0 +1,5 @@
+BANK[1] - Title Tiles
+BANK[2] - Background & Sprite Tiles
+BANK[3] - Tile Maps
+BANK[4] - Tile Maps
+BANK[5] - Sound Data
