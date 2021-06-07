@@ -16,16 +16,17 @@ SECTION "Player Data", WRAM0
 /* Any logic/behavior/function related to player here */
 SECTION "Player", ROM0
 PlayAttackSFX:
-    ld a, %00010110
+    ; Channel 1
+    ld a, %01000010
     ld [rNR10], a
 
-    ld a, %01001000
+    ld a, %01001100
     ld [rNR11], a
 
-    ld a, %01110011
+    ld a, %11111010
     ld [rNR12], a
 
-    xor a
+    ld a, $FF
     ld [rNR13], a
 
     ld a, %11000011
