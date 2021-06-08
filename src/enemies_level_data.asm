@@ -7,9 +7,10 @@ INCLUDE "./src/include/definitions.inc"
         - Enemy type
         - Grid pos y * 8 pixels
         - Grid pos x * 8 pixels
-        - Direction maybe?
+        - Direction of movement and shoot direction
         - health
         - velocity
+        - initial max animation frame
 */
 SECTION "Enemies Level Data", ROMX, BANK[2]
 LevelOneEnemyData::

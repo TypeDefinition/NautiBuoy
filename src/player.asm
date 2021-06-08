@@ -53,7 +53,7 @@ InitialisePlayer::
     ld a, DIR_UP
     ld [wPlayer_Direction], a
     ; Set HP
-    ld a, 3
+    ld a, PLAYER_HEALTH
     ld [wPlayer_HP], a
     ; Set Velocity
     ld hl, VELOCITY_NORMAL
@@ -64,6 +64,8 @@ InitialisePlayer::
     ; Set Animation
     xor a
     ld [wPlayer_CurrAnimationFrame], a
+    ld [wPlayer_DamageFlickerEffect], a
+    ld [wPlayer_DamageFlickerEffect + 1], a
     ld a, PLAYER_WALK_FRAMES
     ld [wPlayer_CurrStateMaxAnimFrame], a
 
@@ -261,8 +263,43 @@ UpdatePlayerAttack::
 .finishAttack
     ret
 
-/* Player has been hit by enemy/projectile */
+/*  Player has been hit by enemy/projectile 
+    TODO:: get proper damage
+
+    WARNING: this is assuming health < 127. Want to prevent underflow, we defined bit 7 to be for -ve
+*/
 PlayerIsHit::
+    ; TODO:: have variable of spawn location in level to teleport
+
+    ; deduct health first
+    ld a, [wPlayer_HP]
+    sub a, BULLET_DAMAGE
+    ld [wPlayer_HP], a
+
+    ; check health <= 0
+    cp a, 0
+    jr z, .dead
+    cp a, 127
+    jr nc, .dead ; value underflowed, go to dead
+
+.damageEffect ; not dead, set damage flicker effect and teleport to spawn
+    ld a, DAMAGE_FLICKER_EFFECT
+    ld [wPlayer_DamageFlickerEffect], a
+    xor a
+    ld [wPlayer_DamageFlickerEffect + 1], a
+
+    ; TODO:: teleport back to spawn
+    ld a, 128
+    ld [wPlayer_PosYInterpolateTarget], a
+    ld [wPlayer_PosXInterpolateTarget], a
+    ld [wPlayer_PosY], a
+    ld [wPlayer_PosX], a
+
+    jr .end
+.dead
+    /* TODO:: if dead, put gameover screen or something */
+
+.end
     ret
 
 

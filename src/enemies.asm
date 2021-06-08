@@ -488,7 +488,6 @@ HitEnemy::
     push hl
     
     ; TODO, check which enemy it is, and whether u can shoot it or not
-    ; if health < 0, mens dead, set the variable to dead
 
     ld de, Character_HP
     add hl, de
@@ -496,7 +495,7 @@ HitEnemy::
     sub a, BULLET_DAMAGE ; deduct health
     ld [hl], a ; update hp
 
-    ; as long as lesser than 0
+    ; check health <= 0
     cp a, 0
     jr z, .dead
     cp a, 127
