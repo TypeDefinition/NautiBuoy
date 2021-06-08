@@ -334,12 +334,16 @@ UpdateBullets::
     bit BIT_FLAG_ACTIVE, a ; check if alive
     jr z, .loopEnd
     call BulletTileCollisionCheck
-    call CheckBulletSpriteCollision
+
+    ld a, [hl]
+    bit BIT_FLAG_ACTIVE, a ; check if alive after collision
+    jr z, .loopEnd
+    call BulletSpriteCollisionCheck
 
     ; Translation
 .translationStart
     ld a, [hl]
-    bit BIT_FLAG_ACTIVE, a ; check if alive after collision
+    bit BIT_FLAG_ACTIVE, a ; check if alive after sprite collision
     jr z, .loopEnd
 
     ; bc = Velocity
@@ -404,22 +408,11 @@ UpdateBullets::
 /*  Check if the bullet collided with any sprite
     hl - starting bullet address 
 */
-CheckBulletSpriteCollision:
+BulletSpriteCollisionCheck:
     push af
     push bc
     push de
     push hl
-
-
-    /*
-        check what type it is first
-        if it belongs to enemy, check against player
-        if belongs to player, check against enemy
-
-        if collide, turn the bullet inactive
-        call the correct function to deal with player and enemy
-    */
-    ;push hl ; PUSH HL = bullet address
 
     ; b = bullet posY, c = bullet pos X
     ld de, Bullet_PosY 

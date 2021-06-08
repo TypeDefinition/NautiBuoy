@@ -86,6 +86,7 @@ InitEnemiesAndPlaceOnMap::
 UpdateAllEnemies::
     ld hl, wEnemiesData
     
+    ; TODO:: make a variable to get the number of enemies in level properly
     ld a, [LevelOneEnemyData] ; get number of enemies in level
     ld d, a
 
@@ -131,7 +132,9 @@ UpdateAllEnemies::
 .endOfLoop
     ret
 
-/* Call this when enemy has been hit */
+/*  Call this when enemy has been hit 
+    hl - enemy address
+*/
 HitEnemy::
     ; should be passing in the address of the enemy here
     ; should also be passing the amount of damage dealth
@@ -233,13 +236,13 @@ EnemyShoot::
     inc de 
 
     ld a, [de]  ; pos X second byte
-    ld [hl], a ; set second byte of pos X for bullet */
+    ld [hl], a ; set second byte of pos X for bullet 
 
 .finishAttack
     pop hl
     pop de
     pop bc
-    pop af
+    pop af 
 
     ret
 
