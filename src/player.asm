@@ -261,6 +261,11 @@ UpdatePlayerAttack::
 .finishAttack
     ret
 
+/* Player has been hit by enemy/projectile */
+PlayerIsHit::
+    ret
+
+
 /*  Update camera pos based on player pos
     Player in middle of camera
     When borders are reached, camera stops

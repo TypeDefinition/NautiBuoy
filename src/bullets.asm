@@ -452,13 +452,18 @@ CheckBulletSpriteCollision:
 
     ; bullet collision behavior
     ; player collision behavior
-    pop hl ; TEMP CODES, TODO:: FIX THIS SHIT
-    push hl
+    ; TEMP CODES, TODO:: FIX THIS SHIT
+    pop hl  ; POP HL = bullet address
+    push hl ; Push HL = bullet address
     ld a, FLAG_INACTIVE
     ld [hl], a
 
-
+    call PlayerIsHit
+    
 .checkCollisionWithEnemy ; bullet belongs to player
+    /* I need do a for loop here to check for all enemies */
+    
+
 
 
 .end
@@ -468,3 +473,4 @@ CheckBulletSpriteCollision:
     pop af
 
     ret
+
