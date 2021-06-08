@@ -75,6 +75,9 @@ InitEnemiesAndPlaceOnMap::
     ld [hli], a ; set CurrStateMaxAnimFrame
     inc bc
 
+    inc hl 
+    inc hl ; skip DamageFlickerEffect
+
     dec d
     ld a, d
     cp a, 0 ; check if initialise all the required enemies yet
@@ -131,17 +134,6 @@ UpdateAllEnemies::
 
 .endOfLoop
     ret
-
-/*  Call this when enemy has been hit 
-    hl - enemy address
-*/
-HitEnemy::
-    ; should be passing in the address of the enemy here
-    ; should also be passing the amount of damage dealth
-    ; deduct health
-    ; if health < 0, mens dead, set the variable to dead
-    ret
-
 
 /*  For enemies shooting in directions it is not facing
     hl - enemy address    
@@ -337,8 +329,46 @@ EnemyBounceOnWallMovement::
         - de: address of enemy sprite data
 */
 UpdateEnemySpriteOAM::
+    push hl ; PUSH HL = enemy address
+
+    ; check if should render this frame
+    push bc ; PUSH BC = temp 
+    ld bc, Character_DamageFlickerEffect
+    add hl, bc
+    ld a, [hli]
+    cp a, 0
+    jr z, .startUpdateOAM 
+
+    ld b, a
+    ld a, [hl] ; get fractional portion
+    add a, DAMAGE_FLICKER_UPDATE_SPEED
+    ld [hl], a ; update fractional portion
+    jr nc, .updateFlickerEffect
+
+    ld a, b ; Got carry, sub 1 from int portion
+    sub a, 1
+    ld b, a
+
+    dec hl
+    ld [hl], a ; update new interger portion value
+
+.updateFlickerEffect
+    ; b = DamageFlickerEffect int portion
+    ld a, b
+    and a, DAMAGE_FLICKER_BITMASK
+    cp a, DAMAGE_FLICKER_VALUE
+    pop bc ; POP BC = temp 
+    pop hl ; POP HL = enemy address
+    jr z, .end 
+
+    push hl ; PUSH HL = enemy address
+    push bc ; PUSH BC = temp 
+
+.startUpdateOAM
     set_romx_bank 2 ; bank for sprites is in bank 2
 
+    pop bc ; POP BC = temp
+    pop hl ; POP HL = enemy address
     push hl ; PUSH HL = enemy address
 
     push bc ; PUSH BC = temp push
@@ -442,4 +472,61 @@ UpdateEnemySpriteOAM::
     ld a, [bc]
     ld [hl], a ; store first flag
 
+.end
     ret 
+
+/*  Call this when enemy has been hit 
+    hl - enemy address
+    TODO:: pass in the amount of damage 
+
+    WARNING: this is assuming health < 127. Want to prevent underflow, we defined bit 7 to be for -ve
+*/
+HitEnemy::
+    push af
+    push bc
+    push de
+    push hl
+    
+    ; TODO, check which enemy it is, and whether u can shoot it or not
+    ; if health < 0, mens dead, set the variable to dead
+
+    ld de, Character_HP
+    add hl, de
+    ld a, [hl]
+    sub a, BULLET_DAMAGE ; deduct health
+    ld [hl], a ; update hp
+
+    ; as long as lesser than 0
+    cp a, 0
+    jr z, .dead
+    cp a, 127
+    jr nc, .dead ; value underflowed, go to dead
+
+
+.damageFlickerEffect ; not dead, set damage flicker effect
+    pop hl ; POP HL = enemy address
+    push hl ; PUSH HL = enemy address
+    
+    ld a, DAMAGE_FLICKER_EFFECT
+    ld de, Character_DamageFlickerEffect
+    add hl, de
+    ld [hli], a ; set the integer portion
+    xor a
+    ld [hl], a ; reset the fractional portion
+
+    pop hl ; POP HL = enemy address
+    jr .end
+
+.dead ; dead, turn it inactive
+    pop hl ; POP HL = enemy address
+    ld a, FLAG_INACTIVE
+    ld [hl], a
+
+.end
+    pop de
+    pop bc
+    pop af
+
+    ret
+
+
