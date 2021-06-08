@@ -327,51 +327,14 @@ PlayerSpriteCollisionCheck:
     ld a, [wPlayer_PosX]
     ld c, a
 
-    ld hl, wEnemy0
-    ld a, [LevelOneEnemyData]
-    ld d, a
-
-.startOfEnemyLoop
-    ld a, [hl]
-    bit BIT_FLAG_ACTIVE, a ; check if enemy alive
-    jr z, .nextEnemyLoop
-
-    push de ; PUSH DE = enemy counter
-    push hl ; PUSH HL = enemy starting address
-
-    inc hl 
-    inc hl
-
-    ld a, [hli] ; get enemy pos Y
-    ld d, a
-    inc hl
-    inc hl
-    ld a, [hl] ; get enemy pos X
-    ld e, a ; d = enemy pos Y, e = enemy position X
-
-    ld h, PLAYER_COLLIDER_SIZE
-    ld l, ENEMY_PLAYER_COLLIDER_SIZE
-
-    call SpriteCollisionCheck
-    cp a, 0
-    pop hl ; POP HL = enemy starting address
-    pop de ; POP DE = enemy counter
-    jr z, .nextEnemyLoop
-
-    call PlayerIsHit
-    jr .end
-
-.nextEnemyLoop
-    dec d
-    ld a, d
+    ld d, PLAYER_COLLIDER_SIZE
+    ld e, ENEMY_PLAYER_COLLIDER_SIZE
+ 
+    call CheckEnemyCollisionLoop
     cp a, 0
     jr z, .end
 
-    push bc ; PUSH BC = player y and x pos
-    ld bc, sizeof_Character
-    add hl, bc
-    pop bc ; POP BC = player y and x pos
-    jr .startOfEnemyLoop
+    call PlayerIsHit
 
 .end
     pop hl

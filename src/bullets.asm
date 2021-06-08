@@ -454,36 +454,12 @@ BulletSpriteCollisionCheck:
 .checkCollisionWithEnemy ; bullet belongs to player
     ; b = bullet posY, c = bullet pos X
 
-    ld hl, wEnemy0
-    ld a, [LevelOneEnemyData]
-    ld d, a
+    ld d, BULLET_COLLIDER_SIZE
+    ld e, ENEMY_BULLET_COLLIDER_SIZE
 
-.startOfEnemyLoop
-    ld a, [hl]
-    bit BIT_FLAG_ACTIVE, a ; check if alive
-    jr z, .nextEnemyLoop
-
-    push de ; PUSH DE = enemy counter
-    push hl ; PUSH HL = enemy starting address
-
-    inc hl 
-    inc hl
-
-    ld a, [hli] ; get enemy pos Y
-    ld d, a
-    inc hl
-    inc hl
-    ld a, [hl] ; get enemy pos X
-    ld e, a ; d = enemy pos Y, e = enemy position X
-
-    ld h, BULLET_COLLIDER_SIZE
-    ld l, ENEMY_BULLET_COLLIDER_SIZE
-
-    call SpriteCollisionCheck
+    call CheckEnemyCollisionLoop
     cp a, 0
-    pop hl ; POP HL = enemy starting address
-    pop de ; POP DE = enemy counter
-    jr z, .nextEnemyLoop
+    jr z, .end
 
     call HitEnemy
     
@@ -491,20 +467,6 @@ BulletSpriteCollisionCheck:
     push hl ; Push HL = bullet address
     ld a, FLAG_INACTIVE ; bullet collision behavior
     ld [hl], a
-
-    jr .end
-
-.nextEnemyLoop
-    dec d
-    ld a, d
-    cp a, 0
-    jr z, .end
-
-    push bc ; PUSH BC = projectile y and x pos
-    ld bc, sizeof_Character
-    add hl, bc
-    pop bc ; POP BC = projectile y and x pos
-    jr .startOfEnemyLoop
 
 .end
     pop hl

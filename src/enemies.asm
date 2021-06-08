@@ -473,6 +473,76 @@ UpdateEnemySpriteOAM::
 .end
     ret 
 
+
+/*
+    Call to loop through whether an entity collided with any enemies
+    b - entity pos Y
+    c - entity pos X
+    d - entity collider size
+    e - enemy collider size
+    return value:
+        a  : if more than 0, means collided
+        hl : enemy collided address
+*/
+CheckEnemyCollisionLoop::
+    push bc
+    push de
+
+    ld hl, wEnemy0
+    ld a, [LevelOneEnemyData]
+
+.startOfEnemyLoop
+    push af ; PUSH AF = loop counter
+
+    ld a, [hl]
+    bit BIT_FLAG_ACTIVE, a ; check if enemy alive
+    jr z, .nextEnemyLoop
+
+    push hl ; PUSH HL = enemy starting address
+
+    inc hl 
+    inc hl
+
+    push de ; PUSH DE = collider size for enemy and other entity
+
+    ld a, [hli] ; get enemy pos Y
+    ld d, a
+    inc hl
+    inc hl
+    ld a, [hl] ; get enemy pos X
+    ld e, a ; d = enemy pos Y, e = enemy position X
+
+    pop hl ; POP HL = collider size for enemy and other entity
+
+    call SpriteCollisionCheck
+    cp a, 0
+    ld d, h
+    ld e, l ; de = collider size for enemy and other entity
+    pop hl ; POP HL = enemy starting address 
+    jr z, .nextEnemyLoop
+
+    pop af ; POP AF = loop counter
+    jr .end
+
+.nextEnemyLoop
+    pop af ; POP AF = loop counter
+    dec a
+    cp a, 0
+    jr z, .end
+
+    push bc ; PUSH BC = player y and x pos
+    ld bc, sizeof_Character
+    add hl, bc
+    pop bc ; POP BC = player y and x pos
+    jr .startOfEnemyLoop
+
+.end
+    pop de
+    pop bc
+    
+    ret
+
+
 /*  Call this when enemy has been hit 
     hl - enemy address
     TODO:: pass in the amount of damage 
