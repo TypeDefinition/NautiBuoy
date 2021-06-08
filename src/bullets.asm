@@ -437,11 +437,11 @@ CheckBulletSpriteCollision:
     jr z, .checkCollisionWithEnemy
 
 .checkCollisionWithPlayer ; bullet belongs to enemy
-    ; d = player pos Y, e = player position X
+    ; b = bullet posY, c = bullet pos X
     ld a, [wPlayer_PosYInterpolateTarget]
     ld d, a
     ld a, [wPlayer_PosXInterpolateTarget]
-    ld e, a
+    ld e, a ; d = player pos Y, e = player position X
 
     ld h, BULLET_COLLIDER_SIZE
     ld l, PLAYER_COLLIDER_SIZE
@@ -450,21 +450,68 @@ CheckBulletSpriteCollision:
     cp a, 0
     jr z, .end
 
-    ; bullet collision behavior
-    ; player collision behavior
-    ; TEMP CODES, TODO:: FIX THIS SHIT
     pop hl  ; POP HL = bullet address
     push hl ; Push HL = bullet address
-    ld a, FLAG_INACTIVE
+    ld a, FLAG_INACTIVE ; bullet collision behavior
     ld [hl], a
 
-    call PlayerIsHit
+    call PlayerIsHit ; player collision behavior
+    jr .end
     
 .checkCollisionWithEnemy ; bullet belongs to player
-    /* I need do a for loop here to check for all enemies */
+    ; b = bullet posY, c = bullet pos X
+
+    ld hl, wEnemy0
+    ld a, [LevelOneEnemyData]
+    ld d, a
+
+.startOfEnemyLoop
+    ld a, [hl]
+    bit BIT_FLAG_ACTIVE, a ; check if alive
+    jr z, .nextEnemyLoop
+
+    push de ; PUSH DE = enemy counter
+    push hl ; PUSH HL = enemy starting address
+
+    inc hl 
+    inc hl
+
+    ld a, [hli] ; get enemy pos Y
+    ld d, a
+    inc hl
+    inc hl
+    ld a, [hl] ; get enemy pos X
+    ld e, a ; d = enemy pos Y, e = enemy position X
+
+    ld h, BULLET_COLLIDER_SIZE
+    ld l, ENEMY_BULLET_COLLIDER_SIZE
+
+    call SpriteCollisionCheck
+    cp a, 0
+    pop hl ; POP HL = enemy starting address
+    pop de ; POP DE = enemy counter
+    jr z, .nextEnemyLoop
+
+    call HitEnemy
     
+    pop hl  ; POP HL = bullet address
+    push hl ; Push HL = bullet address
+    ld a, FLAG_INACTIVE ; bullet collision behavior
+    ld [hl], a
 
+    jr .end
 
+.nextEnemyLoop
+    dec d
+    ld a, d
+    cp a, 0
+    jr z, .end
+
+    push bc ; PUSH BC = projectile y and x pos
+    ld bc, sizeof_Character
+    add hl, bc
+    pop bc ; POP BC = projectile y and x pos
+    jr .startOfEnemyLoop
 
 .end
     pop hl
