@@ -334,6 +334,7 @@ UpdateBullets::
     bit BIT_FLAG_ACTIVE, a ; check if alive
     jr z, .loopEnd
     call BulletTileCollisionCheck
+    call CheckBulletSpriteCollision
 
     ; Translation
 .translationStart
@@ -397,4 +398,73 @@ UpdateBullets::
     pop de
     pop bc
     pop af
+    ret
+
+
+/*  Check if the bullet collided with any sprite
+    hl - starting bullet address 
+*/
+CheckBulletSpriteCollision:
+    push af
+    push bc
+    push de
+    push hl
+
+
+    /*
+        check what type it is first
+        if it belongs to enemy, check against player
+        if belongs to player, check against enemy
+
+        if collide, turn the bullet inactive
+        call the correct function to deal with player and enemy
+    */
+    ;push hl ; PUSH HL = bullet address
+
+    ; b = bullet posY, c = bullet pos X
+    ld de, Bullet_PosY 
+    add hl, de
+    ld a, [hli]
+    ld b, a
+    inc hl
+    ld a, [hl]
+    ld c, a
+
+    pop hl ; POP HL = bullet address
+    push hl ; Push HL = bullet address
+    ld a, [hl]
+    bit BIT_FLAG_PLAYER, a ; check first bit, 0 = player, 1 = enemy
+    jr z, .checkCollisionWithEnemy
+
+.checkCollisionWithPlayer ; bullet belongs to enemy
+    ; d = player pos Y, e = player position X
+    ld a, [wPlayer_PosYInterpolateTarget]
+    ld d, a
+    ld a, [wPlayer_PosXInterpolateTarget]
+    ld e, a
+
+    ld h, BULLET_COLLIDER_SIZE
+    ld l, PLAYER_COLLIDER_SIZE
+
+    call SpriteCollisionCheck
+    cp a, 0
+    jr z, .end
+
+    ; bullet collision behavior
+    ; player collision behavior
+    pop hl ; TEMP CODES, TODO:: FIX THIS SHIT
+    push hl
+    ld a, FLAG_INACTIVE
+    ld [hl], a
+
+
+.checkCollisionWithEnemy ; bullet belongs to player
+
+
+.end
+    pop hl
+    pop de
+    pop bc
+    pop af
+
     ret

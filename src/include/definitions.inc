@@ -27,7 +27,7 @@ DEF FLAG_ENEMY EQU $02  ; bit 1, %0000 00 1 0
 
 ; definitions for the bit flags
 DEF BIT_FLAG_ACTIVE EQU $0 ; 0 bit
-DEF BIT_FLAG_PLAYER EQU $1 ; 01 bit
+DEF BIT_FLAG_PLAYER EQU $1 ; 1 bit
 
 DEF BIT_MASK_TYPE EQU %00011100 ; to do bit masking for power up type/enemy type
 
