@@ -185,6 +185,8 @@ UpdatePlayerMovement::
     push af
     push bc
 
+    call PlayerSpriteCollisionCheck
+
     ; If the player is still interpolating, do not check for input.
     ld a, [wPlayer_PosY]
     ld b, a
@@ -274,9 +276,6 @@ PlayerIsHit::
     push de
     push hl
 
-
-    ; TODO:: have variable of spawn location in level to teleport
-
     ; deduct health first
     ld a, [wPlayer_HP]
     sub a, BULLET_DAMAGE
@@ -296,6 +295,7 @@ PlayerIsHit::
     ld [wPlayer_DamageFlickerEffect + 1], a 
 
     ; TODO:: teleport back to spawn
+    ; TODO:: have variable of spawn location in level to teleport
     ld a, 128
     ld [wPlayer_PosYInterpolateTarget], a
     ld [wPlayer_PosXInterpolateTarget], a
@@ -305,6 +305,73 @@ PlayerIsHit::
     jr .end
 .dead
     /* TODO:: if dead, put gameover screen or something */
+
+.end
+    pop hl
+    pop de
+    pop bc
+    pop af
+
+    ret
+
+
+/*  Player check collision with enemy sprite */
+PlayerSpriteCollisionCheck:
+    push af
+    push bc
+    push de
+    push hl
+
+    ld a, [wPlayer_PosY]
+    ld b, a
+    ld a, [wPlayer_PosX]
+    ld c, a
+
+    ld hl, wEnemy0
+    ld a, [LevelOneEnemyData]
+    ld d, a
+
+.startOfEnemyLoop
+    ld a, [hl]
+    bit BIT_FLAG_ACTIVE, a ; check if enemy alive
+    jr z, .nextEnemyLoop
+
+    push de ; PUSH DE = enemy counter
+    push hl ; PUSH HL = enemy starting address
+
+    inc hl 
+    inc hl
+
+    ld a, [hli] ; get enemy pos Y
+    ld d, a
+    inc hl
+    inc hl
+    ld a, [hl] ; get enemy pos X
+    ld e, a ; d = enemy pos Y, e = enemy position X
+
+    ld h, PLAYER_COLLIDER_SIZE
+    ld l, ENEMY_PLAYER_COLLIDER_SIZE
+
+    call SpriteCollisionCheck
+    cp a, 0
+    pop hl ; POP HL = enemy starting address
+    pop de ; POP DE = enemy counter
+    jr z, .nextEnemyLoop
+
+    call PlayerIsHit
+    jr .end
+
+.nextEnemyLoop
+    dec d
+    ld a, d
+    cp a, 0
+    jr z, .end
+
+    push bc ; PUSH BC = player y and x pos
+    ld bc, sizeof_Character
+    add hl, bc
+    pop bc ; POP BC = player y and x pos
+    jr .startOfEnemyLoop
 
 .end
     pop hl
