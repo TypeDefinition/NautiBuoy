@@ -81,6 +81,7 @@ Initialise::
     mem_copy GameLevelTiles, _SCRN0, GameLevelTiles.end-GameLevelTiles
 
     ; TEMP: Temporary code.
+    set_romx_bank 2
     ld hl, wShadowOAM
     call InitialisePlayer
     call UpdatePlayerShadowOAM

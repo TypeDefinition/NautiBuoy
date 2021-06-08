@@ -269,6 +269,12 @@ UpdatePlayerAttack::
     WARNING: this is assuming health < 127. Want to prevent underflow, we defined bit 7 to be for -ve
 */
 PlayerIsHit::
+    push af
+    push bc
+    push de
+    push hl
+
+
     ; TODO:: have variable of spawn location in level to teleport
 
     ; deduct health first
@@ -280,26 +286,32 @@ PlayerIsHit::
     cp a, 0
     jr z, .dead
     cp a, 127
-    jr nc, .dead ; value underflowed, go to dead
+    jr nc, .dead ; value underflowed, go to dead 
 
 .damageEffect ; not dead, set damage flicker effect and teleport to spawn
+    
     ld a, DAMAGE_FLICKER_EFFECT
     ld [wPlayer_DamageFlickerEffect], a
     xor a
-    ld [wPlayer_DamageFlickerEffect + 1], a
+    ld [wPlayer_DamageFlickerEffect + 1], a 
 
     ; TODO:: teleport back to spawn
     ld a, 128
     ld [wPlayer_PosYInterpolateTarget], a
     ld [wPlayer_PosXInterpolateTarget], a
     ld [wPlayer_PosY], a
-    ld [wPlayer_PosX], a
+    ld [wPlayer_PosX], a 
 
     jr .end
 .dead
     /* TODO:: if dead, put gameover screen or something */
 
 .end
+    pop hl
+    pop de
+    pop bc
+    pop af
+
     ret
 
 
@@ -349,6 +361,30 @@ UpdatePlayerShadowOAM::
     push bc
     push de
 
+    ld a, [wPlayer_DamageFlickerEffect]
+    cp a, 0
+    jr z, .startUpdateOAM
+
+    ld b, a ; b = DamageFlickerEffect int portion
+    ld a, [wPlayer_DamageFlickerEffect + 1]
+    add a, DAMAGE_FLICKER_UPDATE_SPEED
+    ld [wPlayer_DamageFlickerEffect + 1], a
+    jr nc, .updateFlickerEffect
+
+    ld a, b ; Got carry, sub 1 from int portion
+    sub a, 1
+    ld b, a
+
+    ld [wPlayer_DamageFlickerEffect], a ; update new interger portion value
+
+.updateFlickerEffect
+    ; b = DamageFlickerEffect int portion
+    ld a, b
+    and a, DAMAGE_FLICKER_BITMASK
+    cp a, DAMAGE_FLICKER_VALUE
+    jp z, .end 
+
+.startUpdateOAM
     ; get the current address of shadow OAM to hl
     ld a, [wCurrentShadowOAMPtr]
     ld l, a
@@ -384,7 +420,6 @@ UpdatePlayerShadowOAM::
 
 .endSpriteDir
     push bc ; to be used later for animation
-    set_romx_bank 2 ; bank for sprites is in bank 2
 
     ; Convert player position from world space to screen space.
     ld a, [wShadowSCData]
@@ -467,7 +502,7 @@ UpdatePlayerShadowOAM::
     add hl, de ; offset by 4 to go to the second half sprite ID address
     ld [hl], c
 
-    ; end
+.end
     pop de
     pop bc
     pop af

@@ -339,7 +339,7 @@ UpdateEnemySpriteOAM::
     cp a, 0
     jr z, .startUpdateOAM 
 
-    ld b, a
+    ld b, a ; b = DamageFlickerEffect int portion
     ld a, [hl] ; get fractional portion
     add a, DAMAGE_FLICKER_UPDATE_SPEED
     ld [hl], a ; update fractional portion
@@ -365,8 +365,6 @@ UpdateEnemySpriteOAM::
     push bc ; PUSH BC = temp 
 
 .startUpdateOAM
-    set_romx_bank 2 ; bank for sprites is in bank 2
-
     pop bc ; POP BC = temp
     pop hl ; POP HL = enemy address
     push hl ; PUSH HL = enemy address

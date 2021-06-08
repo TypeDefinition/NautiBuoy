@@ -5,6 +5,7 @@ include "./src/include/util.inc"
 
 SECTION "Update Loop", ROM0
 UpdateLoop::
+    set_romx_bank 2 ; player, enemy and bullet sprite data is in rombank 2
     call UpdateInput
 
     call ResetShawdowOAM
@@ -14,12 +15,6 @@ UpdateLoop::
     call UpdatePlayerAttack
     call UpdatePlayerCamera
     call UpdatePlayerShadowOAM ; TODO:: update shadow OAM data here
-
-    /*  HUGE PROBLEM FOR RENDERING the order
-        TODO::
-        for example, enemy starts shooting, so enemy should happen before bullet render
-        but then, bullet update, shoot checks collision, enemies destroyed, need to update enemy but it can only happen next frame
-    */
 
     call UpdateAllEnemies    
     call UpdateBullets
