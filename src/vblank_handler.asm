@@ -15,7 +15,6 @@ WaitVBlank::
 
 SECTION "VBlank Handler", ROM0
 VBlankHandler::
-    call ResetOAM
     call hOAMDMA ; Update OAM
     
     ; update registers for camera
