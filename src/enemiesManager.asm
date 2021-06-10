@@ -95,11 +95,8 @@ InitEnemiesAndPlaceOnMap::
 UpdateAllEnemies::
     ld hl, wEnemiesData
     
-    ; TODO:: make a variable to get the number of enemies in level properly
     ld a, [wTotalLevelEnemiesNo] ; get number of enemies in level
     ld d, a
-
-    ; TODO:: make update loop
 
 .startOfLoop
     push hl ; PUSH HL = enemy address
@@ -107,7 +104,7 @@ UpdateAllEnemies::
 
     ld a, [hl]
     bit BIT_FLAG_ACTIVE, a ; check if alive
-    jr z, .nextLoop ; TODO:: fix this, if not alive, for now end loop
+    jr z, .nextLoop
 
 .updateEnemy
     and a, BIT_MASK_TYPE ; get the type only

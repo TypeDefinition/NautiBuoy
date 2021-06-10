@@ -10,11 +10,11 @@ UpdateLoop::
 
     call ResetShawdowOAM
 
-    ; insert game logic here
+    ; insert game logic here and update shadow OAM data
     call UpdatePlayerMovement
     call UpdatePlayerAttack
     call UpdatePlayerCamera
-    call UpdatePlayerShadowOAM ; TODO:: update shadow OAM data here
+    call UpdatePlayerShadowOAM
 
     call UpdateAllEnemies    
     call UpdateBullets

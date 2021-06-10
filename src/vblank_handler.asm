@@ -23,10 +23,6 @@ VBlankHandler::
     ld a, [wShadowSCData + 1]
     ld [rSCX], a 
 
-    ; TODO:: scrolling or any tile updates here
-    ; TODO:: camera stuff here, just fix with player being in center of it
-    ; TODO:: any UI stuff here too
-
     ; get back old state
     pop hl
     pop de
