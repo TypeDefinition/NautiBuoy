@@ -18,7 +18,7 @@ wEnemiesData::
     dstruct Character, wEnemy7
 wEnemiesDataEnd::
 
-SECTION "Enemies", ROM0
+SECTION "Enemies Manager", ROM0
 
 /*  Read data on where enemy should be and its type
     Initialise the enemy
