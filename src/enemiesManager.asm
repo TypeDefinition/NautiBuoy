@@ -17,6 +17,9 @@ wEnemiesData::
     dstruct Character, wEnemy6
     dstruct Character, wEnemy7
 wEnemiesDataEnd::
+wTotalLevelEnemiesNo:: ds 1 ; original number of enemies in the level
+wCurrLevelEnemiesNo:: ds 1 ; curr enemy level
+
 
 SECTION "Enemies Manager", ROM0
 
@@ -27,10 +30,13 @@ InitEnemiesAndPlaceOnMap::
     mem_set_small wEnemiesData, 0, wEnemiesDataEnd - wEnemiesData ; reset all enemy data
 
     ld hl, wEnemiesData
-    ld bc, LevelOneEnemyData
+    ld bc, LevelOneEnemyData ; TODO:: make sure address if proper level's enemy data
     ld a, [bc] ; get number of enemies in level
     ld d, a ; transfer the numbner of enemies to d
     
+    ld [wTotalLevelEnemiesNo], a
+    ld [wCurrLevelEnemiesNo], a
+
     inc bc
 .loop
     ld a, [bc]
@@ -90,7 +96,7 @@ UpdateAllEnemies::
     ld hl, wEnemiesData
     
     ; TODO:: make a variable to get the number of enemies in level properly
-    ld a, [LevelOneEnemyData] ; get number of enemies in level
+    ld a, [wTotalLevelEnemiesNo] ; get number of enemies in level
     ld d, a
 
     ; TODO:: make update loop
@@ -489,7 +495,7 @@ CheckEnemyCollisionLoop::
     push de
 
     ld hl, wEnemy0
-    ld a, [LevelOneEnemyData]
+    ld a, [wTotalLevelEnemiesNo]
 
 .startOfEnemyLoop
     push af ; PUSH AF = loop counter
