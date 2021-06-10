@@ -373,11 +373,26 @@ UpdatePlayerCamera::
     ; If playerPos < cameraPos
 .subVelocityY
     ld bc, -VELOCITY_FAST
-    jr .translateCameraY
+    add hl, bc
+
+    ; If camera "overshot" player, snap camera to player.
+    cp a, h ; We want playerPos <= cameraPos.
+    jr c, .updateCameraY
+    ld h, a
+    ld l, 0
+    jr .updateCameraY
+
 .addVelocityY
     ld bc, VELOCITY_FAST
-.translateCameraY
     add hl, bc
+    
+    ; If camera "overshot" player, snap camera to player.
+    cp a, h ; We want playerPos <= cameraPos.
+    jr nc, .updateCameraY
+    ld h, a
+    ld l, 0
+
+.updateCameraY
     ld a, l
     ld [wPlayerCamera_PosY + 1], a
     ld a, h
@@ -412,11 +427,26 @@ UpdatePlayerCamera::
     ; If playerPos < cameraPos
 .subVelocityX
     ld bc, -VELOCITY_FAST
-    jr .translateCameraX
+    add hl, bc
+
+    ; If camera "overshot" player, snap camera to player.
+    cp a, h ; We want playerPos <= cameraPos.
+    jr c, .updateCameraX
+    ld h, a
+    ld l, 0
+    jr .updateCameraX
+
 .addVelocityX
     ld bc, VELOCITY_FAST
-.translateCameraX
     add hl, bc
+    
+    ; If camera "overshot" player, snap camera to player.
+    cp a, h ; We want playerPos <= cameraPos.
+    jr nc, .updateCameraX
+    ld h, a
+    ld l, 0
+
+.updateCameraX
     ld a, l
     ld [wPlayerCamera_PosX + 1], a
     ld a, h
