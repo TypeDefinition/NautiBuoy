@@ -342,6 +342,10 @@ PlayerSpriteCollisionCheck:
 
     ret
 
+; Resets the Player Camera back to (0, 0)
+ResetPlayerCamera::
+    mem_set_small wPlayerCamera, 0, sizeof_PlayerCamera
+    ret
 
 /*  Update camera pos based on player pos
     Player in middle of camera
@@ -368,10 +372,10 @@ UpdatePlayerCamera::
     jr nc, .addVelocityY
     ; If playerPos < cameraPos
 .subVelocityY
-    ld bc, -VELOCITY_NORMAL
+    ld bc, -VELOCITY_FAST
     jr .translateCameraY
 .addVelocityY
-    ld bc, VELOCITY_NORMAL
+    ld bc, VELOCITY_FAST
 .translateCameraY
     add hl, bc
     ld a, l
@@ -407,10 +411,10 @@ UpdatePlayerCamera::
     jr nc, .addVelocityX
     ; If playerPos < cameraPos
 .subVelocityX
-    ld bc, -VELOCITY_NORMAL
+    ld bc, -VELOCITY_FAST
     jr .translateCameraX
 .addVelocityX
-    ld bc, VELOCITY_NORMAL
+    ld bc, VELOCITY_FAST
 .translateCameraX
     add hl, bc
     ld a, l

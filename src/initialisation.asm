@@ -86,6 +86,7 @@ Initialise::
     call InitialisePlayer
     call UpdatePlayerShadowOAM
 
+    call ResetPlayerCamera
     call ResetAllBullets
     call ResetDirtyTiles
     call InitEnemiesAndPlaceOnMap
