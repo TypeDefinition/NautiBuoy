@@ -119,8 +119,12 @@ UpdateAllEnemies::
     call UpdateEnemyB ; call correct update for enemy
 .enemyTypeC
     cp a, TYPE_ENEMYC
-    jr nz, .nextLoop
+    jr nz, .enemyTypeD
     call UpdateEnemyC
+.enemyTypeD
+    cp a, TYPE_ENEMYD
+    jr nz, .nextLoop
+    call UpdateEnemyD
 
 .nextLoop
     pop de ; POP de = loop counter

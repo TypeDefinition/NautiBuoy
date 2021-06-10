@@ -5,11 +5,6 @@ INCLUDE "./src/include/util.inc"
 INCLUDE "./src/include/tile_collision.inc"
 INCLUDE "./src/include/movement.inc"
 
-DEF VIEWPORT_SIZE_Y EQU 72
-DEF VIEWPORT_SIZE_X EQU 80
-DEF VIEWPORT_MAX_Y EQU 112 ; 256pixels - 144pixels
-DEF VIEWPORT_MAX_X EQU 96 ; 256pixels - 160pixels
-
 SECTION "Player Data", WRAM0
     dstruct Character, wPlayer
 
