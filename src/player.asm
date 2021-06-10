@@ -8,6 +8,9 @@ INCLUDE "./src/include/movement.inc"
 SECTION "Player Data", WRAM0
     dstruct Character, wPlayer
 
+SECTION "Player Camera Data", WRAM0
+    dstruct PlayerCamera, wPlayerCamera
+
 /* Any logic/behavior/function related to player here */
 SECTION "Player", ROM0
 PlayAttackSFX:
@@ -346,9 +349,37 @@ PlayerSpriteCollisionCheck:
 */
 UpdatePlayerCamera::
     push af
+    push bc
+    push hl
 
 .vertical
+    ; Make the camera "chase" the player.
+    ld a, [wPlayerCamera_PosY]
+    ld h, a
+    ld a, [wPlayerCamera_PosY + 1]
+    ld l, a
+
+    ; Compare the player and camera position.
     ld a, [wPlayer_PosY]
+    cp a, h
+    ; If playerPos == cameraPos, no need to do anything.
+    jr z, .minY
+    ; If playerPos > cameraPos
+    jr nc, .addVelocityY
+    ; If playerPos < cameraPos
+.subVelocityY
+    ld bc, -VELOCITY_NORMAL
+    jr .translateCameraY
+.addVelocityY
+    ld bc, VELOCITY_NORMAL
+.translateCameraY
+    add hl, bc
+    ld a, l
+    ld [wPlayerCamera_PosY + 1], a
+    ld a, h
+    ld [wPlayerCamera_PosY], a
+
+    ; Offset the camera so that the player is in the centre of the screen.
 .minY
     sub a, VIEWPORT_SIZE_Y
     jr nc, .maxY
@@ -361,8 +392,32 @@ UpdatePlayerCamera::
     ld [wShadowSCData], a
 
 .horizontal
+    ; Make the camera "chase" the player.
+    ld a, [wPlayerCamera_PosX]
+    ld h, a
+    ld a, [wPlayerCamera_PosX + 1]
+    ld l, a
+
+    ; Compare the player and camera position.
     ld a, [wPlayer_PosX]
-    
+    cp a, h
+    ; If playerPos == cameraPos, no need to do anything.
+    jr z, .minX
+    ; If playerPos > cameraPos
+    jr nc, .addVelocityX
+    ; If playerPos < cameraPos
+.subVelocityX
+    ld bc, -VELOCITY_NORMAL
+    jr .translateCameraX
+.addVelocityX
+    ld bc, VELOCITY_NORMAL
+.translateCameraX
+    add hl, bc
+    ld a, l
+    ld [wPlayerCamera_PosX + 1], a
+    ld a, h
+    ld [wPlayerCamera_PosX], a
+
 .minX
     sub a, VIEWPORT_SIZE_X
     jr nc, .maxX
@@ -374,6 +429,8 @@ UpdatePlayerCamera::
 .horizontalEnd
     ld [wShadowSCData + 1], a
 
+    pop hl
+    pop bc
     pop af
     ret
 

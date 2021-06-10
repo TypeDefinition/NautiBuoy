@@ -40,7 +40,6 @@ DEF BIT_FLAG_PLAYER EQU $1 ; 1 bit
 
 DEF BIT_MASK_TYPE EQU %00011100 ; to do bit masking for power up type/enemy type
 
-
 ; Directions
 ; can use cp to compare, takes reg A, but takes only 1 cycle and 1 byte
 DEF DIR_UP EQU 0
