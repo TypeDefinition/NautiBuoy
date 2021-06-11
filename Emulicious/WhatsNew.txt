@@ -1,4 +1,21 @@
 ==========
+2021-06-07
+==========
+- Improved Sprite Viewer to support 8x8 and 8x16 sprites at the same time
+- Made the addresses in the video viewers clickable to open them in the Memory Editor
+- Fixed an issue that had prevented some of the additional registers in the debugger from being edited
+- Fixed that sometimes directly after disabling turbo an old frame was shown
+- Fixed an issue that caused the state of some of the exception breakpoints not to be persisted
+- Fixed that the Coverage tool did not update when a new rom was loaded, only after new data was gathered
+
+==========
+2021-05-31
+==========
+- Improved Game Boy Color color correction and made it configurable (thanks to Eievui)
+- Fixed an issue with sound not playing on some computers running Linux (thanks to lhs_azevedo)
+- Minor improvements of the combined video viewer
+
+==========
 2021-04-30
 ==========
 - Added an option to the tracer to write its log to a file
@@ -14,7 +31,7 @@
 - Fixed copy&paste in Go To boxes (thanks to Kabcorp)
 - Keep the tool windows open when a rom is loaded
 - Made the sources in the viewers clickable to directly open them in the Memory Editor / Debugger
-- Overhauled the Tile Viewer
+- Overhauled the Tile Viewer (thanks to Daid)
 - Improved support for RGBDS 0.5.0
 - In Memory Editor, show up to two labels before showing ellipsis (thanks to Advert665)
 - Fixed a bug that could make the Tracer ignore its conditions
