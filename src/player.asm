@@ -73,30 +73,30 @@ InitialisePlayer::
 /* For interpolating player position to the next tile */
 InterpolatePlayerPosition::
     ld a, [wPlayer_Direction]
-.upStart
-    cp a, DIR_UP
-    jr nz, .upEnd
-    interpolate_pos_dec_immd wPlayer_PosY, wPlayer_Velocity
-    jp .end
-.upEnd
-.downStart
-    cp a, DIR_DOWN
-    jr nz, .downEnd
-    interpolate_pos_inc_immd wPlayer_PosY, wPlayer_Velocity
-    jp .end
-.downEnd
-.leftStart
-    cp a, DIR_LEFT
-    jr nz, .leftEnd
-    interpolate_pos_dec_immd wPlayer_PosX, wPlayer_Velocity
-    jp .end
-.leftEnd
+
+    ASSERT DIR_UP == 0
+    and a, a ; cp a, 0
+    jr z, .upStart
+    ASSERT DIR_DOWN == 1
+    dec a
+    jr z, .downStart
+    ASSERT DIR_LEFT == 2
+    dec a
+    jr z, .leftStart
+    ASSERT DIR_RIGHT > 2
+
 .rightStart
-    cp a, DIR_RIGHT
-    jr nz, .rightEnd
     interpolate_pos_inc_immd wPlayer_PosX, wPlayer_Velocity
     jp .end
-.rightEnd
+.upStart
+    interpolate_pos_dec_immd wPlayer_PosY, wPlayer_Velocity
+    jp .end
+.downStart
+    interpolate_pos_inc_immd wPlayer_PosY, wPlayer_Velocity
+    jp .end
+.leftStart
+    interpolate_pos_dec_immd wPlayer_PosX, wPlayer_Velocity
+
 .end
     ret
 
@@ -164,20 +164,6 @@ GetUserInput::
 .end
     ret
 
-/* To update Player animation frame */
-AdvancePlayerAnimation::
-    ld a, [wPlayer_CurrStateMaxAnimFrame]
-    ld b, a ; store max frames into b
-    
-    ld a, [wPlayer_CurrAnimationFrame]
-    inc a ; Advance the animation frame by 1.
-    cp a, b
-    jr nz, .end
-    xor a
-.end
-    ld [wPlayer_CurrAnimationFrame], a
-    ret
-
 /* Update Player Movement */
 UpdatePlayerMovement::
     call PlayerSpriteCollisionCheck
@@ -200,7 +186,18 @@ UpdatePlayerMovement::
     jr .end
 .interpolatePosition
     call InterpolatePlayerPosition
-    call AdvancePlayerAnimation
+
+.advancePlayerAnimation
+    ld a, [wPlayer_CurrStateMaxAnimFrame]
+    ld b, a ; store max frames into b
+    
+    ld a, [wPlayer_CurrAnimationFrame]
+    inc a ; Advance the animation frame by 1.
+    cp a, b
+    jr nz, .endAnimation
+    xor a
+.endAnimation
+    ld [wPlayer_CurrAnimationFrame], a
 
 .end
     ret
@@ -264,24 +261,18 @@ UpdatePlayerAttack::
     WARNING: this is assuming health < 127. Want to prevent underflow, we defined bit 7 to be for -ve
 */
 PlayerIsHit::
-    push af
-    push bc
-    push de
-    push hl
-
     ; deduct health first
     ld a, [wPlayer_HP]
     sub a, BULLET_DAMAGE
     ld [wPlayer_HP], a
 
     ; check health <= 0
-    cp a, 0
+    and a
     jr z, .dead
     cp a, 127
     jr nc, .dead ; value underflowed, go to dead 
 
 .damageEffect ; not dead, set damage flicker effect and teleport to spawn
-    
     ld a, DAMAGE_FLICKER_EFFECT
     ld [wPlayer_DamageFlickerEffect], a
     xor a
@@ -300,11 +291,6 @@ PlayerIsHit::
     /* TODO:: if dead, put gameover screen or something */
 
 .end
-    pop hl
-    pop de
-    pop bc
-    pop af
-
     ret
 
 
