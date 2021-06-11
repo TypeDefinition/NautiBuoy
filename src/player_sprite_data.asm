@@ -68,48 +68,72 @@ PlayerAnimation::
 .upAnimation::
     ; frame 1
     db 0
+    db OAMF_PAL0
     db 0
+    db OAMF_PAL0 | OAMF_XFLIP
 
     ; frame 2
     db 2
+    db OAMF_PAL0
     db 2
+    db OAMF_PAL0 | OAMF_XFLIP
 
     ; frame 3
     db 4
+    db OAMF_PAL0
     db 4
+    db OAMF_PAL0 | OAMF_XFLIP
 
 .downAnimation::
     db 0
+    db OAMF_PAL0 | OAMF_YFLIP
     db 0
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_YFLIP
 
     ; frame 2
     db 2
+    db OAMF_PAL0 | OAMF_YFLIP
     db 2
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_YFLIP
 
     ; frame 3
     db 4
+    db OAMF_PAL0 | OAMF_YFLIP
     db 4
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_YFLIP
 
 .rightAnimation::
     db 6
+    db OAMF_PAL0
     db 8
+    db OAMF_PAL0
 
     ; frame 2
     db 10
+    db OAMF_PAL0
     db 12
+    db OAMF_PAL0
 
     ; frame 3
     db 14
+    db OAMF_PAL0
     db 16
+    db OAMF_PAL0
 
 .leftAnimation::
     db 8
+    db OAMF_PAL0 | OAMF_XFLIP
     db 6
+    db OAMF_PAL0 | OAMF_XFLIP
 
     ; frame 2
     db 12
+    db OAMF_PAL0 | OAMF_XFLIP
     db 10
+    db OAMF_PAL0 | OAMF_XFLIP
 
     ; frame 3
     db 16
+    db OAMF_PAL0 | OAMF_XFLIP
     db 14
+    db OAMF_PAL0 | OAMF_XFLIP

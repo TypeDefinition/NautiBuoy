@@ -337,10 +337,6 @@ ResetPlayerCamera::
     When borders are reached, camera stops
 */
 UpdatePlayerCamera::
-    push af
-    push bc
-    push hl
-
 .vertical
     ; Make the camera "chase" the player.
     ld a, [wPlayerCamera_PosY]
@@ -448,9 +444,6 @@ UpdatePlayerCamera::
 .horizontalEnd
     ld [wShadowSCData + 1], a
 
-    pop hl
-    pop bc
-    pop af
     ret
 
 
@@ -468,10 +461,8 @@ UpdatePlayerShadowOAM::
     ld [wPlayer_DamageFlickerEffect + 1], a
     jr nc, .updateFlickerEffect
 
-    ld a, b ; Got carry, sub 1 from int portion
-    sub a, 1
-    ld b, a
-
+    dec b
+    ld a, b
     ld [wPlayer_DamageFlickerEffect], a ; update new interger portion value
 
 .updateFlickerEffect
@@ -482,42 +473,43 @@ UpdatePlayerShadowOAM::
     jp z, .end 
 
 .startUpdateOAM
-    ; get the current address of shadow OAM to hl
-    ld a, [wCurrentShadowOAMPtr]
-    ld l, a
-    ld a, [wCurrentShadowOAMPtr + 1]
-    ld h, a
-
-    push hl ; for sprite ID intialisation later, store another copy of the original hl
-
     ; do a dir check for sprite
     ld a, [wPlayer_Direction]
 
-.upSprite
-    cp DIR_UP
-    jr nz, .downSprite
-    ld de, PlayerSprites.upSprite
-    ld bc, PlayerAnimation.upAnimation
-.downSprite
-    cp DIR_DOWN
-    jr nz, .rightSprite
-    ld de, PlayerSprites.downSprite
-    ld bc, PlayerAnimation.downAnimation
-.rightSprite
-    cp DIR_RIGHT
-    jr nz, .leftSprite
-    ld de, PlayerSprites.rightSprite
-    ld bc, PlayerAnimation.rightAnimation
+    ASSERT DIR_UP == 0
+    and a, a ; cp a, 0
+    jr z, .upSprite
+    ASSERT DIR_DOWN == 1
+    dec a
+    jr z, .downSprite
+    ASSERT DIR_LEFT == 2
+    dec a
+    jr z, .leftSprite
+    ASSERT DIR_RIGHT > 2
 
+.rightSprite
+    ld de, PlayerAnimation.rightAnimation
+    jr .endSpriteDir
+.upSprite
+    ld de, PlayerAnimation.upAnimation
+    jr .endSpriteDir
+.downSprite
+    ld de, PlayerAnimation.downAnimation
+    jr .endSpriteDir
 .leftSprite
-    cp DIR_LEFT
-    jr nz, .endSpriteDir
-    ld de, PlayerSprites.leftSprite
-    ld bc, PlayerAnimation.leftAnimation
+    ld de, PlayerAnimation.leftAnimation
 
 .endSpriteDir
-    push bc ; to be used later for animation
+    ld a, [wPlayer_CurrAnimationFrame]
+    sla a ; curr animation frame x 4
+    sla a
 
+    add a, e 
+    ld e, a 
+    ld a, d 
+    adc a, 0
+    ld d, a ; offset animation address de
+    
     ; Convert player position from world space to screen space.
     ld a, [wShadowSCData]
     ld b, a
@@ -532,34 +524,42 @@ UpdatePlayerShadowOAM::
     ld c, a ; store x screen pos at c
 
 .initShadowOAMVariables ; init the sprites shadow OAM, for y, x and flags, sprite ID later
-    ld a, [de] ; get the sprite offset y
-    add b
-    ld [hli], a ; init screen y Pos
-    inc de ; inc to get x pos
-    
-    ld a, [de] ; get the sprite offset x
-    add c
-    ld [hli], a ; init screen x pos
-    inc de ; inc to get flags
+    ; b = pos Y, c = pos X, de = animation address
 
-    inc hl ; skip the sprite id first
+    ; get the current address of shadow OAM to hl
+    ld a, [wCurrentShadowOAMPtr]
+    ld l, a
+    ld a, [wCurrentShadowOAMPtr + 1]
+    ld h, a
+
+    ld a, b
+    add a, 8
+    ld [hli], a ; init screen y Pos, first sprite y offset 8
+    
+    ld a, c 
+    ld [hli], a ; init screen x pos, first sprite x offset 0
+
+    ;inc hl ; skip the sprite id first
+    ld a, [de] ; get sprite ID
+    ld [hli], a
+    inc de
 
     ld a, [de] ; get flags
     ld [hli], a
     inc de
 
     ; Init second half of player sprite to shadow OAM
-    ld a, [de] ; get the sprite offset y
-    add b
-    ld [hli], a ; init screen y Pos
-    inc de
+    ld a, b
+    add a, 8
+    ld [hli], a ; init screen y Pos, second sprite y offset 8
     
-    ld a, [de] ; get the sprite offset x
-    add c
-    ld [hli], a ; init screen x pos
-    inc de
+    ld a, c 
+    add a, 8
+    ld [hli], a ; init screen x pos, second sprite x offset 8
 
-    inc hl ; skip the sprite id first
+    ld a, [de] ; get sprite ID
+    ld [hli], a
+    inc de
 
     ld a, [de] ; get flags
     ld [hli], a
@@ -568,36 +568,7 @@ UpdatePlayerShadowOAM::
     ld a, l
     ld [wCurrentShadowOAMPtr], a
     ld a, h
-    ld a, [wCurrentShadowOAMPtr + 1]
-
-.updateSpriteID
-    ; grab the sprite ID from the current animation frame to render
-    ld a, [wPlayer_CurrAnimationFrame]
-    sla a ; curr animation frame x 2
-    
-    ld b, 0
-    ld c, a ; load curr animation frame
-
-    ld hl, 0 ; make hl to 0 so can add the animation address
-    add hl, bc ; init the offset to hl
-
-    pop bc ; get the animation sprite address
-    add hl, bc ; add the address to the offset
-
-    ld a, [hli] ; grab the first half of the sprite
-    ld b, a
-    ld a, [hl] ; get the second half of the sprite
-    ld c, a
-
-    ; update sprite ID to OAM
-    pop hl ; get the original hl from the shadowOAM
-    ld de, 2
-    add hl, de ; offset by 2 to go to the sprite ID address
-    ld [hl], b
-
-    ld e, 4
-    add hl, de ; offset by 4 to go to the second half sprite ID address
-    ld [hl], c
+    ld [wCurrentShadowOAMPtr + 1], a
 
 .end
     ret
