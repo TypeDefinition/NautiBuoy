@@ -92,32 +92,33 @@ InitEnemyCSprite:
     ld a, [hl] ; check direction of enemy and init sprite data
     and a, DIR_BIT_MASK
 
+    ASSERT DIR_UP == 0
+    and a, a ; cp a, 0
+    jr z, .upDir
+    ASSERT DIR_DOWN == 1
+    dec a
+    jr z, .downDir
+    ASSERT DIR_LEFT == 2
+    dec a
+    jr z, .leftDir
+    ASSERT DIR_RIGHT > 2
+
+.rightDir
+    ld bc, EnemyCAnimation.rightAnimation
+    jr .endDir
+
 .upDir
-    cp a, DIR_UP
-    jr nz, .downDir
     ld bc, EnemyCAnimation.upAnimation
     jr .endDir
 
 .downDir
-    cp a, DIR_DOWN
-    jr nz, .rightDir
     ld bc, EnemyCAnimation.upAnimation
     jr .endDir
 
-.rightDir
-    cp a, DIR_RIGHT
-    jr nz, .leftDir
-    ld bc, EnemyCAnimation.rightAnimation
-    jr .endDir
-
 .leftDir
-    ld a, d ; a = updateFrameCounter
     ld bc, EnemyCAnimation.rightAnimation
-    jr .endDir
 
 .endDir
-    ld de, EnemySpriteData.enemyCSpriteData
-
     pop hl ; POP HL = enemy address
     call UpdateEnemySpriteOAM
     ret
