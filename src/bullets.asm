@@ -47,9 +47,6 @@ BulletDestroyTile:
 ; If collided with BULLET_COLLIDABLE_TILES, the bullet is destroyed.
 ; @ hl: Bullet Memory Address
 BulletTileCollisionCheck:
-    push af
-    push bc
-    push de
     push hl
 
     ; d = PosY
@@ -153,9 +150,6 @@ BulletTileCollisionCheck:
     jr z, .bulletNotDestroyed
     ld [hl], FLAG_INACTIVE
 .bulletNotDestroyed
-    pop de
-    pop bc
-    pop af
     ret
 
 ; Translate a bullet.
@@ -314,11 +308,6 @@ GetInactiveBullet::
 
 ; Update all alive bullets movement and collision.
 UpdateBullets::
-    push af
-    push bc
-    push de
-    push hl
-
     ld b, NUM_BULLETS
     ld hl, wBulletObjects
     
@@ -344,14 +333,12 @@ UpdateBullets::
 
     ; bc = Velocity
     push hl ; PUSH HL = bullet address
-    push de ; push DE = value before
     ld de, Bullet_Velocity
     add hl, de
     ld a, [hli]
     ld b, a
     ld a, [hl]
     ld c, a
-    pop de ; pop DE = value before
     pop hl ; pop HL = bullet address
 
     ; a = Direction
@@ -398,10 +385,6 @@ UpdateBullets::
     jr nz, .loopStart
 
 .end
-    pop hl
-    pop de
-    pop bc
-    pop af
     ret
 
 
@@ -409,9 +392,6 @@ UpdateBullets::
     hl - starting bullet address 
 */
 BulletSpriteCollisionCheck:
-    push af
-    push bc
-    push de
     push hl
 
     ; b = bullet posY, c = bullet pos X
@@ -470,9 +450,6 @@ BulletSpriteCollisionCheck:
 
 .end
     pop hl
-    pop de
-    pop bc
-    pop af
 
     ret
 
