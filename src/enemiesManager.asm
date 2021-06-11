@@ -543,9 +543,6 @@ UpdateEnemySpriteOAM::
         hl : enemy collided address
 */
 CheckEnemyCollisionLoop::
-    push bc
-    push de
-
     ld hl, wEnemy0
     ld a, [wTotalLevelEnemiesNo]
 
@@ -595,9 +592,6 @@ CheckEnemyCollisionLoop::
     jr .startOfEnemyLoop
 
 .end
-    pop de
-    pop bc
-    
     ret
 
 

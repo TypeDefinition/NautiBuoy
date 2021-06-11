@@ -5,10 +5,6 @@ DEF MOVEMENT_INC EQU 1
     \1 - Entity Pos Address
     \2 - Entity Velocity Address */
 MACRO interpolate_pos_dec_immd
-    push af
-    push bc
-    push hl
-    
     ; Get -Velocity
     ld a, [\2 + 1]
     cpl
@@ -32,20 +28,12 @@ MACRO interpolate_pos_dec_immd
     ld [\1], a
     ld a, l
     ld [\1 + 1], a
-
-    pop hl
-    pop bc
-    pop af
 ENDM
 
 /*  Interpolate the position of an entity increasingly.
     \1 - Entity Pos Address
     \2 - Entity Velocity Address */
 MACRO interpolate_pos_inc_immd
-    push af
-    push bc
-    push hl
-
     ld bc, \2
 
     ; Get Velocity
@@ -66,10 +54,6 @@ MACRO interpolate_pos_inc_immd
     ld [\1], a
     ld a, l
     ld [\1 + 1], a
-
-    pop hl
-    pop bc
-    pop af
 ENDM
 
 /*  Interpolate the position of an entity decreasingly.
