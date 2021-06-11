@@ -17,9 +17,24 @@ SECTION "Enemy D", ROM0
 UpdateEnemyD::
     push hl ; PUSH HL = enemy address
 
-    ;TODO:: check current state whether
-    ; depdending on state go to the correct one
+.checkState
 
+    ; check current state here
+    ; if rest state, go to rest state: 0 - 1
+    ; if 'waking up state' go to end, just render, make sure the animation stuff is updated: 2 - 4
+    ; if chase state, to to chase state: after a certain number
+    ; if player dies, teleport enemy D to somewhere
+    ; rest state if player is nearby, set to 'wake up state'
+    ; set all the proper variables like max frames
+    ld de, Character_UpdateFrameCounter + 1
+    add hl, de
+    ld a, [hl]
+
+    cp a, ENEMY_TYPED_WAKEUP_STATE_FRAME
+    jr nz, .updateAnimation ; >=, it is waking up
+
+    cp a, ENEMY_TYPED_CHASE_STATE_FRAME
+    jr nz, .chaseState ; >=, it is in chase state
 
 .restState ; check if player can see enemy on screen
     ld a, [wShadowSCData] ; get screen pos y
@@ -95,6 +110,19 @@ UpdateEnemyD::
     push hl ; PUSH HL = enemy address
 
     call EnemyMoveBasedOnDir
+
+.updateAnimation
+/*    ld de, Character_UpdateFrameCounter
+    add hl, de
+    ld a, [hl]
+    add a, ENEMY_TYPED_ANIMATION_UPDATE_SPEED
+    ld [hl], a
+    jr nc, .checkState */
+
+.updateFrames
+
+    ; update animation frames here
+    ; update the int part of updateFrameCounter
 
 .endUpdateEnemyD
     pop hl ; POP HL = enemy address

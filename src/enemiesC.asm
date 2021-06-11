@@ -53,19 +53,18 @@ UpdateEnemyC::
     ld [hli], a ; update new value to updateFrameCounter
 
     ; update animation frames and check if more
-    inc hl
-    ld a, [hl] ; take max frames
-    ld b, a ; b = max frames
-
     inc e
-    ld a, e
-    cp a, b ; check if reach max frame
+    inc hl
+
+    ld a, [hl] ; take max frames
+    cp a, e ; check if reach max frame
     jr nz, .updateCurrFrame
-    ld a, 0 ; reset current frames
+    ld e, 0 ; reset current frames
 
 .updateCurrFrame
-    ; a = curr frame, hl = max frame address
+    ; e = curr frame, hl = max frame address
     dec hl
+    ld a, e
     ld [hl], a ; update curr frame
 
 .endUpdateEnemyC

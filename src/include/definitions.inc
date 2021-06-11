@@ -108,6 +108,16 @@ DEF ENEMY_TYPEC_ANIMATION_UPDATE_SPEED EQU $10
 DEF ENEMY_TYPEC_SHOOT_FRAME EQU 10 ; frame to shoot
 DEF ENEMY_TYPEC_NORMAL_STATE_FRAME EQU 2
 
+; Enemy D data
+; wake up duration = ENEMY_TYPED_CHASE_STATE_FRAME - ENEMY_TYPED_WAKEUP_STATE_FRAME
+; sleep state is < ENEMY_TYPED_WAKEUP_STATE_FRAME
+DEF ENEMY_TYPED_ANIMATION_UPDATE_SPEED EQU $10
+DEF ENEMY_TYPED_CHASE_STATE_FRAME EQU 5 ; frame to indicate chase state
+DEF ENEMY_TYPED_WAKEUP_STATE_FRAME EQU 2 ; frame to indicate wake up state
+
+
+
+
 ; Damage flicker effect
 DEF DAMAGE_FLICKER_EFFECT EQU 5 ; number of times to do the flicker effect based on the flicker timer
 DEF DAMAGE_FLICKER_UPDATE_SPEED EQU 40 ; 256/DAMAGE_FLICKER_UPDATE_SPEED number of frames to stop flicker effect
