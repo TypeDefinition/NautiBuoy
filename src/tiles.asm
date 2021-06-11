@@ -54,24 +54,20 @@ GetTileIndex::
     srl e
     srl e
 
-; We want hl = Col + Row * NUM_COLS.
+    ; Fast Multiplication
     ld bc, NUM_COLS
     ld hl, $0000
-
-    push de
-    ld e, %10000000
-.loopStart
-    add hl, hl ; hl + hl is the same as (hl << 1)
-
+_mask = %10000000
+    REPT 8
+    add hl, hl ; hl + hl == (hl << 1)
     ld a, d
-    and a, e
-    jr z, .loopEnd
+    and a, _mask
+    jr z, :+
     add hl, bc
-.loopEnd
-    srl e
-    jr nz, .loopStart
-    pop de
-
+:
+_mask = (_mask >> 1)
+    ENDR
+    
 .end
     ld d, 0
     add hl, de
