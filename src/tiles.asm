@@ -57,7 +57,7 @@ GetTileIndex::
     ; Fast Multiplication
     ld bc, NUM_COLS
     ld hl, $0000
-_mask = %10000000
+    DEF _mask = %10000000
     REPT 8
     add hl, hl ; hl + hl == (hl << 1)
     ld a, d
@@ -65,7 +65,7 @@ _mask = %10000000
     jr z, :+
     add hl, bc
 :
-_mask = (_mask >> 1)
+    DEF _mask = (_mask >> 1)
     ENDR
     
 .end
