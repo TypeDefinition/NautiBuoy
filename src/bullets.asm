@@ -323,10 +323,6 @@ UpdateBullets::
     ld hl, wBulletObjects
     
 .loopStart
-    ld a, b
-    cp a, 0 ; check if end of loop
-    jp z, .end
-
     push bc ; push bc = loop counter
 
     ; Collision
@@ -365,27 +361,31 @@ UpdateBullets::
     pop hl ; pop HL = bullet address
 
     push bc ; push bc = velocity
+    ASSERT DIR_UP == 0
+    and a, a ; cp a, 0
+    jr z, .translateUp
+    ASSERT DIR_DOWN == 1
+    dec a
+    jr z, .translateDown
+    ASSERT DIR_LEFT == 2
+    dec a
+    jr z, .translateLeft
+    ASSERT DIR_RIGHT > 2
+.translateRight
+    call TranslateBulletRight
+    ld bc, BulletSprites.rightSprite
+    jr .translationEnd
 .translateUp
-    cp a, DIR_UP
-    jr nz, .translateDown
     call TranslateBulletUp
     ld bc, BulletSprites.upSprite
     jr .translationEnd
 .translateDown
-    cp a, DIR_DOWN
-    jr nz, .translateLeft
     call TranslateBulletDown
     ld bc, BulletSprites.downSprite
     jr .translationEnd
 .translateLeft
-    cp a, DIR_LEFT
-    jr nz, .translateRight
     call TranslateBulletLeft
     ld bc, BulletSprites.leftSprite
-    jr .translationEnd
-.translateRight
-    call TranslateBulletRight
-    ld bc, BulletSprites.rightSprite
 .translationEnd
     call UpdateBulletShadowOAM
     pop bc ; pop bc = velocity
@@ -395,7 +395,7 @@ UpdateBullets::
     add hl, de ; offset to get the next bullet
     pop bc ; pop bc = loop counter
     dec b ; dec counter
-    jr .loopStart
+    jr nz, .loopStart
 
 .end
     pop hl
