@@ -1,8 +1,8 @@
 INCLUDE "./src/include/hardware.inc"
 INCLUDE "./src/include/util.inc"
 
-DEF NUM_COLS EQU $0020
-DEF NUM_ROWS EQU $0020
+DEF NUM_COLS EQU $20
+DEF NUM_ROWS EQU $20
 
 DEF MAX_DIRTY_TILES EQU $10
 
@@ -43,10 +43,9 @@ ResetDirtyTiles::
 GetTileIndex::
     push af
     push de
-    push hl
 
-; d = Row = PosY/8
-; e = Col = PosX/8
+; Row = PosY/8
+; Col = PosX/8
     srl d
     srl d
     srl d
@@ -54,31 +53,25 @@ GetTileIndex::
     srl e
     srl e
 
-; We want hl = Col + Row * NUM_COLS.
-    ld bc, NUM_COLS
-    ld hl, $0000
-
-    push de
-    ld e, %10000000
-.loopStart
-    add hl, hl ; hl + hl is the same as (hl << 1)
-
+; bc = Col + Row * NUM_COLS.
+    ld b, 0
+    ld c, e
+.loop ; adding row * NUM_COLS to bc
     ld a, d
-    and a, e
-    jr z, .loopEnd
-    add hl, bc
-.loopEnd
-    srl e
-    jr nz, .loopStart
-    pop de
+    cp a, $00
+    jr z, .end
 
+    ld a, c
+    add a, NUM_COLS
+    ld c, a
+
+    ld a, b
+    adc a, $00
+    ld b, a
+
+    dec d
+    jr .loop
 .end
-    ld d, 0
-    add hl, de
-    ld b, h
-    ld c, l
-
-    pop hl
     pop de
     pop af
     ret
