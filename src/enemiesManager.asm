@@ -121,7 +121,7 @@ UpdateAllEnemies::
     cp a, TYPE_ENEMYC
     jr nz, .enemyTypeD
     call UpdateEnemyC
-.enemyTypeD
+.enemyTypeD ; ghost
     cp a, TYPE_ENEMYD
     jr nz, .nextLoop
     call UpdateEnemyD
@@ -328,6 +328,57 @@ EnemyBounceOnWallMovement::
     pop hl ; POP HL = enemy starting address
     ret
 
+
+/*  Enemy just moves in direction set, no collision */ 
+EnemyMoveBasedOnDir::
+    push hl ; PUSH HL = enemy starting address
+    ld de, Character_Velocity
+    add hl, de
+    ld a, [hli]
+    ld c, a
+    ld a, [hl]
+    ld b, a ; bc = velocity, note the velocity in data is stored in little endian
+    pop hl ; POP HL = enemy starting address
+    push hl ; PUSH HL = enemy starting address
+
+    ld de, Character_Direction
+    add hl, de
+    ld a, [hl]
+    and a, DIR_BIT_MASK ; only want the first 2 bits for move direction
+
+    pop hl ; POP HL = enemy starting address
+    push hl ; PUSH HL = enemy starting address
+    ld de, Character_PosY
+    add hl, de ; hl = pos Y address
+
+    ; bc = velocity, hl = posY address
+.upDirMove
+    cp a, DIR_UP
+    jr nz, .downDirMove
+    interpolate_pos_dec_reg
+    jp .end
+
+.downDirMove
+    cp a, DIR_DOWN
+    jr nz, .rightDirMove
+    interpolate_pos_inc_reg
+    jp .end
+
+.rightDirMove
+    inc hl
+    inc hl
+    inc hl
+    cp a, DIR_RIGHT
+    jr nz, .leftDirMove
+    interpolate_pos_inc_reg
+    jr .end
+
+.leftDirMove
+    interpolate_pos_dec_reg
+
+.end
+    pop hl ; POP HL = enemy starting address
+    ret
 
 /*  Render and set enemy OAM data and animation 
     Parameters:

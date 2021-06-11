@@ -17,9 +17,11 @@ SECTION "Enemy D", ROM0
 UpdateEnemyD::
     push hl ; PUSH HL = enemy address
 
-    ; get the difference, and see is it within the screen
+    ;TODO:: check current state whether
+    ; depdending on state go to the correct one
 
-    ; check player in same view first and radius, follow player
+
+.restState ; check if player can see enemy on screen
     ld a, [wShadowSCData] ; get screen pos y
     ld d, a
 
@@ -28,11 +30,11 @@ UpdateEnemyD::
 
     ld a, [hli] ; get enemy pos Y
     sub a, d ; enemy y pos - camera pos y
-    jr c, .endUpdateEnemyC
+    jr c, .endUpdateEnemyD
 
 .checkWithinYAxis
     cp a, SCRN_Y ; check if enemy pos is within y screen pos
-    jr nc, .endUpdateEnemyC
+    jr nc, .endUpdateEnemyD
 
 .checkXOffset
     ld a, [wShadowSCData + 1] ; get screen pos x
@@ -43,25 +45,60 @@ UpdateEnemyD::
 
     ld a, [hl]
     sub a, d ; enemy x pos - camera pos x
-    jr c, .endUpdateEnemyC
+    jr c, .endUpdateEnemyD
 
 .checkWithinXAxis
     cp a, SCRN_X
-    jr nc, .endUpdateEnemyC 
+    jr nc, .endUpdateEnemyD 
 
-.enemyInRange
-
-
-    ; TEMP CODES FOR TESTING
-    ; move the enemy towards player
+.chaseState ; chase after player
     pop hl ; POP HL = enemy address
-    push hl 
+    push hl ; PUSH HL = enemy address
+
+    inc hl
+    inc hl ; offset address to get posY
+
+    ld a, [wPlayer_PosYInterpolateTarget]
+    ld b, a
+    ld a, [hli]
+    cp a, b
+    jr z, .checkHorizontal
+    ld c, DIR_DOWN
+    jr c, .finishFindingPlayer ; player is below enemy
+    ld c, DIR_UP
+    jr .finishFindingPlayer
+
+.checkHorizontal 
+    inc hl
+    inc hl ; get x pos
+
+    ld a,  [wPlayer_PosXInterpolateTarget]
+    ld b, a
+    ld a, [hl]
+    cp a, b
+    ld c, DIR_RIGHT
+    jr c, .finishFindingPlayer ; player on right of enemy
+    ld c, DIR_LEFT
+
+.finishFindingPlayer
+    ; c = direction
+
+    pop hl ; POP HL = enemy address
+    push hl ; PUSH HL = enemy address
+
+    ld de, Character_Direction
+    add hl, de
+    ld a, c
+    ld [hl], a
+
+    pop hl ; POP HL = enemy address
+    push hl ; PUSH HL = enemy address
+
+    call EnemyMoveBasedOnDir
+
+.endUpdateEnemyD
+    pop hl ; POP HL = enemy address
     call InitEnemyDSprite
-
-    ;ld a, $FF
-
-.endUpdateEnemyC
-    pop hl
     ret
 
 
@@ -87,24 +124,24 @@ InitEnemyDSprite:
 .upDir
     cp a, DIR_UP
     jr nz, .downDir
-    ld bc, EnemyCAnimation.upAnimation
+    ld bc, EnemyAAnimation.upAnimation
     jr .endDir
 
 .downDir
     cp a, DIR_DOWN
     jr nz, .rightDir
-    ld bc, EnemyCAnimation.upAnimation
+    ld bc, EnemyAAnimation.downAnimation
     jr .endDir
 
 .rightDir
     cp a, DIR_RIGHT
     jr nz, .leftDir
-    ld bc, EnemyCAnimation.rightAnimation
+    ld bc, EnemyAAnimation.rightAnimation
     jr .endDir
 
 .leftDir
     ld a, d ; a = updateFrameCounter
-    ld bc, EnemyCAnimation.rightAnimation
+    ld bc, EnemyAAnimation.leftAnimation
     jr .endDir
 
 .endDir
