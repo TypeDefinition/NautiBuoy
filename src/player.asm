@@ -180,9 +180,6 @@ AdvancePlayerAnimation::
 
 /* Update Player Movement */
 UpdatePlayerMovement::
-    push af
-    push bc
-
     call PlayerSpriteCollisionCheck
 
     ; If the player is still interpolating, do not check for input.
@@ -206,8 +203,6 @@ UpdatePlayerMovement::
     call AdvancePlayerAnimation
 
 .end
-    pop bc
-    pop af
     ret
 
 /*  For checking player inputs that allow them to attack
@@ -315,11 +310,6 @@ PlayerIsHit::
 
 /*  Player check collision with enemy sprite */
 PlayerSpriteCollisionCheck:
-    push af
-    push bc
-    push de
-    push hl
-
     ld a, [wPlayer_PosY]
     ld b, a
     ld a, [wPlayer_PosX]
@@ -329,17 +319,12 @@ PlayerSpriteCollisionCheck:
     ld e, ENEMY_PLAYER_COLLIDER_SIZE
  
     call CheckEnemyCollisionLoop
-    cp a, 0
+    and a, a
     jr z, .end
 
     call PlayerIsHit
 
 .end
-    pop hl
-    pop de
-    pop bc
-    pop af
-
     ret
 
 ; Resets the Player Camera back to (0, 0)
@@ -473,12 +458,8 @@ UpdatePlayerCamera::
     Update sprite ID according to current frame of animation and direction
 */
 UpdatePlayerShadowOAM::
-    push af
-    push bc
-    push de
-
     ld a, [wPlayer_DamageFlickerEffect]
-    cp a, 0
+    and a, a
     jr z, .startUpdateOAM
 
     ld b, a ; b = DamageFlickerEffect int portion
@@ -619,8 +600,4 @@ UpdatePlayerShadowOAM::
     ld [hl], c
 
 .end
-    pop de
-    pop bc
-    pop af
-
     ret
