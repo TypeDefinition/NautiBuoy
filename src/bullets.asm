@@ -239,8 +239,7 @@ UpdateBulletShadowOAM:
     ; get the current address of shadow OAM to hl
     ld a, [wCurrentShadowOAMPtr]
     ld l, a
-    ld a, [wCurrentShadowOAMPtr + 1]
-    ld h, a
+    ld h, HIGH(wShadowOAM)
 
     ld a, [bc] ; y offset
     add a, d
@@ -262,8 +261,6 @@ UpdateBulletShadowOAM:
     ; update the current address from hl to the wCurrentShadowOAMPtr
     ld a, l
     ld [wCurrentShadowOAMPtr], a
-    ld a, h
-    ld a, [wCurrentShadowOAMPtr + 1]
 
     pop hl
     pop de

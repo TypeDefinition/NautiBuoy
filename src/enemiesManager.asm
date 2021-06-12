@@ -453,8 +453,7 @@ UpdateEnemySpriteOAM::
     ; hl = shadow OAM 
     ld a, [wCurrentShadowOAMPtr]
     ld l, a
-    ld a, [wCurrentShadowOAMPtr + 1]
-    ld h, a
+    ld h, HIGH(wShadowOAM)
 
     ; start initialising to shadow OAM
     ld a, d
@@ -491,8 +490,6 @@ UpdateEnemySpriteOAM::
     ; update the current address of from hl to the wCurrentShadowOAMPtr
     ld a, l
     ld [wCurrentShadowOAMPtr], a
-    ld a, h
-    ld a, [wCurrentShadowOAMPtr + 1]
 
 .end
     ret 

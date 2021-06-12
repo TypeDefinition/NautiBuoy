@@ -22,7 +22,7 @@ wShadowOAM::
 .end
 
 wCurrentShadowOAMPtr::
-    ds 2 ; stores the address of the current empty set of wShadowOAM data
+    ds 1 ; stores the address of the current empty set of wShadowOAM data
 .end 
 
 /* Move codes from RAM to HRAM */
@@ -59,15 +59,28 @@ SECTION "Clear OAM", ROM0
 ResetOAM::
     mem_set_small _OAMRAM, 0, wShadowOAM.end - wShadowOAM
     ret
+    
 /* Clean up shadowOAM data, can be used anytime, best to use when needing to reinitialise OAM values */
 ResetShawdowOAM::
-    mem_set_small wShadowOAM, 0, wShadowOAM.end - wShadowOAM
+    ld hl, wShadowOAM
+    
+    ld a, [wCurrentShadowOAMPtr]
+    sra a
+    sra a ; divide by 4
+    ld c, a ; get counter, only 'reset' the ones updated
+    
+    xor a
+.startClearLoop
+    ld [hli], a ; just set y pos to 0 to hide it
+    inc l ; skip x
+    inc l ; skip id
+    inc l ; skip flags
 
-    ; reset the pointer too
-    ld a, LOW(wShadowOAM)
-    ld [wCurrentShadowOAMPtr], a
-    ld a, HIGH(wShadowOAM)
-    ld [wCurrentShadowOAMPtr + 1], a
+    dec c
+    jr nz, .startClearLoop
+.end
+
+    ld [wCurrentShadowOAMPtr], a ; reset the pointer too
     ret
 
 SECTION "OAM DMA", HRAM

@@ -514,8 +514,7 @@ UpdatePlayerShadowOAM::
     ; get the current address of shadow OAM to hl
     ld a, [wCurrentShadowOAMPtr]
     ld l, a
-    ld a, [wCurrentShadowOAMPtr + 1]
-    ld h, a
+    ld h, HIGH(wShadowOAM)
 
     ld a, b
     add a, 8
@@ -524,7 +523,6 @@ UpdatePlayerShadowOAM::
     ld a, c 
     ld [hli], a ; init screen x pos, first sprite x offset 0
 
-    ;inc hl ; skip the sprite id first
     ld a, [de] ; get sprite ID
     ld [hli], a
     inc de
