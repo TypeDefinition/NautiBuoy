@@ -85,8 +85,6 @@ InitEnemiesAndPlaceOnMap::
     inc hl ; skip DamageFlickerEffect
 
     dec d
-    ld a, d
-    cp a, 0 ; check if initialise all the required enemies yet
     jr nz, .loop
 .endloop
     ret
@@ -131,8 +129,6 @@ UpdateAllEnemies::
     pop hl ; POP HL = enemy address
     
     dec d
-    ld a, d
-    cp a, 0
     jr z, .endOfLoop
 
     ld bc, sizeof_Character
@@ -384,149 +380,119 @@ EnemyMoveBasedOnDir::
     Parameters:
         - hl: address of enemy
         - bc: address of enemy animation data
-        - de: address of enemy sprite data
 */
 UpdateEnemySpriteOAM::
     push hl ; PUSH HL = enemy address
 
     ; check if should render this frame
-    push bc ; PUSH BC = temp 
-    ld bc, Character_DamageFlickerEffect
-    add hl, bc
+    ld de, Character_DamageFlickerEffect
+    add hl, de
     ld a, [hli]
-    cp a, 0
+    and a
     jr z, .startUpdateOAM 
 
-    ld b, a ; b = DamageFlickerEffect int portion
+    ld d, a ; b = DamageFlickerEffect int portion
     ld a, [hl] ; get fractional portion
     add a, DAMAGE_FLICKER_UPDATE_SPEED
     ld [hl], a ; update fractional portion
     jr nc, .updateFlickerEffect
 
-    ld a, b ; Got carry, sub 1 from int portion
-    sub a, 1
-    ld b, a
+    dec d
+    ld a, d
 
     dec hl
     ld [hl], a ; update new interger portion value
 
 .updateFlickerEffect
-    ; b = DamageFlickerEffect int portion
-    ld a, b
+    ; d = DamageFlickerEffect int portion
+    ld a, d
     and a, DAMAGE_FLICKER_BITMASK
     cp a, DAMAGE_FLICKER_VALUE
-    pop bc ; POP BC = temp 
     pop hl ; POP HL = enemy address
     jr z, .end 
 
     push hl ; PUSH HL = enemy address
-    push bc ; PUSH BC = temp 
 
 .startUpdateOAM
-    pop bc ; POP BC = temp
     pop hl ; POP HL = enemy address
     push hl ; PUSH HL = enemy address
 
-    push bc ; PUSH BC = temp push
-    ld bc, Character_CurrAnimationFrame
-    add hl, bc
+    ld de, Character_CurrAnimationFrame
+    add hl, de
     ld a, [hl] ; get curr frame
-    pop bc ; POP BC = temp push
+
+    sla a 
+    sla a ; curr animation frame x 4
+    add a, c
+    ld c, a
+    ld a, b
+    adc a, 0 ; add offset to animation address: bc + a
+    ld b, a
     
     pop hl ; POP HL = enemy address
-    push af ; PUSH AF = curr animation frame
 
     inc hl ; skip flags
     inc hl ; skip PosYInterpolateTarget go to y pos
 
-    push bc ; PUSH bc =  animation address data
-
     ; Convert position from world space to screen space.
     ld a, [wShadowSCData]
-    ld b, a
+    ld d, a
     ld a, [hli] ; get Y pos
-    sub a, b
-    ld b, a ; store y screen pos at b
+    sub a, d
+    ld d, a ; store y screen pos at b
 
     inc hl ; skip second part of y pos
     inc hl ; skip the PosXInterpolateTarget
 
     ld a, [wShadowSCData + 1]
-    ld c, a
+    ld e, a
     ld a, [hl] ; get x pos
-    sub a, c
-    ld c, a ; store x screen pos at c
+    sub a, e
+    ld e, a ; store x screen pos at c
 
     ; hl = shadow OAM 
     ld a, [wCurrentShadowOAMPtr]
     ld l, a
     ld a, [wCurrentShadowOAMPtr + 1]
     ld h, a
-    push hl ; PUSH HL = starting address of shadow OAM 
 
     ; start initialising to shadow OAM
-    ld a, [de] ; get the sprite offset y
-    add b 
-    ld [hli], a ; init screen y Pos
-    inc de ; inc to get x pos
+    ld a, d
+    add a, 8
+    ld [hli], a ; init screen y Pos,  first sprite y offset 8
 
-    ld a, [de] ; get the sprite offset x
-    add c
-    ld [hli], a ; init screen x pos
+    ld a, e
+    ld [hli], a ; init screen x pos, first sprite x offset 0
 
-    inc hl ; skip the sprite ID first
-    inc hl ; skip flags
+    ld a, [bc] ; get sprite ID
+    ld [hli], a
+    inc bc
+
+    ld a, [bc] ; get flags
+    ld [hli], a
+    inc bc
 
     ; Init second half of enemy sprite to shadow OAM
-    inc de
-    ld a, [de] ; get the sprite offset y
-    add b
-    ld [hli], a ; init screen y Pos
-    inc de
+    ld a, d
+    add a, 8
+    ld [hli], a ; init screen y Pos, second sprite y offset 8
     
-    ld a, [de] ; get the sprite offset x
-    add c
-    ld [hli], a ; init screen x pos
+    ld a, e
+    add a, 8
+    ld [hli], a ; init screen x pos, second sprite x offset 8
     
+    ld a, [bc] ; get sprite ID
+    ld [hli], a
+    inc bc
 
-    inc hl ; skip sprite id 
-    inc hl ; skip flags
+    ld a, [bc] ; get flags
+    ld [hli], a
 
     ; update the current address of from hl to the wCurrentShadowOAMPtr
     ld a, l
     ld [wCurrentShadowOAMPtr], a
     ld a, h
     ld a, [wCurrentShadowOAMPtr + 1]
-    
-    ; update animation
-    pop hl ; POP hl = starting address of shadow OAM 
-    pop bc ; POP bc = animation address data
-    pop af ; POP af = curr animation frame
-
-    sla a 
-    sla a ; curr animation frame x 4
-    add a, c
-    ld c, a
-    ld a, 0 ; a = 0
-    adc a, b ; add offset to animation address: bc + a
-    ld b, a
-
-    ld de, 2
-    add hl, de ; ; offset by 2 to go to the sprite ID address
-    ld a, [bc]
-    ld [hli], a ; store first sprite ID
-    inc bc
-    ld a, [bc]
-    ld [hl], a ; store first flag
-    inc bc
-
-    ld e, 3
-    add hl, de ; ; offset by 4 to go to the sprite ID address
-    ld a, [bc]
-    ld [hli], a ; store second sprite ID
-    inc bc
-    ld a, [bc]
-    ld [hl], a ; store first flag
 
 .end
     ret 
@@ -582,7 +548,6 @@ CheckEnemyCollisionLoop::
 .nextEnemyLoop
     pop af ; POP AF = loop counter
     dec a
-    cp a, 0
     jr z, .end
 
     push bc ; PUSH BC = player y and x pos

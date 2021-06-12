@@ -216,10 +216,27 @@ InitEnemyBSprite:
     add hl, bc 
     ld a, [hl] ; check direction of enemy and init sprite data
     and a, DIR_BIT_MASK
-.upDir
-    cp a, DIR_UP
-    jr nz, .downDir
 
+    ASSERT DIR_UP == 0
+    and a, a ; cp a, 0
+    jr z, .upDir
+    ASSERT DIR_DOWN == 1
+    dec a
+    jr z, .downDir
+    ASSERT DIR_LEFT == 2
+    dec a
+    jr z, .leftDir
+    ASSERT DIR_RIGHT > 2
+
+.rightDir
+    ld a, d ; a = updateFrameCounter
+    add a, ENEMY_TYPEB_REST_STATE_FRAME ; offset it
+    cp a, ENEMY_TYPEB_ATTACK_STATE_FRAME + ENEMY_TYPEB_REST_STATE_FRAME ; check state and init proper animation
+    jr nc, .leftRightDirAttack
+    ld bc, EnemyBAnimation.rightAnimation
+    jr .endDir
+
+.upDir
     ld a, d ; a = updateFrameCounter
     add a, ENEMY_TYPEB_REST_STATE_FRAME ; offset it
     cp a, ENEMY_TYPEB_ATTACK_STATE_FRAME + ENEMY_TYPEB_REST_STATE_FRAME; check state and init proper animation
@@ -228,9 +245,6 @@ InitEnemyBSprite:
     jr .endDir
 
 .downDir
-    cp a, DIR_DOWN
-    jr nz, .rightDir
-
     ld a, d ; a = updateFrameCounter
     add a, ENEMY_TYPEB_REST_STATE_FRAME ; offset it
     cp a, ENEMY_TYPEB_ATTACK_STATE_FRAME + ENEMY_TYPEB_REST_STATE_FRAME ; check state and init proper animation
@@ -240,17 +254,6 @@ InitEnemyBSprite:
 
 .upDownDirAttack ; up and down have same attack animation
     ld bc, EnemyBAnimation.attackUpAnimation
-    jr .endDir
-
-.rightDir
-    cp a, DIR_RIGHT
-    jr nz, .leftDir
-
-    ld a, d ; a = updateFrameCounter
-    add a, ENEMY_TYPEB_REST_STATE_FRAME ; offset it
-    cp a, ENEMY_TYPEB_ATTACK_STATE_FRAME + ENEMY_TYPEB_REST_STATE_FRAME ; check state and init proper animation
-    jr nc, .leftRightDirAttack
-    ld bc, EnemyBAnimation.rightAnimation
     jr .endDir
 
 .leftDir
@@ -265,8 +268,6 @@ InitEnemyBSprite:
     ld bc, EnemyBAnimation.attackRightAnimation
 
 .endDir
-    ld de, EnemySpriteData.enemyBSpriteData
-
     pop hl ; POP HL = enemy address
     call UpdateEnemySpriteOAM
     ret

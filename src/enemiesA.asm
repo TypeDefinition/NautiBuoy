@@ -110,12 +110,30 @@ InitEnemyASprite:
     add hl, bc 
     ld a, [hl] ; check direction of enemy and init sprite data
     and a, DIR_BIT_MASK
-.upDir
-    cp a, DIR_UP
-    jr nz, .downDir
 
+    ASSERT DIR_UP == 0
+    and a, a ; cp a, 0
+    jr z, .upDir
+    ASSERT DIR_DOWN == 1
+    dec a
+    jr z, .downDir
+    ASSERT DIR_LEFT == 2
+    dec a
+    jr z, .leftDir
+    ASSERT DIR_RIGHT > 2
+
+.rightDir
     ld a, d ; a = updateFrameCounter
+    cp a, ENEMY_TYPEA_ATTACK_STATE_FRAME ; check state and init proper animation
+    jr nc, .rightDirAttack
+    ld bc, EnemyAAnimation.rightAnimation
+    jr .endDir
+.rightDirAttack
+    ld bc, EnemyAAnimation.attackRightAnimation
+    jr .endDir
 
+.upDir
+    ld a, d ; a = updateFrameCounter
     cp a, ENEMY_TYPEA_ATTACK_STATE_FRAME ; check state and init proper animation
     jr nc, .upDirAttack 
     ld bc, EnemyAAnimation.upAnimation
@@ -125,11 +143,7 @@ InitEnemyASprite:
     jr .endDir
 
 .downDir
-    cp a, DIR_DOWN
-    jr nz, .rightDir
-
     ld a, d ; a = updateFrameCounter
-
     cp a, ENEMY_TYPEA_ATTACK_STATE_FRAME  ; check state and init proper animation
     jr nc, .downDirAttack 
     ld bc, EnemyAAnimation.downAnimation
@@ -138,34 +152,16 @@ InitEnemyASprite:
     ld bc, EnemyAAnimation.attackDownAnimation
     jr .endDir
 
-.rightDir
-    cp a, DIR_RIGHT
-    jr nz, .leftDir
-
-    ld a, d ; a = updateFrameCounter
-
-    cp a, ENEMY_TYPEA_ATTACK_STATE_FRAME ; check state and init proper animation
-    jr nc, .rightDirAttack
-    ld bc, EnemyAAnimation.rightAnimation
-    jr .endDir
-.rightDirAttack
-    ld bc, EnemyAAnimation.attackRightAnimation
-    jr .endDir
-
 .leftDir
     ld a, d ; a = updateFrameCounter
-
     cp a, ENEMY_TYPEA_ATTACK_STATE_FRAME ; check state and init proper animation
     jr nc, .leftDirAttack
     ld bc, EnemyAAnimation.leftAnimation
     jr .endDir
 .leftDirAttack
     ld bc, EnemyAAnimation.attackLeftAnimation
-    jr .endDir
 
 .endDir
-    ld de, EnemySpriteData.enemyASpriteData
-
     pop hl ; POP HL = enemy address
     call UpdateEnemySpriteOAM
     ret
