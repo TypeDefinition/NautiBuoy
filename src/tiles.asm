@@ -1,9 +1,6 @@
 INCLUDE "./src/include/hardware.inc"
 INCLUDE "./src/include/util.inc"
 
-DEF NUM_COLS EQU $0020
-DEF NUM_ROWS EQU $0020
-
 DEF MAX_DIRTY_TILES EQU $10
 
 ; Collidable Tiles: A tile is assumed to be collidable if it's value is less than 16.
@@ -45,31 +42,23 @@ GetTileIndex::
     push de
     push hl
 
-; d = Row = PosY/8
-; e = Col = PosX/8
-    srl d
-    srl d
-    srl d
-    srl e
-    srl e
-    srl e
-
-    ; Fast Multiplication
-    ld bc, NUM_COLS
-    ld hl, $0000
-    DEF _mask = %10000000
-    REPT 8
-    add hl, hl ; hl + hl == (hl << 1)
-    ld a, d
-    and a, _mask
-    jr z, :+
-    add hl, bc
-:
-    DEF _mask = (_mask >> 1)
-    ENDR
+    ; Row = PosY/8
+    ; Col = PosX/8
+    ; Index = Row * 32 + Col
     
-.end
+    ; Calculate Row * 32
+    ld a, d
+    and a, %11111000 ; Equal to Row * 8
+    ld h, 0
+    ld l, a
+    add hl, hl ; Equal to Row * 16
+    add hl, hl ; Equal to Row * 32
+
+    ; Add Col
     ld d, 0
+    srl e
+    srl e
+    srl e
     add hl, de
     ld b, h
     ld c, l
