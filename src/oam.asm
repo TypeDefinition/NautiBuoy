@@ -19,7 +19,7 @@ INCLUDE "./src/include/util.inc"
 SECTION "Shadow OAM Vars", WRAM0, ALIGN[8] 
 wShadowOAM::
     ds 4 * 40 ; This is the buffer we'll write sprite data to, reserve 4*40 bytes for it
-.end
+.end::
 
 wCurrentShadowOAMPtr::
     ds 1 ; stores the address of the current empty set of wShadowOAM data

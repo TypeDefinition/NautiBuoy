@@ -66,7 +66,7 @@ Initialise::
     call LCDOff
 
     call ResetOAM
-    call ResetShawdowOAM
+    mem_set_small wShadowOAM, 0, wShadowOAM.end - wShadowOAM
 
     ; Copy background tile data into VRAM.
     set_romx_bank 2 ; Our tile data is in Bank 2, so we load that into ROMX.
