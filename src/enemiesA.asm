@@ -15,13 +15,12 @@ UpdateEnemyA::
 
     ld de, Character_Direction
     add hl, de ; get direction
-    ld a, [hl]
+    ld a, [hli]
     ld c, a ; c = direction
 
-    pop hl ; POP hl = enemy address
-    push hl ; PUSH hl = enemy address
-    ld de, Character_UpdateFrameCounter
-    add hl, de
+    inc hl
+    inc hl
+    inc hl
 
     ld a, [hl] ; first part of updateFrameCounter
     add a, ENEMY_TYPEA_ANIMATION_UPDATE_SPEED
@@ -37,10 +36,15 @@ UpdateEnemyA::
     jr nz, .attackFinish
     pop de ; POP de = enemy address
     push de ; PUSH de = enemy address
-
+ 
+    push af ; PUSH af = int part of updateFrameCounter
+    push hl ; PUSH hl = updateFrameCounter address
     call EnemyShoot
+    pop hl ; POP hl = updateFrameCounter address
+    pop af ; POP af = int part of updateFrameCounter
 
 .attackFinish
+    ; a = int part of updateFrameCounter, hl = updateFrameCounter address
     ld d, a ; reg d = int part of updateFrameCounter
     push hl ; PUSH HL = updateFrameCounter address
     inc hl

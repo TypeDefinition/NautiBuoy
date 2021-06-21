@@ -139,13 +139,15 @@ UpdateAllEnemies::
     ret
 
 /*  For enemies shooting in directions it is not facing
-    hl - enemy address    
+    hl - enemy address   
+    
+    registers changed:
+    - AF
+    - BC
+    - DE
+    - HL
 */
 EnemyShootDir::
-    push bc
-    push de
-    push hl
-
     ld d, h ; de = enemy address
     ld e, l
 
@@ -175,23 +177,21 @@ EnemyShootDir::
     ld c, DIR_LEFT
     call EnemyShoot 
 
-.end
-    pop hl
-    pop de
-    pop bc
-    
+.end    
     ret
 
 /*  Attack 
     de - enemy address
     c - direction the bullet will travel
+
+    registers changed:
+        - AF
+        - BC
+        - DE
+        - HL
+
 */
 EnemyShoot::
-    push af
-    push bc
-    push de
-    push hl
-
     inc de ; skip flags
     inc de ; skip posYinterpolateTarget
 
@@ -234,11 +234,6 @@ EnemyShoot::
     ld [hl], a ; set second byte of pos X for bullet 
 
 .finishAttack
-    pop hl
-    pop de
-    pop bc
-    pop af 
-
     ret
 
 
@@ -286,35 +281,41 @@ EnemyBounceOnWallMovement::
 .downDirMove
     cp a, DIR_DOWN
     jr nz, .rightDirMove
+    push bc ; PUSH BC = velocity
     tile_collision_check_down_reg ENEMY_COLLIDER_SIZE, CHARACTER_COLLIDABLE_TILES, .collideOnWall
+    pop bc ; POP BC = velocity
     interpolate_pos_inc_reg
     jp .end
 
 .rightDirMove
     cp a, DIR_RIGHT
     jr nz, .leftDirMove
+    push bc ; PUSH BC = velocity
     tile_collision_check_right_reg ENEMY_COLLIDER_SIZE, CHARACTER_COLLIDABLE_TILES, .collideOnWall
+    pop bc ; POP BC = velocity
     ld h, d 
     ld l, e ; hl = posX address
     interpolate_pos_inc_reg
     jr .end
 
 .leftDirMove
+    push bc ; PUSH BC = velocity
     tile_collision_check_left_reg ENEMY_COLLIDER_SIZE, CHARACTER_COLLIDABLE_TILES, .collideOnWall
+    pop bc ; POP BC = velocity
     ld h, d 
     ld l, e ; hl = posX address
     interpolate_pos_dec_reg
     jr .end
 
 .collideOnWall ; move the opposite direction
+    pop bc ; POP BC = velocity
     pop hl ; POP HL = enemy starting address
     push hl ; PUSH HL = enemy starting address
+
     ld de, Character_Direction
     add hl, de
-
-    ; invert last bit to get opposite direction
     ld a, [hl]
-    xor a, %00000001 ; invert last bit
+    xor a, %00000001 ; invert last bit, get opposite direction
     
     ld [hl], a 
 .end

@@ -139,11 +139,16 @@ ENDM
     de - Entity PosX Address
     \1 - Collider Size
     \2 - Collidable Tiles
-    \3 - True Jump Address */
+    \3 - True Jump Address 
+    
+    Registers change:
+    - AF
+    - BC
+    - DE
+*/
 MACRO tile_collision_check_up_reg
     ; Top Left Corner Collision Check
     push de
-    push bc
     ld a, [de]
     sub a, \1
     ld e, a
@@ -152,14 +157,12 @@ MACRO tile_collision_check_up_reg
     ld d, a
     call GetTileIndex
     call GetTileValue
-    pop bc
     pop de
     cp a, \2
     jp c, \3
 
     ; Top Right Corner Collision Check
     push de
-    push bc
     ld a, [de]
     add a, \1 - 1
     ld e, a
@@ -168,7 +171,6 @@ MACRO tile_collision_check_up_reg
     ld d, a
     call GetTileIndex
     call GetTileValue
-    pop bc
     pop de
     cp a, \2
     jp c, \3
@@ -183,7 +185,6 @@ ENDM
 MACRO tile_collision_check_down_reg
     ; Bottom Left Corner Collision Check
     push de
-    push bc
     ld a, [de]
     sub a, \1
     ld e, a
@@ -192,14 +193,12 @@ MACRO tile_collision_check_down_reg
     ld d, a
     call GetTileIndex
     call GetTileValue
-    pop bc
     pop de
     cp a, \2
     jp c, \3
 
     ; Bottom Right Corner Collision Check
     push de
-    push bc
     ld a, [de]
     add a, \1 - 1
     ld e, a
@@ -208,7 +207,6 @@ MACRO tile_collision_check_down_reg
     ld d, a
     call GetTileIndex
     call GetTileValue
-    pop bc
     pop de
     cp a, \2
     jp c, \3
@@ -223,7 +221,6 @@ ENDM
 MACRO tile_collision_check_left_reg
     ; Top Left Corner Collision Check
     push de
-    push bc
     ld a, [de]
     sub a, (TILE_SIZE + \1)
     ld e, a
@@ -232,14 +229,12 @@ MACRO tile_collision_check_left_reg
     ld d, a
     call GetTileIndex
     call GetTileValue
-    pop bc
     pop de
     cp a, \2
     jp c, \3
 
     ; Bottom Left Corner Collision Check
     push de
-    push bc
     ld a, [de]
     sub a, (TILE_SIZE + \1)
     ld e, a
@@ -248,7 +243,6 @@ MACRO tile_collision_check_left_reg
     ld d, a
     call GetTileIndex
     call GetTileValue
-    pop bc
     pop de
     cp a, \2
     jp c, \3
@@ -263,7 +257,6 @@ ENDM
 MACRO tile_collision_check_right_reg
     ; Top Right Corner Collision Check
     push de
-    push bc
     ld a, [de]
     add a, (TILE_SIZE + \1 - 1)
     ld e, a
@@ -272,14 +265,12 @@ MACRO tile_collision_check_right_reg
     ld d, a
     call GetTileIndex
     call GetTileValue
-    pop bc
     pop de
     cp a, \2
     jp c, \3
 
     ; Bottom Right Corner Collision Check
     push de
-    push bc
     ld a, [de]
     add a, (TILE_SIZE + \1 - 1)
     ld e, a
@@ -288,7 +279,6 @@ MACRO tile_collision_check_right_reg
     ld d, a
     call GetTileIndex
     call GetTileValue
-    pop bc
     pop de
     cp a, \2
     jp c, \3
