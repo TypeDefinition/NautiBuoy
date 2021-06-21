@@ -323,55 +323,63 @@ EnemyBounceOnWallMovement::
     ret
 
 
-/*  Enemy just moves in direction set, no collision */ 
-EnemyMoveBasedOnDir::
-    push hl ; PUSH HL = enemy starting address
-    ld de, Character_Velocity
-    add hl, de
-    ld a, [hli]
-    ld c, a
-    ld a, [hl]
-    ld b, a ; bc = velocity, note the velocity in data is stored in little endian
-    pop hl ; POP HL = enemy starting address
-    push hl ; PUSH HL = enemy starting address
+/*  Enemy just moves in direction set, no collision 
+    hl - enemy starting address
 
-    ld de, Character_Direction
+    Register changes:
+        - af
+        - de
+        - hl
+*/ 
+EnemyMoveBasedOnDir::
+    ld de, Character_Velocity + 1
     add hl, de
     ld a, [hl]
+    ld b, a
+    dec hl
+    ld a, [hl]
+    ld c, a ; bc = velocity, note the velocity in data is stored in little endian
+    
+    dec hl
+    dec hl
+    
+    ld a, [hl]
+
+    dec hl
+    dec hl
     and a, DIR_BIT_MASK ; only want the first 2 bits for move direction
 
-    pop hl ; POP HL = enemy starting address
-    push hl ; PUSH HL = enemy starting address
-    ld de, Character_PosY
-    add hl, de ; hl = pos Y address
+    ASSERT DIR_UP == 0
+    and a, a ; cp a, 0
+    jr z, .upDir
+    ASSERT DIR_DOWN == 1
+    dec a
+    jr z, .downDir
+    ASSERT DIR_LEFT == 2
+    dec a
+    jr z, .leftDir
+    ASSERT DIR_RIGHT > 2
 
-    ; bc = velocity, hl = posY address
-.upDirMove
-    cp a, DIR_UP
-    jr nz, .downDirMove
-    interpolate_pos_dec_reg
-    jp .end
-
-.downDirMove
-    cp a, DIR_DOWN
-    jr nz, .rightDirMove
-    interpolate_pos_inc_reg
-    jp .end
-
-.rightDirMove
-    inc hl
-    inc hl
-    inc hl
-    cp a, DIR_RIGHT
-    jr nz, .leftDirMove
+    ; bc = velocity, hl = posX address
+.rightDir
     interpolate_pos_inc_reg
     jr .end
-
-.leftDirMove
+.upDir
+    dec hl
+    dec hl
+    dec hl
+    interpolate_pos_dec_reg
+    jr .end
+.downDir
+    dec hl
+    dec hl
+    dec hl
+    interpolate_pos_inc_reg
+    jr .end
+.leftDir
     interpolate_pos_dec_reg
 
 .end
-    pop hl ; POP HL = enemy starting address
     ret
 
 /*  Render and set enemy OAM data and animation 

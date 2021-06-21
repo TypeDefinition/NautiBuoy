@@ -47,5 +47,5 @@ LevelOneEnemyData::
     db DIR_UP
     db ENEMY_TYPEA_HEALTH
     dw VELOCITY_VSLOW ; cpu allocate and auto store in little endian
-    db ENEMY_TYPEC_NORMAL_STATE_FRAME
+    db ENEMY_TYPEA_WALK_FRAMES
 .endLevelOneEnemyData:

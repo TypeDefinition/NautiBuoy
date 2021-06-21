@@ -30,13 +30,16 @@ UpdateEnemyD::
     add hl, de
     ld a, [hl]
 
-    cp a, ENEMY_TYPED_WAKEUP_STATE_FRAME
-    jr nz, .updateAnimation ; >=, it is waking up
-
     cp a, ENEMY_TYPED_CHASE_STATE_FRAME
-    jr nz, .chaseState ; >=, it is in chase state
+    jr nc, .chaseState ; >=, it is in chase state 
+
+    cp a, ENEMY_TYPED_WAKEUP_STATE_FRAME
+    jr nc, .updateAnimation ; >=, it is waking up
 
 .restState ; check if player can see enemy on screen
+    pop hl ; POP HL = enemy address
+    push hl ; PUSH HL = enemy address
+
     ld a, [wShadowSCData] ; get screen pos y
     ld d, a
 
@@ -64,7 +67,9 @@ UpdateEnemyD::
 
 .checkWithinXAxis
     cp a, SCRN_X
-    jr nc, .endUpdateEnemyD 
+    jr nc, .endUpdateEnemyD
+
+    jr .updateAnimation ; start waking up
 
 .chaseState ; chase after player
     pop hl ; POP HL = enemy address
@@ -112,21 +117,43 @@ UpdateEnemyD::
     call EnemyMoveBasedOnDir
 
 .updateAnimation
-/*    ld de, Character_UpdateFrameCounter
+    pop hl ; POP HL = enemy address
+    push hl ; PUSH HL = enemy address
+    ld de, Character_UpdateFrameCounter
     add hl, de
+
     ld a, [hl]
     add a, ENEMY_TYPED_ANIMATION_UPDATE_SPEED
-    ld [hl], a
-    jr nc, .checkState */
+    ld [hli], a ; update fraction part of updateFrameCounter
+    jr nc, .endUpdateEnemyD
 
 .updateFrames
+    ; hl = enemy update frame counter + 1 address
+    ld a, [hl]
+    inc a
+    ; TODO:: make sure to check for overflow when attack mode
+    ld [hli], a ; int part of update frame counter
+    
+    ld a, [hli]
+    inc a  ; update animation frames
+    ld b, a ; b = curr animation frame
 
-    ; update animation frames here
-    ; update the int part of updateFrameCounter
+    ld a, [hl] ; get max frames 
+    cp a, b
+    jr nz, .continueUpdateFrames
+
+    ld b, 0 ; reset frame
+
+.continueUpdateFrames
+    ; b = curr animation frame, hl = enemy max frame address
+    dec hl
+    ld a, b
+    ld [hl], a ; store curr animation frame */
+
 
 .endUpdateEnemyD
     pop hl ; POP HL = enemy address
-    call InitEnemyDSprite
+    call InitEnemyDSprite ; DONT EVEN HAVE TO RENDER IF PLAYER NOT ON SAME SCREEN
     ret
 
 
@@ -163,15 +190,12 @@ InitEnemyDSprite:
 .rightDir
     ld bc, EnemyAAnimation.rightAnimation
     jr .endDir
-
 .upDir
     ld bc, EnemyAAnimation.upAnimation
     jr .endDir
-
 .downDir
     ld bc, EnemyAAnimation.downAnimation
     jr .endDir
-
 .leftDir
     ld bc, EnemyAAnimation.leftAnimation
 
