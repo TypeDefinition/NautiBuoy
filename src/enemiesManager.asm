@@ -248,61 +248,59 @@ EnemyShoot::
 EnemyBounceOnWallMovement::
     ; movement behaviour, goes in opposite direction when hit wall
     push hl ; PUSH HL = enemy starting address
+
     ld de, Character_Velocity
     add hl, de
     ld a, [hli]
     ld c, a
     ld a, [hl]
     ld b, a ; bc = velocity, note the velocity in data is stored in little endian
-    pop hl ; POP HL = enemy starting address
-    push hl ; PUSH HL = enemy starting address
+    
+    dec hl
+    dec hl
+    dec hl
 
-    ld de, Character_Direction
-    add hl, de
     ld a, [hl]
     and a, DIR_BIT_MASK ; only want the first 2 bits for move direction
 
-    pop hl ; POP HL = enemy starting address
-    push hl ; PUSH HL = enemy starting address
-    ld de, Character_PosY
-    add hl, de ; hl = pos Y address
+    dec hl 
+    dec hl
 
-    ld d, h
+    ld d, h ; de = posX address
     ld e, l
-    inc de
-    inc de
-    inc de ; de = posX address
+
+    dec hl ; pos y second half
+    dec hl
+    dec hl
 
     ; bc = velocity, hl = posY address, de = posX address
 .upDirMove
     cp a, DIR_UP
     jr nz, .downDirMove
-    tile_collision_check_up_reg ENEMY_COLLIDER_SIZE, CHARACTER_COLLIDABLE_TILES, .collideOnWall, .moveUp
-.moveUp
+    push bc ; PUSH BC = velocity
+    tile_collision_check_up_reg ENEMY_COLLIDER_SIZE, CHARACTER_COLLIDABLE_TILES, .collideOnWall
+    pop bc ; POP BC = velocity
     interpolate_pos_dec_reg
     jp .end
 
 .downDirMove
     cp a, DIR_DOWN
     jr nz, .rightDirMove
-    tile_collision_check_down_reg ENEMY_COLLIDER_SIZE, CHARACTER_COLLIDABLE_TILES, .collideOnWall, .moveDown
-.moveDown
+    tile_collision_check_down_reg ENEMY_COLLIDER_SIZE, CHARACTER_COLLIDABLE_TILES, .collideOnWall
     interpolate_pos_inc_reg
     jp .end
 
 .rightDirMove
     cp a, DIR_RIGHT
     jr nz, .leftDirMove
-    tile_collision_check_right_reg ENEMY_COLLIDER_SIZE, CHARACTER_COLLIDABLE_TILES, .collideOnWall, .moveRight
-.moveRight
+    tile_collision_check_right_reg ENEMY_COLLIDER_SIZE, CHARACTER_COLLIDABLE_TILES, .collideOnWall
     ld h, d 
     ld l, e ; hl = posX address
     interpolate_pos_inc_reg
     jr .end
 
 .leftDirMove
-    tile_collision_check_left_reg ENEMY_COLLIDER_SIZE, CHARACTER_COLLIDABLE_TILES, .collideOnWall, .moveLeft
-.moveLeft
+    tile_collision_check_left_reg ENEMY_COLLIDER_SIZE, CHARACTER_COLLIDABLE_TILES, .collideOnWall
     ld h, d 
     ld l, e ; hl = posX address
     interpolate_pos_dec_reg
@@ -315,9 +313,8 @@ EnemyBounceOnWallMovement::
     add hl, de
 
     ; invert last bit to get opposite direction
-    ld d, %00000001
     ld a, [hl]
-    xor a, d ; invert last bit
+    xor a, %00000001 ; invert last bit
     
     ld [hl], a 
 .end
@@ -427,7 +424,7 @@ UpdateEnemySpriteOAM::
     ld c, a
     ld a, b
     adc a, 0 ; add offset to animation address: bc + a
-    ld b, a
+    ld b, a 
     
     pop hl ; POP HL = enemy address
 
@@ -439,6 +436,7 @@ UpdateEnemySpriteOAM::
     ld d, a
     ld a, [hli] ; get Y pos
     sub a, d
+    add a, 8
     ld d, a ; store y screen pos at b
 
     inc hl ; skip second part of y pos
@@ -457,7 +455,6 @@ UpdateEnemySpriteOAM::
 
     ; start initialising to shadow OAM
     ld a, d
-    add a, 8
     ld [hli], a ; init screen y Pos,  first sprite y offset 8
 
     ld a, e
@@ -473,7 +470,6 @@ UpdateEnemySpriteOAM::
 
     ; Init second half of enemy sprite to shadow OAM
     ld a, d
-    add a, 8
     ld [hli], a ; init screen y Pos, second sprite y offset 8
     
     ld a, e
@@ -578,7 +574,7 @@ HitEnemy::
     ld [hl], a ; update hp
 
     ; check health <= 0
-    cp a, 0
+    and a
     jr z, .dead
     cp a, 127
     jr nc, .dead ; value underflowed, go to dead

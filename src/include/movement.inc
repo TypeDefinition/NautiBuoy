@@ -59,7 +59,13 @@ ENDM
 /*  Interpolate the position of an entity decreasingly.
     Parameters are registers instead
     hl - Pos starting address
-    bc - Value of velocity */
+    bc - Value of velocity 
+    
+    Registers change:
+        - AF
+        - BC
+        - DE
+*/
     
 MACRO interpolate_pos_dec_reg
     push af

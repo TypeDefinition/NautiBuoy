@@ -139,8 +139,7 @@ ENDM
     de - Entity PosX Address
     \1 - Collider Size
     \2 - Collidable Tiles
-    \3 - True Jump Address
-    \4 - False Jump Address */
+    \3 - True Jump Address */
 MACRO tile_collision_check_up_reg
     ; Top Left Corner Collision Check
     push de
@@ -173,8 +172,6 @@ MACRO tile_collision_check_up_reg
     pop de
     cp a, \2
     jp c, \3
-
-    jp \4
 ENDM
 
 /*  Check for entity collision with tiles (down) 
@@ -182,8 +179,7 @@ ENDM
     de - Entity PosX Address
     \1 - Collider Size
     \2 - Collidable Tiles
-    \3 - True Jump Address
-    \4 - False Jump Address */
+    \3 - True Jump Address */
 MACRO tile_collision_check_down_reg
     ; Bottom Left Corner Collision Check
     push de
@@ -216,17 +212,14 @@ MACRO tile_collision_check_down_reg
     pop de
     cp a, \2
     jp c, \3
-
-    jp \4
 ENDM
 
 /*  Check for entity collision with tiles (left)
     hl - Entity PosY Address
     de - Entity PosX Address
     \1 - Collider Size
-    \4 - Collidable Tiles
-    \5 - True Jump Address
-    \6 - False Jump Address */
+    \2 - Collidable Tiles
+    \3 - True Jump Address */
 MACRO tile_collision_check_left_reg
     ; Top Left Corner Collision Check
     push de
@@ -259,8 +252,6 @@ MACRO tile_collision_check_left_reg
     pop de
     cp a, \2
     jp c, \3
-
-    jp \4
 ENDM
 
 /*  Check for entity collision with tiles (right)
@@ -268,8 +259,7 @@ ENDM
     de - Entity PosX Address
     \1 - Collider Size
     \2 - Collidable Tiles
-    \3 - True Jump Address
-    \4 - False Jump Address */
+    \3 - True Jump Address */
 MACRO tile_collision_check_right_reg
     ; Top Right Corner Collision Check
     push de
@@ -302,8 +292,6 @@ MACRO tile_collision_check_right_reg
     pop de
     cp a, \2
     jp c, \3
-
-    jp \4
 ENDM
 
     ENDC ; TILE_COLLISION_INC
