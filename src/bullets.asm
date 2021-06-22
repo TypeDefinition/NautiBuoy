@@ -146,79 +146,23 @@ BulletTileCollisionCheck:
 .end
     ld a, h
     pop hl
-    cp a, $00
+    and a
     jr z, .bulletNotDestroyed
     ld [hl], FLAG_INACTIVE
 .bulletNotDestroyed
     ret
 
-; Translate a bullet.
-; @ bc: Velocity
-; @ hl: Bullet Memory Address
-TranslateBulletUp:
-    ; hl = PosY
-    push hl
-    push de
-    ld de, Bullet_PosY
-    add hl, de
-    interpolate_pos_dec_reg
-    pop de
-    pop hl
-    ret
-
-; Translate a bullet.
-; @ bc: Velocity
-; @ hl: Bullet Memory Address
-TranslateBulletDown:
-    ; hl = PosY
-    push hl
-    push de
-    ld de, Bullet_PosY
-    add hl, de
-    interpolate_pos_inc_reg
-    pop de
-    pop hl
-    ret
-
-; Translate a bullet.
-; @ bc: Velocity
-; @ hl: Bullet Memory Address
-TranslateBulletLeft:
-    ; hl = PosX
-    push hl
-    push de
-    ld de, Bullet_PosX
-    add hl, de
-    interpolate_pos_dec_reg
-    pop de
-    pop hl
-    ret
-
-; Translate a bullet.
-; @ bc: Velocity
-; @ hl: Bullet Memory Address
-TranslateBulletRight:
-    ; hl = PosX
-    push hl
-    push de
-    ld de, Bullet_PosX
-    add hl, de
-    interpolate_pos_inc_reg
-    pop de
-    pop hl
-    ret
 
 ; Update Bullet Shadow OAM
 ; @ bc: Bullet Sprite
 ; @ hl: Bullet Memory Address
+; Register change:
+;   - AF
+;   - BC
+;   - DE
+;   - HL
 UpdateBulletShadowOAM:
-    push af
-    push bc
-    push de
-    push hl
-
-    ld d, 0
-    ld e, 4
+    ld de, Bullet_PosY
     add hl, de ; offset hl by 4
     
     ; translate to screen pos
@@ -226,6 +170,7 @@ UpdateBulletShadowOAM:
     ld d, a
     ld a, [hli] ; bullet y pos
     sub a, d ; decrease by screen offset
+    add a, 8 ; bullet sprite y offset = 8
     ld d, a
     
     inc hl
@@ -234,6 +179,7 @@ UpdateBulletShadowOAM:
     ld e, a
     ld a, [hl] ; bullet x pos
     sub a, e ; decrease by screen offset
+    add a, 4 ; bullet sprite y offset = 4
     ld e, a
 
     ; get the current address of shadow OAM to hl
@@ -241,16 +187,12 @@ UpdateBulletShadowOAM:
     ld l, a
     ld h, HIGH(wShadowOAM)
 
-    ld a, [bc] ; y offset
-    add a, d
+    ld a, d
     ld [hli], a ; update y pos
 
-    inc bc
-    ld a, [bc] ; x offset
-    add a, e
+    ld a, e
     ld [hli], a ; update x pos
 
-    inc bc
     ld a, [bc] ; sprite ID
     ld [hli], a 
 
@@ -261,12 +203,6 @@ UpdateBulletShadowOAM:
     ; update the current address from hl to the wCurrentShadowOAMPtr
     ld a, l
     ld [wCurrentShadowOAMPtr], a
-
-    pop hl
-    pop de
-    pop bc
-    pop af
-
     ret
 
 /* Global Functions */
@@ -281,6 +217,12 @@ ResetAllBullets::
     @ hl: Return 
     return hl - starting address of available bullet, if no available bullets, return the last bullet
     WARNING: after calling this function, need to check if active anyway, there's no null check...
+
+    Registers change:
+        - AF
+        - BC
+        - DE
+        - HL
 */
 GetInactiveBullet::
     push de
@@ -292,7 +234,7 @@ GetInactiveBullet::
     
     dec b ; decrement and check
     ld a, b
-    cp a, 0
+    and a
     jr z, .end
 
     ld de, sizeof_Bullet
@@ -314,37 +256,33 @@ UpdateBullets::
     ; Collision
     ld a, [hl]
     bit BIT_FLAG_ACTIVE, a ; check if alive
-    jr z, .loopEnd
+    jp z, .loopEnd
     call BulletTileCollisionCheck
 
     ld a, [hl]
     bit BIT_FLAG_ACTIVE, a ; check if alive after collision
-    jr z, .loopEnd
+    jp z, .loopEnd
     call BulletSpriteCollisionCheck
 
     ; Translation
 .translationStart
     ld a, [hl]
     bit BIT_FLAG_ACTIVE, a ; check if alive after sprite collision
-    jr z, .loopEnd
+    jp z, .loopEnd
 
-    ; bc = Velocity
     push hl ; PUSH HL = bullet address
-    ld de, Bullet_Velocity
-    add hl, de
+    inc hl
+    ld a, [hli] ; get direction
+    ld d, a
+
     ld a, [hli]
     ld b, a
-    ld a, [hl]
-    ld c, a
-    pop hl ; pop HL = bullet address
+    ld a, [hli]
+    ld c, a ; bc = Velocity
 
-    ; a = Direction
-    push hl ; push HL = bullet address
-    inc hl
-    ld a, [hl]
-    pop hl ; pop HL = bullet address
+    ; hl = y pos address, d = direction, bc = velocity
+    ld a, d
 
-    push bc ; push bc = velocity
     ASSERT DIR_UP == 0
     and a, a ; cp a, 0
     jr z, .translateUp
@@ -356,30 +294,37 @@ UpdateBullets::
     jr z, .translateLeft
     ASSERT DIR_RIGHT > 2
 .translateRight
-    call TranslateBulletRight
+    inc hl
+    inc hl
+    interpolate_pos_inc_reg
     ld bc, BulletSprites.rightSprite
     jr .translationEnd
 .translateUp
-    call TranslateBulletUp
+    interpolate_pos_dec_reg
     ld bc, BulletSprites.upSprite
     jr .translationEnd
 .translateDown
-    call TranslateBulletDown
+    interpolate_pos_inc_reg
     ld bc, BulletSprites.downSprite
     jr .translationEnd
 .translateLeft
-    call TranslateBulletLeft
+    inc hl
+    inc hl
+    interpolate_pos_dec_reg
     ld bc, BulletSprites.leftSprite
 .translationEnd
+    pop hl ; POP HL = bullet address
+    push hl ; PUSH HL = bullet address
     call UpdateBulletShadowOAM
-    pop bc ; pop bc = velocity
+    pop hl ; POP HL = bullet address
 
 .loopEnd
+    ; hl = bullet starting address
     ld de, sizeof_Bullet ; based on number of bytes the bullet has
     add hl, de ; offset to get the next bullet
     pop bc ; pop bc = loop counter
     dec b ; dec counter
-    jr nz, .loopStart
+    jp nz, .loopStart
 
 .end
     ret
@@ -417,7 +362,7 @@ BulletSpriteCollisionCheck:
     ld l, PLAYER_COLLIDER_SIZE
 
     call SpriteCollisionCheck
-    cp a, 0
+    and a
     jr z, .end
 
     pop hl  ; POP HL = bullet address
@@ -435,7 +380,7 @@ BulletSpriteCollisionCheck:
     ld e, ENEMY_BULLET_COLLIDER_SIZE
 
     call CheckEnemyCollisionLoop
-    cp a, 0
+    and a
     jr z, .end
 
     call HitEnemy

@@ -7,25 +7,17 @@ SECTION "Bullet Sprite Data", ROMX, BANK[2]
 */
 BulletSprites::
 .upSprite::
-    db 8 ; y
-    db 4 ; x
     db 18 ; sprite ID
     db OAMF_PAL0 
 
 .downSprite::
-    db 8 ; y
-    db 4 ; x
     db 18 ; sprite ID
     db OAMF_PAL0 | OAMF_YFLIP
 
 .rightSprite::
-    db 8 ; y
-    db 4 ; x
     db 20 ; sprite ID
     db OAMF_PAL0
     
 .leftSprite::
-    db 8 ; y
-    db 4 ; x
     db 20 ; sprite ID
     db OAMF_PAL0 | OAMF_XFLIP

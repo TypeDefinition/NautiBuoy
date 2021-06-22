@@ -65,13 +65,10 @@ ENDM
         - AF
         - BC
         - DE
+        - hl
 */
     
 MACRO interpolate_pos_dec_reg
-    push af
-    push de
-    push hl
-    
     ; Get -Velocity
     ld a, c
     cpl
@@ -82,9 +79,6 @@ MACRO interpolate_pos_dec_reg
     cpl
     adc a, $00
     ld b, a 
-
-    ; what if i do add and then put over the carry bits?
-    push hl
     
     ld a, [hli] ; get first byte of pos 
     ld d, a
@@ -96,28 +90,23 @@ MACRO interpolate_pos_dec_reg
     ld a, d
     adc b ; add with the first part of velocity
 
-    pop hl
+    dec hl
     
     ld [hli], a
     ld a, e
     ld [hl], a 
-
-    pop hl
-    pop de
-    pop af
 ENDM
 
 /*  Interpolate the position of an entity increasingly.
     hl - position starting address
-    bc - Entity Velocity value */
-MACRO interpolate_pos_inc_reg
-    push af
-    push de
-    push hl
-
-    ; what if i do add and then put over the carry bits?
-    push hl
+    bc - Entity Velocity value 
     
+    Registers changed:
+        - af
+        - de
+        - hl
+*/
+MACRO interpolate_pos_inc_reg
     ld a, [hli] ; get first byte of pos 
     ld d, a
     ld a, [hl] ; get second byte of pos 
@@ -128,15 +117,11 @@ MACRO interpolate_pos_inc_reg
     ld a, d
     adc a, b ; add with the first part of velocity
 
-    pop hl
+    dec hl
 
     ld [hli], a
     ld a, e
     ld [hl], a 
-
-    pop hl
-    pop de
-    pop af
 ENDM
 
 
