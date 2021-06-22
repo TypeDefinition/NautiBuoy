@@ -111,18 +111,22 @@ UpdateAllEnemies::
     cp a, TYPE_ENEMYA
     jr nz, .enemyTypeB
     call UpdateEnemyA ; call correct update for enemy
+    jr .nextLoop
 .enemyTypeB ; turtle
     cp a, TYPE_ENEMYB
     jr nz, .enemyTypeC
     call UpdateEnemyB ; call correct update for enemy
+    jr .nextLoop
 .enemyTypeC
     cp a, TYPE_ENEMYC
     jr nz, .enemyTypeD
     call UpdateEnemyC
+    jr .nextLoop
 .enemyTypeD ; ghost
     cp a, TYPE_ENEMYD
     jr nz, .nextLoop
     call UpdateEnemyD
+    jr .nextLoop
 
 .nextLoop
     pop de ; POP de = loop counter
