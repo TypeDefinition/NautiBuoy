@@ -285,6 +285,10 @@ PlayerIsHit::
     ld [wPlayer_PosY], a
     ld [wPlayer_PosX], a 
 
+    xor a
+    ld [wPlayer_PosY + 1], a
+    ld [wPlayer_PosY + 1], a
+
     jr .end
 .dead
     /* TODO:: if dead, put gameover screen or something */
@@ -550,8 +554,5 @@ UpdatePlayerShadowOAM::
     ; update the current address of from hl to the wCurrentShadowOAMPtr
     ld a, l
     ld [wCurrentShadowOAMPtr], a
-    ld a, h
-    ld [wCurrentShadowOAMPtr + 1], a
-
 .end
     ret

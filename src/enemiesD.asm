@@ -164,6 +164,11 @@ UpdateEnemyD::
     call InitEnemyDSprite ; DONT EVEN HAVE TO RENDER IF PLAYER NOT ON SAME SCREEN
     ret
 
+/* Reset enemy D states */
+ResetEnemyD::
+    ret
+
+
 /*  Init enemy Ghost sprite
     hl - enemy address 
 */
@@ -222,3 +227,4 @@ InitEnemyDSprite:
     pop hl ; POP HL = enemy address
     call UpdateEnemySpriteOAM
     ret
+

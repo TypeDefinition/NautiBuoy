@@ -6,6 +6,8 @@ include "./src/include/util.inc"
 SECTION "Update Loop", ROM0
 UpdateLoop::
     set_romx_bank 2 ; player, enemy and bullet sprite data is in rombank 2
+    ;ld a, BANK(LevelOneEnemyData)
+    ;ld [rROMB0], a
     call UpdateInput
 
     call ResetShawdowOAM
