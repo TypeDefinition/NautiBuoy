@@ -112,7 +112,6 @@ UpdateEnemyD::
 
 .finishFindingPlayer
     ; c = direction
-
     pop hl ; POP HL = enemy address
     push hl ; PUSH HL = enemy address
 
@@ -175,12 +174,24 @@ InitEnemyDSprite:
     add hl, de ; offset hl = updateFrameCounter
 
     ld a, [hl] ; get int part of updateFrameCounter
+    cp a, ENEMY_TYPED_CHASE_STATE_FRAME
+    jr nc, .chaseStateSprite ; >=, it is in chase state 
+
+    ld bc, EnemyDAnimation.sleepAnimation
+    jr .endDir
+
+.chaseStateSprite
+    ; a = updateFrameCounter
+
     ld d, a ; reg d = updateFrameCounter
 
-    pop hl ; POP hl = enemy address
-    push hl ; PUSH hl = enemy address
-    ld bc, Character_Direction
-    add hl, bc 
+    ld a, l ; 8 cycles
+    sub a, 5
+    ld l, a
+    ld a, h
+    sbc a, 0
+    ld h, a ; offset to get direction
+
     ld a, [hl] ; check direction of enemy and init sprite data
     and a, DIR_BIT_MASK
 
@@ -208,7 +219,6 @@ InitEnemyDSprite:
     ld bc, EnemyDAnimation.leftAnimation
 
 .endDir
-
     pop hl ; POP HL = enemy address
     call UpdateEnemySpriteOAM
     ret

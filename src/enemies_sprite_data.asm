@@ -260,7 +260,7 @@ EnemyCAnimation::
 
 /* Animation for enemy D */
 EnemyDAnimation::
-.sleepAnimation
+.sleepAnimation::
     ; frame 1
     db $4E
     db OAMF_PAL0
