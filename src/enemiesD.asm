@@ -20,12 +20,22 @@ UpdateEnemyD::
 .checkState
 
     ; check current state here
-    ; if rest state, go to rest state: 0 - 1
+    ; if rest state, dont even bother updating the animation or render
     ; if 'waking up state' go to end, just render, make sure the animation stuff is updated: 2 - 4
     ; if chase state, to to chase state: after a certain number
     ; if player dies, teleport enemy D to somewhere
     ; rest state if player is nearby, set to 'wake up state'
     ; set all the proper variables like max frames
+
+    ; TODO:: all the reset animation frame properly, able to teleport back to its original location when player died
+    ; able to reset its state after player has died
+
+    ; rest state is currently ran every frame, do we want to change this?
+    ; run only certain frames?
+    ; when it just reach wakeup state, it should start the animation
+    ; if it reach chase state, should change the max animation frame and reset the animation counter
+    ; rest state has no animation or even need update animation frame since player cant see the enemy
+
     ld de, Character_UpdateFrameCounter + 1
     add hl, de
     ld a, [hl]
@@ -119,9 +129,9 @@ UpdateEnemyD::
 .updateAnimation
     pop hl ; POP HL = enemy address
     push hl ; PUSH HL = enemy address
+
     ld de, Character_UpdateFrameCounter
     add hl, de
-
     ld a, [hl]
     add a, ENEMY_TYPED_ANIMATION_UPDATE_SPEED
     ld [hli], a ; update fraction part of updateFrameCounter
@@ -150,12 +160,10 @@ UpdateEnemyD::
     ld a, b
     ld [hl], a ; store curr animation frame */
 
-
 .endUpdateEnemyD
     pop hl ; POP HL = enemy address
     call InitEnemyDSprite ; DONT EVEN HAVE TO RENDER IF PLAYER NOT ON SAME SCREEN
     ret
-
 
 /*  Init enemy Ghost sprite
     hl - enemy address 
@@ -188,16 +196,16 @@ InitEnemyDSprite:
     ASSERT DIR_RIGHT > 2
 
 .rightDir
-    ld bc, EnemyAAnimation.rightAnimation
+    ld bc, EnemyDAnimation.rightAnimation
     jr .endDir
 .upDir
-    ld bc, EnemyAAnimation.upAnimation
+    ld bc, EnemyDAnimation.upAnimation
     jr .endDir
 .downDir
-    ld bc, EnemyAAnimation.downAnimation
+    ld bc, EnemyDAnimation.downAnimation
     jr .endDir
 .leftDir
-    ld bc, EnemyAAnimation.leftAnimation
+    ld bc, EnemyDAnimation.leftAnimation
 
 .endDir
 

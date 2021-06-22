@@ -30,7 +30,7 @@ UpdateEnemyB::
 
     ; update frames
     ld a, [hli] ; a = int part of UpdateFrameCounter
-    adc a, 0
+    inc a
     ld d, a
 
     ld a, [hli]
