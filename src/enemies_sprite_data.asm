@@ -2,30 +2,6 @@ INCLUDE "./src/include/hardware.inc"
 
 SECTION "Enemy Sprite Data", ROMX, BANK[2]
 
-/* Data for enemy sprites, */
-EnemySpriteData::
-.enemyASpriteData::
-    db 8 ; y
-    db 0 ; x
-
-    ; right sprite of the enemy
-    db 8 ; y
-    db 8 ; x
-.enemyBSpriteData::
-    db 8 ; y
-    db 0 ; x
-
-    ; right sprite of the enemy
-    db 8 ; y
-    db 8 ; x
-.enemyCSpriteData::
-    db 8 ; y
-    db 0 ; x
-
-    ; right sprite of the enemy
-    db 8 ; y
-    db 8 ; x
-
 /* Animation, sprite IDs for the enemy*/
 EnemyAAnimation::
 .upAnimation:: ; up and down has the same frames
