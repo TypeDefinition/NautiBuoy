@@ -588,7 +588,6 @@ HitEnemy::
     cp a, 127
     jr nc, .dead ; value underflowed, go to dead
 
-
 .damageFlickerEffect ; not dead, set damage flicker effect
     pop hl ; POP HL = enemy address
     push hl ; PUSH HL = enemy address
@@ -607,6 +606,13 @@ HitEnemy::
     pop hl ; POP HL = enemy address
     ld a, FLAG_INACTIVE
     ld [hl], a
+
+    ; reduce enemy counter by 1
+    ld a, [wCurrLevelEnemiesNo]
+    dec a
+    ld [wCurrLevelEnemiesNo], a
+
+    ; TODO:: if reach 0, win game
 
 .end
     pop de

@@ -76,7 +76,9 @@ Initialise::
     mem_copy TestSprite, _VRAM8000, TestSprite.end-TestSprite
     mem_copy EnemyTurtleSprite, _VRAM8000 + TestSprite.end - TestSprite, EnemyTurtleSprite.end - EnemyTurtleSprite
     mem_copy EnemyCSprite, _VRAM8000 + (TestSprite.end - TestSprite) + (EnemyTurtleSprite.end - EnemyTurtleSprite), EnemyCSprite.end - EnemyCSprite
-    
+    mem_copy EnemyDSprite, _VRAM8000 + (TestSprite.end - TestSprite) + (EnemyTurtleSprite.end - EnemyTurtleSprite) + (EnemyCSprite.end - EnemyCSprite), EnemyDSprite.end - EnemyDSprite
+
+
     ; Copy tile map into VRAM.
     set_romx_bank 3 ; Our tile maps are in Bank 3, so we load that into ROMX.
     mem_copy Level0, GameLevelTiles, Level0.end-Level0
