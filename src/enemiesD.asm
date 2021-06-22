@@ -18,24 +18,6 @@ UpdateEnemyD::
     push hl ; PUSH HL = enemy address
 
 .checkState
-
-    ; check current state here
-    ; if rest state, dont even bother updating the animation or render
-    ; if 'waking up state' go to end, just render, make sure the animation stuff is updated: 2 - 4
-    ; if chase state, to to chase state: after a certain number
-    ; if player dies, teleport enemy D to somewhere
-    ; rest state if player is nearby, set to 'wake up state'
-    ; set all the proper variables like max frames
-
-    ; TODO:: all the reset animation frame properly, able to teleport back to its original location when player died
-    ; able to reset its state after player has died
-
-    ; rest state is currently ran every frame, do we want to change this?
-    ; run only certain frames?
-    ; when it just reach wakeup state, it should start the animation
-    ; if it reach chase state, should change the max animation frame and reset the animation counter
-    ; rest state has no animation or even need update animation frame since player cant see the enemy
-
     ld de, Character_UpdateFrameCounter + 1
     add hl, de
     ld a, [hl]
@@ -164,8 +146,53 @@ UpdateEnemyD::
     call InitEnemyDSprite ; DONT EVEN HAVE TO RENDER IF PLAYER NOT ON SAME SCREEN
     ret
 
-/* Reset enemy D states */
+/*  Reset enemy D state when player dies
+    hl - enemy address
+
+    registers changed:
+        - hl
+        - de
+        - af
+        - bc
+*/
 ResetEnemyD::
+    push hl ; PUSH HL = enemy address
+
+    ; get spawn position
+    ld de, Character_SpawnPosition
+    add hl, de
+    ld a, [hli] 
+    ld d, a
+    ld a, [hl]
+    ld e, a
+
+    ; d = spawn pos y, e = spawn pos x
+    pop hl ; POP HL = enemy address
+
+    inc hl
+    inc hl
+
+    ld a, d
+    ld [hli], a ; update pos Y
+    inc hl 
+    inc hl
+
+    ld a, e
+    ld [hl], a ; update pos x
+
+    ; 8 cycles, offset to get updateFrameCounter
+    ld a, (Character_UpdateFrameCounter) - Character_PosX 
+    add a, l
+    ld l, a
+    ld a, h
+    adc a, 0
+    ld h, a
+
+    xor a
+    ld [hli], a ; update fraction part of UpdateFrameCounter
+    ld [hli], a ; update int part of UpdateFrameCounter
+    ld [hl], a ; update curr anaimation frame
+
     ret
 
 
