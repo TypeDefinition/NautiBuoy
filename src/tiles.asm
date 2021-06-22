@@ -11,7 +11,7 @@ GameLevelTiles::
     ds 1024
 .end::
 
-SECTION "Dirty Tiles", WRAM0[$C000]
+SECTION "Dirty Tiles", WRAM0
 /* Contains an array of tiles to update in the VRAM.
     Each tile to update is represented using 4 bytes.
     Tile Index: 2 bytes
