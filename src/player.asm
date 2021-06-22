@@ -366,7 +366,7 @@ UpdatePlayerCamera::
 
     ; Offset the camera so that the player is in the centre of the screen.
 .minY
-    sub a, VIEWPORT_SIZE_Y
+    sub a, VIEWPORT_SIZE_Y/2
     jr nc, .maxY
     xor a
 .maxY
@@ -419,7 +419,7 @@ UpdatePlayerCamera::
     ld [wPlayerCamera_PosX], a
 
 .minX
-    sub a, VIEWPORT_SIZE_X
+    sub a, VIEWPORT_SIZE_X/2
     jr nc, .maxX
     xor a
 .maxX

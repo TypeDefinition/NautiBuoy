@@ -24,7 +24,7 @@ LCDOn::
     push af
     ; Turn screen on, display background
     ; WARNING/TEMP: might change one of the 9800 to use tilemap 9c00, unsure what effects putting both to 9800 will cause for UI. default is 9800 
-    ld a, LCDCF_ON | LCDCF_WIN9800 | LCDCF_WINOFF | LCDCF_BG9800 | LCDCF_OBJ16 | LCDCF_OBJON | LCDCF_BGON ; we want to set back LCDC bit 7 to 1
+    ld a, LCDCF_ON | LCDCF_WIN9C00 | LCDCF_WINOFF | LCDCF_BG9800 | LCDCF_OBJ16 | LCDCF_OBJON | LCDCF_BGON ; we want to set back LCDC bit 7 to 1
     ld [rLCDC], a ; turn on the screen
     pop af
     ret
@@ -70,7 +70,7 @@ Initialise::
 
     ; Copy background tile data into VRAM.
     set_romx_bank 2 ; Our tile data is in Bank 2, so we load that into ROMX.
-    mem_copy BackgroundTiles, _VRAM9000, BackgroundTiles.end-BackgroundTiles
+    mem_copy BGWindowTiles, _VRAM9000, BGWindowTiles.end-BGWindowTiles
     mem_copy TestSprite, _VRAM8000, TestSprite.end-TestSprite
     mem_copy EnemyTurtleSprite, _VRAM8000 + TestSprite.end - TestSprite, EnemyTurtleSprite.end - EnemyTurtleSprite
     mem_copy EnemyCSprite, _VRAM8000 + (TestSprite.end - TestSprite) + (EnemyTurtleSprite.end - EnemyTurtleSprite), EnemyCSprite.end - EnemyCSprite
@@ -79,6 +79,8 @@ Initialise::
     set_romx_bank 3 ; Our tile maps are in Bank 3, so we load that into ROMX.
     mem_copy Level0, GameLevelTiles, Level0.end-Level0
     mem_copy GameLevelTiles, _SCRN0, GameLevelTiles.end-GameLevelTiles
+
+    ; call InitialiseGameUI
 
     ; TEMP: Temporary code.
     set_romx_bank 2

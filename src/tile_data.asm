@@ -5,8 +5,8 @@ TitleTiles::
 .end::
 
 SECTION "Game Tile Data", ROMX, BANK[2]
-BackgroundTiles::
-    INCBIN "./tile_data/background.2bpp" ; INCBIN copies the binary file contents directly into the ROM.
+BGWindowTiles::
+    INCBIN "./tile_data/bg_window.2bpp" ; INCBIN copies the binary file contents directly into the ROM.
 .end::
 
 TestSprite::
