@@ -39,6 +39,8 @@ InitEnemiesAndPlaceOnMap::
 
     inc bc
 .loop
+    push de ; PUSH DE = loop counter
+
     ld a, [bc]
     ld [hli], a ; store flag
     inc bc
@@ -46,6 +48,7 @@ InitEnemiesAndPlaceOnMap::
     inc hl ; skip PosYInterpolateTarget, since init to 0 abv
 
     ld a, [bc]
+    ld d, a
     ld [hli], a ; set first byte of pos y
     inc bc
 
@@ -53,6 +56,7 @@ InitEnemiesAndPlaceOnMap::
     inc hl ; skip PosXInterpolateTarget = 0
 
     ld a, [bc]
+    ld e, a
     ld [hli], a ; set first byte of pos x
     inc hl ;  skip second byte of pos x = 0
     inc bc
@@ -84,6 +88,14 @@ InitEnemiesAndPlaceOnMap::
     inc hl 
     inc hl ; skip DamageFlickerEffect
 
+    ; d = pos y, e = pos x
+    ld a, d
+    ld [hli], a ; spawn pos Y 
+    ld a, e
+    ld [hli], a ; spawn pos X
+
+    pop de ; POP DE = loop counter
+
     dec d
     jr nz, .loop
 .endloop
@@ -111,14 +123,17 @@ UpdateAllEnemies::
     cp a, TYPE_ENEMYA
     jr nz, .enemyTypeB
     call UpdateEnemyA ; call correct update for enemy
+    jr .nextLoop
 .enemyTypeB ; turtle
     cp a, TYPE_ENEMYB
     jr nz, .enemyTypeC
     call UpdateEnemyB ; call correct update for enemy
+    jr .nextLoop
 .enemyTypeC
     cp a, TYPE_ENEMYC
     jr nz, .enemyTypeD
     call UpdateEnemyC
+    jr .nextLoop
 .enemyTypeD ; ghost
     cp a, TYPE_ENEMYD
     jr nz, .nextLoop
@@ -588,7 +603,6 @@ HitEnemy::
     cp a, 127
     jr nc, .dead ; value underflowed, go to dead
 
-
 .damageFlickerEffect ; not dead, set damage flicker effect
     pop hl ; POP HL = enemy address
     push hl ; PUSH HL = enemy address
@@ -608,6 +622,13 @@ HitEnemy::
     ld a, FLAG_INACTIVE
     ld [hl], a
 
+    ; reduce enemy counter by 1
+    ld a, [wCurrLevelEnemiesNo]
+    dec a
+    ld [wCurrLevelEnemiesNo], a
+
+    ; TODO:: if reach 0, win game
+
 .end
     pop de
     pop bc
@@ -615,4 +636,45 @@ HitEnemy::
 
     ret
 
+/*  To be called when player gets hit, update things for enemies 
+    registers changed:
+    - af
+    - bc
+    - de    
+    - hl
+
+*/
+PlayerGetsHitEnemyBehavior::
+    ; loop through enemy, check type, then call the correct function
+    ld hl, wEnemy0
+    ld a, [wTotalLevelEnemiesNo]
+
+.startOfEnemyLoop
+    push af ; PUSH AF = loop counter
+
+    ld a, [hl]
+    bit BIT_FLAG_ACTIVE, a ; check if enemy alive
+    jr z, .nextEnemyLoop
+
+    ; get enemy type and check if got the reset
+    and a, BIT_MASK_TYPE
+
+.enemyTypeD ; ghost
+    cp a, TYPE_ENEMYD
+    jr nz, .nextEnemyLoop
+    push hl ; PUSH hl = enemy address
+    call ResetEnemyD
+    pop hl ; POP hl = enemy address
+
+.nextEnemyLoop
+    pop af ; POP AF = loop counter
+    dec a
+    jr z, .end
+
+    ld bc, sizeof_Character
+    add hl, bc
+    jr .startOfEnemyLoop
+
+.end
+    ret
 

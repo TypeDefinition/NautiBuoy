@@ -20,3 +20,7 @@ EnemyTurtleSprite::
 EnemyCSprite::
     INCBIN "./tile_data/enemyShootOneDir.2bpp"
 .end::
+
+EnemyDSprite::
+    INCBIN "./tile_data/ghostEnemy.2bpp"
+.end::

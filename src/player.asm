@@ -44,6 +44,8 @@ InitialisePlayer::
     ld [wPlayer_PosXInterpolateTarget], a
     ld [wPlayer_PosY], a
     ld [wPlayer_PosX], a
+    ld [wPlayer_SpawnPosition], a
+    ld [wPlayer_SpawnPosition + 1], a
     xor a
     ld [wPlayer_PosY + 1], a
     ld [wPlayer_PosX + 1], a
@@ -285,6 +287,11 @@ PlayerIsHit::
     ld [wPlayer_PosY], a
     ld [wPlayer_PosX], a 
 
+    xor a
+    ld [wPlayer_PosY + 1], a
+    ld [wPlayer_PosY + 1], a
+
+    call PlayerGetsHitEnemyBehavior ; update enemy behavior for getting hit
     jr .end
 .dead
     /* TODO:: if dead, put gameover screen or something */
@@ -550,8 +557,5 @@ UpdatePlayerShadowOAM::
     ; update the current address of from hl to the wCurrentShadowOAMPtr
     ld a, l
     ld [wCurrentShadowOAMPtr], a
-    ld a, h
-    ld [wCurrentShadowOAMPtr + 1], a
-
 .end
     ret

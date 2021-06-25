@@ -30,7 +30,7 @@ UpdateEnemyB::
 
     ; update frames
     ld a, [hli] ; a = int part of UpdateFrameCounter
-    adc a, 0
+    inc a
     ld d, a
 
     ld a, [hli]
@@ -42,35 +42,27 @@ UpdateEnemyB::
     pop hl ; POP HL = enemy starting address
     push hl ; PUSH HL = enemy starting address
 
-    cp a, 1 
+    cp a, 1
     jr nz, .checkEnterAttackState
     push de ; PUSH de = int value of UpdateFrameCounter & curr frame
     
     ld a, [wPlayer_PosYInterpolateTarget]
+    and a, %11111000
     ld d, a
     ld a, [wPlayer_PosXInterpolateTarget]
+    and a, %11111000
     ld e, a
-    srl d ; convert to tile pos
-    srl d
-    srl d
-    srl e
-    srl e
-    srl e
 
     inc hl
     inc hl
     ld a, [hli] ; get pos Y of enemy
+    and a, %11111000 ; 'divide' by 8, so dont need last 3 bits, convert to tile pos
     ld b, a
     inc hl
     inc hl
     ld a, [hl] ; get pos X of enemy
+    and a, %11111000
     ld c, a
-    srl b ; convert to tile pos
-    srl b
-    srl b
-    srl c
-    srl c
-    srl c
 
     ; bc = enemy tile pos, de = player tile pos, hl = pos X of enemy
     ld a, b
@@ -107,13 +99,6 @@ UpdateEnemyB::
 
 .enemyFacePlayer ; if on same line, properly reset the position to fix to tile, x8 shift left 3 times
     ; bc = enemy tile pos, d = direction, hl = address of pos X
-    sla b
-    sla b
-    sla b
-
-    sla c
-    sla c
-    sla c
 
     ld a, c
     ld [hli], a ; init x pos

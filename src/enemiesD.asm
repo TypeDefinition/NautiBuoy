@@ -18,14 +18,6 @@ UpdateEnemyD::
     push hl ; PUSH HL = enemy address
 
 .checkState
-
-    ; check current state here
-    ; if rest state, go to rest state: 0 - 1
-    ; if 'waking up state' go to end, just render, make sure the animation stuff is updated: 2 - 4
-    ; if chase state, to to chase state: after a certain number
-    ; if player dies, teleport enemy D to somewhere
-    ; rest state if player is nearby, set to 'wake up state'
-    ; set all the proper variables like max frames
     ld de, Character_UpdateFrameCounter + 1
     add hl, de
     ld a, [hl]
@@ -102,7 +94,6 @@ UpdateEnemyD::
 
 .finishFindingPlayer
     ; c = direction
-
     pop hl ; POP HL = enemy address
     push hl ; PUSH HL = enemy address
 
@@ -119,9 +110,9 @@ UpdateEnemyD::
 .updateAnimation
     pop hl ; POP HL = enemy address
     push hl ; PUSH HL = enemy address
+
     ld de, Character_UpdateFrameCounter
     add hl, de
-
     ld a, [hl]
     add a, ENEMY_TYPED_ANIMATION_UPDATE_SPEED
     ld [hli], a ; update fraction part of updateFrameCounter
@@ -150,10 +141,58 @@ UpdateEnemyD::
     ld a, b
     ld [hl], a ; store curr animation frame */
 
-
 .endUpdateEnemyD
     pop hl ; POP HL = enemy address
     call InitEnemyDSprite ; DONT EVEN HAVE TO RENDER IF PLAYER NOT ON SAME SCREEN
+    ret
+
+/*  Reset enemy D state when player dies
+    hl - enemy address
+
+    registers changed:
+        - hl
+        - de
+        - af
+        - bc
+*/
+ResetEnemyD::
+    push hl ; PUSH HL = enemy address
+
+    ; get spawn position
+    ld de, Character_SpawnPosition
+    add hl, de
+    ld a, [hli] 
+    ld d, a
+    ld a, [hl]
+    ld e, a
+
+    ; d = spawn pos y, e = spawn pos x
+    pop hl ; POP HL = enemy address
+
+    inc hl
+    inc hl
+
+    ld a, d
+    ld [hli], a ; update pos Y
+    inc hl 
+    inc hl
+
+    ld a, e
+    ld [hl], a ; update pos x
+
+    ; 8 cycles, offset to get updateFrameCounter
+    ld a, (Character_UpdateFrameCounter) - Character_PosX 
+    add a, l
+    ld l, a
+    ld a, h
+    adc a, 0
+    ld h, a
+
+    xor a
+    ld [hli], a ; update fraction part of UpdateFrameCounter
+    ld [hli], a ; update int part of UpdateFrameCounter
+    ld [hl], a ; update curr anaimation frame
+
     ret
 
 
@@ -167,12 +206,24 @@ InitEnemyDSprite:
     add hl, de ; offset hl = updateFrameCounter
 
     ld a, [hl] ; get int part of updateFrameCounter
+    cp a, ENEMY_TYPED_CHASE_STATE_FRAME
+    jr nc, .chaseStateSprite ; >=, it is in chase state 
+
+    ld bc, EnemyDAnimation.sleepAnimation
+    jr .endDir
+
+.chaseStateSprite
+    ; a = updateFrameCounter
+
     ld d, a ; reg d = updateFrameCounter
 
-    pop hl ; POP hl = enemy address
-    push hl ; PUSH hl = enemy address
-    ld bc, Character_Direction
-    add hl, bc 
+    ld a, l ; 8 cycles
+    sub a, 5
+    ld l, a
+    ld a, h
+    sbc a, 0
+    ld h, a ; offset to get direction
+
     ld a, [hl] ; check direction of enemy and init sprite data
     and a, DIR_BIT_MASK
 
@@ -188,19 +239,19 @@ InitEnemyDSprite:
     ASSERT DIR_RIGHT > 2
 
 .rightDir
-    ld bc, EnemyAAnimation.rightAnimation
+    ld bc, EnemyDAnimation.rightAnimation
     jr .endDir
 .upDir
-    ld bc, EnemyAAnimation.upAnimation
+    ld bc, EnemyDAnimation.upAnimation
     jr .endDir
 .downDir
-    ld bc, EnemyAAnimation.downAnimation
+    ld bc, EnemyDAnimation.downAnimation
     jr .endDir
 .leftDir
-    ld bc, EnemyAAnimation.leftAnimation
+    ld bc, EnemyDAnimation.leftAnimation
 
 .endDir
-
     pop hl ; POP HL = enemy address
     call UpdateEnemySpriteOAM
     ret
+
