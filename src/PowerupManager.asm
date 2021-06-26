@@ -131,14 +131,34 @@ PowerUpCollisionBehaviour:
 .invincibilityPowerup
     cp a, TYPE_INVINCIBILITY_POWERUP
     jr nz, .timePowerup
+
+    ld a, [wPlayer_Flags]
+    or a, TYPE_INVINCIBILITY_POWERUP
+    ld [wPlayer_Flags], a ; activate the invincibility flag for player
+
+    jr .end
 .timePowerup
     cp a, TYPE_TIME_POWERUP
     jr nz, .speedPowerup
+    jr .end
 .speedPowerup
     cp a, TYPE_SPEED_POWERUP
     jr nz, .damagePowerup
-.damagePowerup
 
+    ; increase speed
+    ;ld a, [wPlayer_Flags]
+    ;or a, TYPE_SPEED_POWERUP
+    ;ld [wPlayer_Flags], a ; activate the invincibility flag for player
+
+    ; init new speed here
+
+    jr .end
+.damagePowerup
+    ; damage output increase
+    ld a, [wPlayer_Flags]
+    or a, TYPE_DAMAGE_POWERUP
+    ld [wPlayer_Flags], a ; activate the invincibility flag for player
+    jr .end
 .end
     xor a
     ld [hl], a ; make the powerup inactive

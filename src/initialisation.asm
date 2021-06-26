@@ -106,6 +106,10 @@ Initialise::
     ld [rBGP], a ; render it out
     ld [rOBP0], a ; object palette 0
 
+    ld a, %10010011; setting the other color palette
+    ld [rOBP1], a ; object palette 1
+
+
     xor a ; ld a, 0
     ld [rSCY], a ; make the screen for scroll X and Y start at 0
     ld [rSCX], a
