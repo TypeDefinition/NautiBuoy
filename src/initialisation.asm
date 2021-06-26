@@ -97,6 +97,7 @@ Initialise::
     call ResetAllBullets
     call ResetDirtyTiles
     call InitEnemiesAndPlaceOnMap
+    call InitPowerupsAndPlaceOnMap
  
     call hOAMDMA ; transfer sprite data to OAM
 

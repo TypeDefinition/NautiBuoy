@@ -20,6 +20,7 @@ UpdateLoop::
 
     call UpdateAllEnemies    
     call UpdateBullets
+    call UpdatePowerUpShadowOAM
 
     ; Dirty tiles get updated during HBlank.
     call UpdateDirtyTiles
