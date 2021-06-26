@@ -68,6 +68,7 @@ DEF ENTITIES_INC EQU 1
         bytes 1, Flags
         bytes 1, PosY
         bytes 1, PosX
+        bytes 1, SpriteID
     end_struct
 
     ENDC ; ENTITIES_INC

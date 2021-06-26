@@ -2,10 +2,6 @@ INCLUDE "./src/include/entities.inc"
 include "./src/include/util.inc"
 INCLUDE "./src/include/definitions.inc"
 
-DEF HEART_POWERUP_SPRITE_ID EQU $68
-DEF INVINCIBILITY_POWERUP_SPRITE_ID EQU $64
-DEF TIME_POWERUP_SPRITE_ID EQU $66
-
 SECTION "Powerup Data", WRAM0
 wPowerupData::
     dstruct PowerUps, wPowerup0
@@ -48,6 +44,11 @@ InitPowerupsAndPlaceOnMap::
     ld a, [bc]
     ld [hli], a ; store y pos
 
+    inc bc
+    ld a, [bc]
+    ld [hli], a ; store sprite ID
+
+    inc bc
     dec d
     jr nz, .startLoop
 
@@ -67,38 +68,46 @@ InitPowerupsAndPlaceOnMap::
 */
 CheckPowerUpCollision::
     ld hl, wPowerupData
+    ld a, [wTotalLevelPowerupNo]
 
 .startLoop
-    ld a, [hli]
-    bit BIT_FLAG_ACTIVE, a ; check if power up alive
-    jr nz, .checkCollided
+    push af ; PUSH AF = loop counter
 
-    ;inc hl  ; check next power up
-    ;inc hl
-    ;jr .startLoop
-    jr .endLoop
+    ld a, [hl]
+    bit BIT_FLAG_ACTIVE, a ; check if power up alive
+    jr z, .nextLoop
 
 .checkCollided
+    push hl ; PUSH HL = power up address
+    inc hl
+
     ld a, [hli]
     ld d, a ; get power up pos y
 
     ld a, [hli]
     ld e, a ; get power up pos x
 
-    push hl ; PUSH HL = power up address
     ld h, PLAYER_COLLIDER_SIZE
     ld l, POWERUP_COLLIDER_SIZE
 
     call SpriteCollisionCheck
     pop hl ; POP HL = power up address
     and a, a ; check if collided
-    jr z, .endLoop
+    jr z, .nextLoop
 
-    ; TODO:: set powerup inactive and run the corresponding behaviors of the powerup
-    dec hl
-    dec hl
-    dec hl ; get back flag address
+    pop af ; POP AF = loop counter
     call PowerUpCollisionBehaviour
+    jr .endLoop
+
+.nextLoop
+    inc hl ; next power up address
+    inc hl  
+    inc hl
+    inc hl
+
+    pop af ; POP AF = loop counter
+    dec a
+    jr nz, .startLoop
 
 .endLoop
     ret
@@ -136,7 +145,13 @@ PowerUpCollisionBehaviour:
 
     ret
 
-/*  Update shadow OAM info for powerups */
+/*  Update shadow OAM info for powerups 
+    Registers changed:
+    - af
+    - bc
+    - de
+    - hl
+*/
 UpdatePowerUpShadowOAM::
     ld a, [wCurrentShadowOAMPtr]
     ld l, a
@@ -149,13 +164,24 @@ UpdatePowerUpShadowOAM::
     ld a, [wShadowSCData + 1] ; for pos X
     ld e, a
 
+    ld a, [wTotalLevelPowerupNo]
+
     ; d = screen pos Y, e = screen pos X, bc = power up address, hl = shadowOAM address
 .startLoop
+    push af ; PUSH AF = loop counter
+    
     ld a, [bc]
     bit BIT_FLAG_ACTIVE, a ; check if power up alive
-    jr z, .endLoop
+    jr nz, .shadowOAMInit
 
-    ; TODO check if the powerup is active first
+    inc bc ; next power up address
+    inc bc
+    inc bc
+    inc bc
+
+    jr .nextLoop
+
+.shadowOAMInit
     inc bc
     ld a, [bc]
     sub a, d
@@ -168,12 +194,20 @@ UpdatePowerUpShadowOAM::
     add a, 4 ; bullet sprite x offset = 4
     ld [hli], a ; x pos
 
-    ; TODO:: check power up type
-    ld a, HEART_POWERUP_SPRITE_ID
+    inc bc
+    ld a, [bc]
     ld [hli], a ; sprite ID
 
     ld a, OAMF_PAL0
-    ld [hli], a ; flags 
+    ld [hli], a ; flags
+
+    inc bc ; next sprite ID address
+
+.nextLoop
+    ; bc next sprite address
+    pop af ; POP AF = loop counter
+    dec a
+    jr nz, .startLoop
 
 .endLoop
     ld a, l
