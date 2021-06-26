@@ -1,5 +1,6 @@
 INCLUDE "./src/include/entities.inc"
 include "./src/include/util.inc"
+INCLUDE "./src/include/definitions.inc"
 
 DEF HEART_POWERUP_SPRITE_ID EQU $68
 DEF INVINCIBILITY_POWERUP_SPRITE_ID EQU $64
@@ -53,11 +54,89 @@ InitPowerupsAndPlaceOnMap::
 .endLoop
     ret
 
-; make a function to check for collision
-; if collide run the proper behavior
-; also able to render the powerup
+/*  Check whether if collided with a power up
+    When collided with the powerup, the powerup will take care of the correct action
 
+    b - entity pos y
+    c - entity pos x
 
+    registers changed:
+    - af
+    - de
+    - hl
+*/
+CheckPowerUpCollision::
+    ld hl, wPowerupData
+
+.startLoop
+    ld a, [hli]
+    bit BIT_FLAG_ACTIVE, a ; check if power up alive
+    jr nz, .checkCollided
+
+    ;inc hl  ; check next power up
+    ;inc hl
+    ;jr .startLoop
+    jr .endLoop
+
+.checkCollided
+    ld a, [hli]
+    ld d, a ; get power up pos y
+
+    ld a, [hli]
+    ld e, a ; get power up pos x
+
+    push hl ; PUSH HL = power up address
+    ld h, PLAYER_COLLIDER_SIZE
+    ld l, POWERUP_COLLIDER_SIZE
+
+    call SpriteCollisionCheck
+    pop hl ; POP HL = power up address
+    and a, a ; check if collided
+    jr z, .endLoop
+
+    ; TODO:: set powerup inactive and run the corresponding behaviors of the powerup
+    dec hl
+    dec hl
+    dec hl ; get back flag address
+    call PowerUpCollisionBehaviour
+
+.endLoop
+    ret
+
+/*  Powerup collision behavior
+    hl - power up address
+*/ 
+PowerUpCollisionBehaviour:
+    ld a, [hl] ; get the flags
+    and a, BIT_MASK_TYPE
+    
+.healthPowerup
+    and a, a ; TYPE_HEALTH_POWERUP = 0
+    jr nz, .invincibilityPowerup
+
+    ld a, [wPlayer_HP]
+    inc a
+    ld [wPlayer_HP], a
+
+    jr .end
+.invincibilityPowerup
+    cp a, TYPE_INVINCIBILITY_POWERUP
+    jr nz, .timePowerup
+.timePowerup
+    cp a, TYPE_TIME_POWERUP
+    jr nz, .speedPowerup
+.speedPowerup
+    cp a, TYPE_SPEED_POWERUP
+    jr nz, .damagePowerup
+.damagePowerup
+
+.end
+    xor a
+    ld [hl], a ; make the powerup inactive
+
+    ret
+
+/*  Update shadow OAM info for powerups */
 UpdatePowerUpShadowOAM::
     ld a, [wCurrentShadowOAMPtr]
     ld l, a
@@ -72,9 +151,11 @@ UpdatePowerUpShadowOAM::
 
     ; d = screen pos Y, e = screen pos X, bc = power up address, hl = shadowOAM address
 .startLoop
+    ld a, [bc]
+    bit BIT_FLAG_ACTIVE, a ; check if power up alive
+    jr z, .endLoop
 
     ; TODO check if the powerup is active first
-
     inc bc
     ld a, [bc]
     sub a, d
@@ -96,6 +177,6 @@ UpdatePowerUpShadowOAM::
 
 .endLoop
     ld a, l
-    ld [wCurrentShadowOAMPtr], a
+    ld [wCurrentShadowOAMPtr], a ; update the shadowOAM pointer
 
     ret

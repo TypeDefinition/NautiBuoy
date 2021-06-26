@@ -55,6 +55,6 @@ LevelOnePowerUpData::
     db 4 ; number of powerups in level
 .powerUpOne
     db TYPE_HEALTH_POWERUP | FLAG_ACTIVE
-    db 30 * 8 ; y 
-    db 6 * 8 ; x
+    db 16 * 8 ; y 
+    db 18 * 8 ; x
 .endPowerUpOne
