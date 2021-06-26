@@ -553,7 +553,7 @@ CheckEnemyCollisionLoop::
     pop hl ; POP HL = collider size for enemy and other entity
 
     call SpriteCollisionCheck
-    cp a, 0
+    and a ; check if a = 0
     ld d, h
     ld e, l ; de = collider size for enemy and other entity
     pop hl ; POP HL = enemy starting address 
