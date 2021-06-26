@@ -24,3 +24,7 @@ EnemyCSprite::
 EnemyDSprite::
     INCBIN "./tile_data/ghostEnemy.2bpp"
 .end::
+
+PowerUpSprite::
+    INCBIN "./tile_data/Powerups.2bpp"
+.end::

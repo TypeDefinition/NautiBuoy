@@ -66,8 +66,8 @@ DEF ENTITIES_INC EQU 1
     */
     struct PowerUps
         bytes 1, Flags
-        words 1, PosY
-        words 1, PosX
+        bytes 1, PosY
+        bytes 1, PosX
     end_struct
 
     ENDC ; ENTITIES_INC

@@ -49,3 +49,12 @@ LevelOneEnemyData::
     dw VELOCITY_VSLOW ; cpu allocate and auto store in little endian
     db ENEMY_TYPEA_WALK_FRAMES
 .endLevelOneEnemyData:
+
+/* Powerup information and data for level 1 */
+LevelOnePowerUpData::
+    db 4 ; number of powerups in level
+.powerUpOne
+    db TYPE_HEALTH_POWERUP | FLAG_ACTIVE
+    db 30 * 8 ; y 
+    db 6 * 8 ; x
+.endPowerUpOne

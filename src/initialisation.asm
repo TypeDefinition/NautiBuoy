@@ -77,6 +77,7 @@ Initialise::
     mem_copy EnemyTurtleSprite, _VRAM8000 + TestSprite.end - TestSprite, EnemyTurtleSprite.end - EnemyTurtleSprite
     mem_copy EnemyCSprite, _VRAM8000 + (TestSprite.end - TestSprite) + (EnemyTurtleSprite.end - EnemyTurtleSprite), EnemyCSprite.end - EnemyCSprite
     mem_copy EnemyDSprite, _VRAM8000 + (TestSprite.end - TestSprite) + (EnemyTurtleSprite.end - EnemyTurtleSprite) + (EnemyCSprite.end - EnemyCSprite), EnemyDSprite.end - EnemyDSprite
+    mem_copy PowerUpSprite, _VRAM8000 + (TestSprite.end - TestSprite) + (EnemyTurtleSprite.end - EnemyTurtleSprite) + (EnemyCSprite.end - EnemyCSprite) + (EnemyDSprite.end - EnemyDSprite), PowerUpSprite.end - PowerUpSprite
 
 
     ; Copy tile map into VRAM.
