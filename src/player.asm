@@ -7,7 +7,7 @@ INCLUDE "./src/include/movement.inc"
 
 SECTION "Player Data", WRAM0
     dstruct Character, wPlayer
-
+    
 SECTION "Player Camera Data", WRAM0
     dstruct PlayerCamera, wPlayerCamera
 
@@ -64,8 +64,8 @@ InitialisePlayer::
     ; Set Animation
     xor a
     ld [wPlayer_CurrAnimationFrame], a
-    ld [wPlayer_DamageFlickerEffect], a
-    ld [wPlayer_DamageFlickerEffect + 1], a
+    ld [wPlayer_FlickerEffect], a
+    ld [wPlayer_FlickerEffect + 1], a
     ld a, PLAYER_WALK_FRAMES
     ld [wPlayer_CurrStateMaxAnimFrame], a
 
@@ -286,9 +286,9 @@ PlayerIsHit::
 
 .damageEffect ; not dead, set damage flicker effect and teleport to spawn
     ld a, DAMAGE_FLICKER_EFFECT
-    ld [wPlayer_DamageFlickerEffect], a
+    ld [wPlayer_FlickerEffect], a
     xor a
-    ld [wPlayer_DamageFlickerEffect + 1], a 
+    ld [wPlayer_FlickerEffect + 1], a 
 
     ; TODO:: teleport back to spawn
     ; TODO:: have variable of spawn location in level to teleport
@@ -301,6 +301,10 @@ PlayerIsHit::
     xor a
     ld [wPlayer_PosY + 1], a
     ld [wPlayer_PosY + 1], a
+
+    ld a, [wPlayer_Flags]
+    and a, BIT_MASK_TYPE_REMOVE
+    ld [wPlayer_Flags], a ; remove any power up on player
 
     call PlayerGetsHitEnemyBehavior ; update enemy behavior for getting hit
     jr .end
@@ -454,26 +458,38 @@ UpdatePlayerCamera::
     Update sprite ID according to current frame of animation and direction
 */
 UpdatePlayerShadowOAM::
-    ld a, [wPlayer_DamageFlickerEffect]
+    xor a
+    push af ; PUSH AF = power up
+
+    ld a, [wPlayer_FlickerEffect]
     and a, a
     jr z, .startUpdateOAM
 
-    ld b, a ; b = DamageFlickerEffect int portion
-    ld a, [wPlayer_DamageFlickerEffect + 1]
-    add a, DAMAGE_FLICKER_UPDATE_SPEED
-    ld [wPlayer_DamageFlickerEffect + 1], a
+    ld b, a ; b = FlickerEffect int portion
+    ld a, [wPlayer_FlickerEffect + 1]
+    add a, PLAYER_FLICKER_UPDATE_SPEED
+    ld [wPlayer_FlickerEffect + 1], a
     jr nc, .updateFlickerEffect
 
     dec b
     ld a, b
-    ld [wPlayer_DamageFlickerEffect], a ; update new interger portion value
+    ld [wPlayer_FlickerEffect], a ; update new interger portion value
 
 .updateFlickerEffect
-    ; b = DamageFlickerEffect int portion
+    ; b = FlickerEffect int portion
     ld a, b
-    and a, DAMAGE_FLICKER_BITMASK
-    cp a, DAMAGE_FLICKER_VALUE
-    jp z, .end 
+    and a, FLICKER_BITMASK
+    cp a, FLICKER_VALUE
+    jp nz, .startUpdateOAM
+
+    pop af ; POP AF = power up
+    
+    ld a, [wPlayer_Flags]
+    and a, BIT_MASK_TYPE ; if type is 0, 
+    jr z, .end ; not a power up effect, its damage flicker effect
+
+    ld a, OAMF_PAL1
+    push af ; PUSH AF = power up
 
 .startUpdateOAM
     ; do a dir check for sprite
@@ -518,6 +534,7 @@ UpdatePlayerShadowOAM::
     ld b, a
     ld a, [wPlayer_PosY]
     sub a, b
+    add a, 8 ; y sprite offset = 8
     ld b, a ; store y screen pos at b
 
     ld a, [wShadowSCData + 1]
@@ -535,7 +552,6 @@ UpdatePlayerShadowOAM::
     ld h, HIGH(wShadowOAM)
 
     ld a, b
-    add a, 8
     ld [hli], a ; init screen y Pos, first sprite y offset 8
     
     ld a, c 
@@ -545,13 +561,18 @@ UpdatePlayerShadowOAM::
     ld [hli], a
     inc de
 
-    ld a, [de] ; get flags
-    ld [hli], a
+    pop af ; POP AF = power up
+    push af ; PUSH AF = power up
+    push hl ; push hl = sprite oam address
+    ld h, d
+    ld l, e
+    or a, [hl]
+    pop hl ; POP hl = sprite oam address
+    ld [hli], a ; flags
     inc de
 
     ; Init second half of player sprite to shadow OAM
     ld a, b
-    add a, 8
     ld [hli], a ; init screen y Pos, second sprite y offset 8
     
     ld a, c 
@@ -562,8 +583,13 @@ UpdatePlayerShadowOAM::
     ld [hli], a
     inc de
 
-    ld a, [de] ; get flags
-    ld [hli], a
+    pop af ; POP AF = power up
+    push hl ; push hl = sprite oam address
+    ld h, d
+    ld l, e
+    or a, [hl] ; add the other palette
+    pop hl ; POP hl = sprite oam address
+    ld [hli], a ; flags
 
     ; update the current address of from hl to the wCurrentShadowOAMPtr
     ld a, l

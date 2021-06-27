@@ -39,7 +39,7 @@ DEF ENTITIES_INC EQU 1
         words 1, UpdateFrameCounter ; Little endian, helps keep track of frames for states. 1st half is the fraction, 2nd half is int
         bytes 1, CurrAnimationFrame
         bytes 1, CurrStateMaxAnimFrame  ; Update this based on states
-        words 1, DamageFlickerEffect ; top half byte for interger portion, bottom half byte for fractional portion
+        words 1, FlickerEffect ; top half byte for interger portion, bottom half byte for fractional portion
         words 1, SpawnPosition ; top half is posY, bottom half is posX
     end_struct
 

@@ -59,8 +59,8 @@ LevelOnePowerUpData::
     db 18 * 8 ; x
     db HEART_POWERUP_SPRITE_ID
 .powerUpTwo
-    db TYPE_HEALTH_POWERUP | FLAG_ACTIVE
+    db TYPE_INVINCIBILITY_POWERUP | FLAG_ACTIVE
     db 16 * 8 ; y 
     db 14 * 8 ; x
-    db HEART_POWERUP_SPRITE_ID
+    db INVINCIBILITY_POWERUP_SPRITE_ID
 .endPowerUpOne

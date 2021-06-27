@@ -120,7 +120,7 @@ PowerUpCollisionBehaviour:
     and a, BIT_MASK_TYPE
     
 .healthPowerup
-    and a, a ; TYPE_HEALTH_POWERUP = 0
+    cp a, TYPE_HEALTH_POWERUP
     jr nz, .invincibilityPowerup
 
     ld a, [wPlayer_HP]
@@ -138,6 +138,9 @@ PowerUpCollisionBehaviour:
     or a, TYPE_INVINCIBILITY_POWERUP
     ld [wPlayer_Flags], a ; activate the invincibility flag for player
 
+    ld a, INVINCIBILITY_FLICKER_EFFECT
+    ld [wPlayer_FlickerEffect], a
+
     jr .end
 .timePowerup
     cp a, TYPE_TIME_POWERUP
@@ -148,11 +151,14 @@ PowerUpCollisionBehaviour:
     jr nz, .damagePowerup
 
     ; increase speed
-    ;ld a, [wPlayer_Flags]
-    ;or a, TYPE_SPEED_POWERUP
-    ;ld [wPlayer_Flags], a ; activate the invincibility flag for player
+    ld a, [wPlayer_Flags]
+    or a, TYPE_SPEED_POWERUP
+    ld [wPlayer_Flags], a ; activate the speed flag for player
 
-    ; init new speed here
+    ld a, SPEED_FLICKER_EFFECT
+    ld [wPlayer_FlickerEffect], a
+
+    ; TODO:: ninit new speed here
 
     jr .end
 .damagePowerup
