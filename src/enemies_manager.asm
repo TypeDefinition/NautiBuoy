@@ -86,7 +86,7 @@ InitEnemiesAndPlaceOnMap::
     inc bc
 
     inc hl 
-    inc hl ; skip DamageFlickerEffect
+    inc hl ; skip FlickerEffect
 
     ; d = pos y, e = pos x
     ld a, d
@@ -407,13 +407,13 @@ UpdateEnemySpriteOAM::
     push hl ; PUSH HL = enemy address
 
     ; check if should render this frame
-    ld de, Character_DamageFlickerEffect
+    ld de, Character_FlickerEffect
     add hl, de
     ld a, [hli]
     and a
     jr z, .startUpdateOAM 
 
-    ld d, a ; b = DamageFlickerEffect int portion
+    ld d, a ; b = FlickerEffect int portion
     ld a, [hl] ; get fractional portion
     add a, DAMAGE_FLICKER_UPDATE_SPEED
     ld [hl], a ; update fractional portion
@@ -426,7 +426,7 @@ UpdateEnemySpriteOAM::
     ld [hl], a ; update new interger portion value
 
 .updateFlickerEffect
-    ; d = DamageFlickerEffect int portion
+    ; d = FlickerEffect int portion
     ld a, d
     and a, DAMAGE_FLICKER_BITMASK
     cp a, DAMAGE_FLICKER_VALUE
@@ -604,12 +604,12 @@ HitEnemy::
     cp a, 127
     jr nc, .dead ; value underflowed, go to dead
 
-.damageFlickerEffect ; not dead, set damage flicker effect
+.FlickerEffect ; not dead, set damage flicker effect
     pop hl ; POP HL = enemy address
     push hl ; PUSH HL = enemy address
     
     ld a, DAMAGE_FLICKER_EFFECT
-    ld de, Character_DamageFlickerEffect
+    ld de, Character_FlickerEffect
     add hl, de
     ld [hli], a ; set the integer portion
     xor a

@@ -64,8 +64,8 @@ InitialisePlayer::
     ; Set Animation
     xor a
     ld [wPlayer_CurrAnimationFrame], a
-    ld [wPlayer_DamageFlickerEffect], a
-    ld [wPlayer_DamageFlickerEffect + 1], a
+    ld [wPlayer_FlickerEffect], a
+    ld [wPlayer_FlickerEffect + 1], a
     ld a, PLAYER_WALK_FRAMES
     ld [wPlayer_CurrStateMaxAnimFrame], a
 
@@ -286,9 +286,9 @@ PlayerIsHit::
 
 .damageEffect ; not dead, set damage flicker effect and teleport to spawn
     ld a, DAMAGE_FLICKER_EFFECT
-    ld [wPlayer_DamageFlickerEffect], a
+    ld [wPlayer_FlickerEffect], a
     xor a
-    ld [wPlayer_DamageFlickerEffect + 1], a 
+    ld [wPlayer_FlickerEffect + 1], a 
 
     ; TODO:: teleport back to spawn
     ; TODO:: have variable of spawn location in level to teleport
@@ -454,22 +454,22 @@ UpdatePlayerCamera::
     Update sprite ID according to current frame of animation and direction
 */
 UpdatePlayerShadowOAM::
-    ld a, [wPlayer_DamageFlickerEffect]
+    ld a, [wPlayer_FlickerEffect]
     and a, a
     jr z, .startUpdateOAM
 
-    ld b, a ; b = DamageFlickerEffect int portion
-    ld a, [wPlayer_DamageFlickerEffect + 1]
+    ld b, a ; b = FlickerEffect int portion
+    ld a, [wPlayer_FlickerEffect + 1]
     add a, DAMAGE_FLICKER_UPDATE_SPEED
-    ld [wPlayer_DamageFlickerEffect + 1], a
+    ld [wPlayer_FlickerEffect + 1], a
     jr nc, .updateFlickerEffect
 
     dec b
     ld a, b
-    ld [wPlayer_DamageFlickerEffect], a ; update new interger portion value
+    ld [wPlayer_FlickerEffect], a ; update new interger portion value
 
 .updateFlickerEffect
-    ; b = DamageFlickerEffect int portion
+    ; b = FlickerEffect int portion
     ld a, b
     and a, DAMAGE_FLICKER_BITMASK
     cp a, DAMAGE_FLICKER_VALUE
