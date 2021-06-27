@@ -24,7 +24,7 @@ UpdateEnemyB::
     ld de, Character_UpdateFrameCounter
     add hl, de
     ld a, [hl]
-    add a, ENEMY_TYPEB_ANIMATION_UPDATE
+    add a, ENEMY_TYPEB_ANIMATION_UPDATE_SPEED
     ld [hli], a
     jp nc, .endUpdateEnemyB
 

@@ -89,7 +89,7 @@ Initialise::
     mem_copy Level0, GameLevelTiles, Level0.end-Level0
     mem_copy GameLevelTiles, _SCRN0, GameLevelTiles.end-GameLevelTiles
 
-    call InitialiseGameplayUI
+    call LoadGameplayUI
 
     ; TEMP: Temporary code.
     set_romx_bank 2

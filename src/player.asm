@@ -271,8 +271,13 @@ UpdatePlayerAttack::
     WARNING: this is assuming health < 127. Want to prevent underflow, we defined bit 7 to be for -ve
 */
 PlayerIsHit::
-    ; deduct health first
     ld a, [wPlayer_HP]
+
+    ; If HP is already 0, go to the end.
+    and a
+    jr z, .end
+
+    ; deduct health first
     sub a, BULLET_DAMAGE
     ld [wPlayer_HP], a
 
@@ -310,6 +315,7 @@ PlayerIsHit::
     jr .end
 .dead
     /* TODO:: if dead, put gameover screen or something */
+    call LoadStageFailedUI
 
 .end
     ret

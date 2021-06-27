@@ -29,7 +29,7 @@ LevelOneEnemyData::
     db 15 * 8 ; x
     ;db DIR_RIGHT
     db DIR_RIGHT
-    db ENEMY_TYPEA_HEALTH
+    db ENEMY_TYPEB_HEALTH
     dw VELOCITY_VSLOW ; cpu allocate and auto store in little endian
     db ENEMY_TYPEB_WALK_MAX_FRAMES
 .enemyThree
@@ -37,7 +37,7 @@ LevelOneEnemyData::
     db 12 * 8 ; y 
     db 6 * 8 ; x
     db DIR_RIGHT | SHOOT_DIR_DOWN | SHOOT_DIR_RIGHT
-    db ENEMY_TYPEA_HEALTH
+    db ENEMY_TYPEC_HEALTH
     dw VELOCITY_VSLOW ; cpu allocate and auto store in little endian
     db ENEMY_TYPEC_NORMAL_STATE_FRAME
 .enemyFour
@@ -45,7 +45,7 @@ LevelOneEnemyData::
     db 30 * 8 ; y 
     db 6 * 8 ; x
     db DIR_UP
-    db ENEMY_TYPEA_HEALTH
+    db ENEMY_TYPED_HEALTH
     dw VELOCITY_VSLOW ; cpu allocate and auto store in little endian
     db ENEMY_TYPEA_WALK_FRAMES
 .endLevelOneEnemyData:

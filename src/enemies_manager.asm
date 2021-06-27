@@ -631,6 +631,8 @@ HitEnemy::
     call UpdateEnemyCounterUI
 
     ; TODO:: if reach 0, win game
+    jr nz, .end
+    call LoadStageClearedUI
 
 .end
     pop de
