@@ -583,15 +583,33 @@ CheckEnemyCollisionLoop::
     TODO:: pass in the amount of damage 
 
     WARNING: this is assuming health < 127. Want to prevent underflow, we defined bit 7 to be for -ve
+
+    Registers changed:
+    - af
+    - de
+    - hl
 */
 HitEnemy::
-    push af
-    push bc
-    push de
-    push hl
+    push hl ; PUSH hl = enemy address
     
-    ; TODO, check which enemy it is, and whether u can shoot it or not
+    ld a, [hl] ; get enemy flags
+    and a, BIT_MASK_TYPE
+    cp a, TYPE_ENEMYB ; check which enemy it is, and whether u can shoot it or not
+    jr nz, .hitEnemy
 
+.checkCanHit
+    ld de, Character_UpdateFrameCounter + 1
+    add hl, de
+    ld a, [hl]
+    add a, ENEMY_TYPEB_REST_STATE_FRAME
+    cp a, ENEMY_TYPEB_REST_STATE_FRAME + ENEMY_TYPEB_ATTACK_STATE_FRAME
+
+    pop hl ; POP hl = enemy address
+    jr nc, .end ; enemy B is in attack mode
+
+    push hl ; PUSH hl = enemy address
+
+.hitEnemy
     ld de, Character_HP
     add hl, de
     ld a, [hl]
@@ -635,10 +653,6 @@ HitEnemy::
     call LoadStageClearedUI
 
 .end
-    pop de
-    pop bc
-    pop af
-
     ret
 
 /*  To be called when player gets hit, update things for enemies 
