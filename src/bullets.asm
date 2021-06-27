@@ -353,6 +353,11 @@ BulletSpriteCollisionCheck:
 
 .checkCollisionWithPlayer ; bullet belongs to enemy
     ; b = bullet posY, c = bullet pos X
+    ld a, [wPlayer_Flags]
+    and a, BIT_MASK_TYPE ; check if there is invincibility powerup
+    cp a, TYPE_INVINCIBILITY_POWERUP
+    jr z, .end
+
     ld a, [wPlayer_PosYInterpolateTarget]
     ld d, a
     ld a, [wPlayer_PosXInterpolateTarget]

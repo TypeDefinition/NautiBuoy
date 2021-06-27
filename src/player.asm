@@ -169,8 +169,13 @@ GetUserInput::
 
 /* Update Player Movement */
 UpdatePlayerMovement::
+    ld a, [wPlayer_Flags]
+    and a, BIT_MASK_TYPE ; check if there is invincibility powerup
+    cp a, TYPE_INVINCIBILITY_POWERUP
+    jr z, .updateMovement
     call PlayerSpriteCollisionCheck ; have to check here, in case enemy moves into player instead
 
+.updateMovement
     ; If the player is still interpolating, do not check for input.
     ld a, [wPlayer_PosY]
     ld b, a
@@ -465,7 +470,7 @@ UpdatePlayerCamera::
 */
 UpdatePlayerShadowOAM::
     xor a
-    push af ; PUSH AF = power up
+    push af ; PUSH AF = power up flag
 
     ld a, [wPlayer_FlickerEffect]
     and a, a
@@ -480,6 +485,12 @@ UpdatePlayerShadowOAM::
     dec b
     ld a, b
     ld [wPlayer_FlickerEffect], a ; update new interger portion value
+    jr nz, .updateFlickerEffect ; check if reach 0
+
+    ld a, [wPlayer_Flags]
+    and a, BIT_MASK_TYPE_REMOVE
+    ld [wPlayer_Flags], a ; remove any power up on player
+    jr .startUpdateOAM
 
 .updateFlickerEffect
     ; b = FlickerEffect int portion
@@ -488,14 +499,14 @@ UpdatePlayerShadowOAM::
     cp a, FLICKER_VALUE
     jp nz, .startUpdateOAM
 
-    pop af ; POP AF = power up
+    pop af ; POP AF = power up flag
     
     ld a, [wPlayer_Flags]
     and a, BIT_MASK_TYPE ; if type is 0, 
     jr z, .end ; not a power up effect, its damage flicker effect
 
     ld a, OAMF_PAL1
-    push af ; PUSH AF = power up
+    push af ; PUSH AF = power up flag
 
 .startUpdateOAM
     ; do a dir check for sprite
@@ -567,8 +578,8 @@ UpdatePlayerShadowOAM::
     ld [hli], a
     inc de
 
-    pop af ; POP AF = power up
-    push af ; PUSH AF = power up
+    pop af ; POP AF = power up flag
+    push af ; PUSH AF = power up flag
     push hl ; push hl = sprite oam address
     ld h, d
     ld l, e
@@ -589,7 +600,7 @@ UpdatePlayerShadowOAM::
     ld [hli], a
     inc de
 
-    pop af ; POP AF = power up
+    pop af ; POP AF = power up flag
     push hl ; push hl = sprite oam address
     ld h, d
     ld l, e
