@@ -24,7 +24,7 @@ UpdateLoop::
     ; Dirty tiles get updated during HBlank.
     call UpdateDirtyTiles
     ; Game UI gets updated during HBlank
-    call UpdateGameUI
+    call UpdateGameplayUI
 
     ; Update Sound
     set_romx_bank 5

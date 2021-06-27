@@ -6,16 +6,16 @@ DEF PLAYER_LIVES_UI_TILE_INDEX EQU 34
 DEF NUM_ENEMIES_UI_TILE_INDEX EQU 38
 
 SECTION "Game UI", ROM0
-InitialiseGameUI::
+InitialiseGameplayUI::
     set_romx_bank 3
-    mem_copy UI, _SCRN1, UI.end-UI
+    mem_copy GameplayUI, _SCRN1, GameplayUI.end-GameplayUI
     ld a, 7
     ld [rWX], a
-    ld a, SCREEN_SIZE_Y-UI_SIZE_Y
+    ld a, SCREEN_SIZE_Y-GAMEPLAY_UI_SIZE_Y
     ld [rWY], a
     ret
 
-UpdateGameUI::
+UpdateGameplayUI::
     ld hl, rSTAT
 
     ld a, [wPlayer_HP]
