@@ -106,7 +106,9 @@ Initialise::
     ld [rBGP], a ; render it out
     ld [rOBP0], a ; object palette 0
 
-    ld a, %10010011; setting the other color palette
+    ;10010011
+    ;01001011
+    ld a, %01001011; setting the other color palette
     ld [rOBP1], a ; object palette 1
 
 

@@ -415,7 +415,7 @@ UpdateEnemySpriteOAM::
 
     ld d, a ; b = FlickerEffect int portion
     ld a, [hl] ; get fractional portion
-    add a, FLICKER_UPDATE_SPEED
+    add a, ENEMY_FLICKER_UPDATE_SPEED
     ld [hl], a ; update fractional portion
     jr nc, .updateFlickerEffect
 

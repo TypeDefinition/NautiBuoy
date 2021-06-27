@@ -7,7 +7,7 @@ INCLUDE "./src/include/movement.inc"
 
 SECTION "Player Data", WRAM0
     dstruct Character, wPlayer
-
+    
 SECTION "Player Camera Data", WRAM0
     dstruct PlayerCamera, wPlayerCamera
 
@@ -302,6 +302,10 @@ PlayerIsHit::
     ld [wPlayer_PosY + 1], a
     ld [wPlayer_PosY + 1], a
 
+    ld a, [wPlayer_Flags]
+    and a, BIT_MASK_TYPE_REMOVE
+    ld [wPlayer_Flags], a ; remove any power up on player
+
     call PlayerGetsHitEnemyBehavior ; update enemy behavior for getting hit
     jr .end
 .dead
@@ -454,13 +458,16 @@ UpdatePlayerCamera::
     Update sprite ID according to current frame of animation and direction
 */
 UpdatePlayerShadowOAM::
+    xor a
+    push af ; PUSH AF = power up
+
     ld a, [wPlayer_FlickerEffect]
     and a, a
     jr z, .startUpdateOAM
 
     ld b, a ; b = FlickerEffect int portion
     ld a, [wPlayer_FlickerEffect + 1]
-    add a, FLICKER_UPDATE_SPEED
+    add a, PLAYER_FLICKER_UPDATE_SPEED
     ld [wPlayer_FlickerEffect + 1], a
     jr nc, .updateFlickerEffect
 
@@ -474,13 +481,15 @@ UpdatePlayerShadowOAM::
     and a, FLICKER_BITMASK
     cp a, FLICKER_VALUE
     jp nz, .startUpdateOAM
+
+    pop af ; POP AF = power up
     
     ld a, [wPlayer_Flags]
     and a, BIT_MASK_TYPE ; if type is 0, 
     jr z, .end ; not a power up effect, its damage flicker effect
 
-    ;xor a ; a = 0
-    ; if power up effect, make a reg a = 0 or something
+    ld a, OAMF_PAL1
+    push af ; PUSH AF = power up
 
 .startUpdateOAM
     ; do a dir check for sprite
@@ -525,6 +534,7 @@ UpdatePlayerShadowOAM::
     ld b, a
     ld a, [wPlayer_PosY]
     sub a, b
+    add a, 8 ; y sprite offset = 8
     ld b, a ; store y screen pos at b
 
     ld a, [wShadowSCData + 1]
@@ -542,7 +552,6 @@ UpdatePlayerShadowOAM::
     ld h, HIGH(wShadowOAM)
 
     ld a, b
-    add a, 8
     ld [hli], a ; init screen y Pos, first sprite y offset 8
     
     ld a, c 
@@ -552,14 +561,18 @@ UpdatePlayerShadowOAM::
     ld [hli], a
     inc de
 
-    ld a, [de] ; get flags
-    ;or a, OAMF_PAL1
-    ld [hli], a
+    pop af ; POP AF = power up
+    push af ; PUSH AF = power up
+    push hl ; push hl = sprite oam address
+    ld h, d
+    ld l, e
+    or a, [hl]
+    pop hl ; POP hl = sprite oam address
+    ld [hli], a ; flags
     inc de
 
     ; Init second half of player sprite to shadow OAM
     ld a, b
-    add a, 8
     ld [hli], a ; init screen y Pos, second sprite y offset 8
     
     ld a, c 
@@ -570,9 +583,13 @@ UpdatePlayerShadowOAM::
     ld [hli], a
     inc de
 
-    ld a, [de] ; get flags
-    ;or a, OAMF_PAL1
-    ld [hli], a
+    pop af ; POP AF = power up
+    push hl ; push hl = sprite oam address
+    ld h, d
+    ld l, e
+    or a, [hl] ; add the other palette
+    pop hl ; POP hl = sprite oam address
+    ld [hli], a ; flags
 
     ; update the current address of from hl to the wCurrentShadowOAMPtr
     ld a, l
