@@ -16,12 +16,22 @@ InitialiseGameplayUI::
     ret
 
 InitialiseStageEndUI::
+    push af
+
     set_romx_bank 3
+
+    call WaitVBlank
+    call LCDOff
+
     mem_copy StageEndUI, _SCRN1, StageEndUI.end-StageEndUI
     ld a, 7
     ld [rWX], a
     xor a
     ld [rWY], a
+
+    call LCDOn
+
+    pop af
     ret
 
 UpdatePlayerLivesUI::

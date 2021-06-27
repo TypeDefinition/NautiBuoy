@@ -41,6 +41,10 @@ SoundOn::
 Initialise::
     ld sp, $E000 ; Initialise our stack pointer to the end of the work RAM.
 
+    ; Set Interrupt Flags
+    ld a, IEF_VBLANK ; Enable Interrupts
+    ld [rIE], a
+
     ; Initialise Timer (https://gbdev.gg8.se/wiki/articles/Timer_and_Divider_Registers)
     xor a
     ld [rTMA], a
@@ -125,8 +129,6 @@ Initialise::
     ld hl, CombatBGM
     call hUGE_init
 
-    ld a, IEF_VBLANK ; Enable Interrupts
-    ld [rIE], a
     xor a ; clean up work
     ei ; Enable Master Interrupt Switch
 
