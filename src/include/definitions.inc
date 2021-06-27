@@ -26,11 +26,12 @@ DEF TYPE_BULLET2 EQU 5
 DEF TYPE_BULLET3 EQU 6
 
 ; PowerUp types
-DEF TYPE_HEALTH_POWERUP EQU 0 ; bit 2, 3 & 4, %000 000 00
+; equ 0 means no powerup at all
 DEF TYPE_INVINCIBILITY_POWERUP EQU 4 ; bit 2, 3 & 4, %000 001 00
 DEF TYPE_TIME_POWERUP EQU 8 ; bit 2, 3 & 4, %000 010 00
 DEF TYPE_DAMAGE_POWERUP EQU 12 ; bit 2, 3 & 4, %000 011 00
 DEF TYPE_SPEED_POWERUP EQU 16 ; bit 2, 3 & 4, %000 100 00
+DEF TYPE_HEALTH_POWERUP EQU 20 ; bit 2, 3 & 4, %000 101 00
 
 ; power up sprite ID
 DEF HEART_POWERUP_SPRITE_ID EQU $68
@@ -134,12 +135,22 @@ DEF ENEMY_TYPED_CHASE_STATE_FRAME EQU 5 ; frame to indicate chase state
 DEF ENEMY_TYPED_WAKEUP_STATE_FRAME EQU 2 ; frame to indicate wake up state
 DEF ENEMY_TYPED_ANIMATION_MAX_FRAME EQU 2 ; max animation frame for type D
 
-
+; Flicker effect
+DEF FLICKER_BITMASK EQU %00000001 ; the multiple we want to compare
+DEF FLICKER_VALUE EQU 1 ; value to not render
+DEF FLICKER_UPDATE_SPEED EQU 40 ; 256/FLICKER_UPDATE_SPEED number of frames to stop flicker effect
 
 ; Damage flicker effect
 DEF DAMAGE_FLICKER_EFFECT EQU 5 ; number of times to do the flicker effect based on the flicker timer
-DEF DAMAGE_FLICKER_UPDATE_SPEED EQU 40 ; 256/DAMAGE_FLICKER_UPDATE_SPEED number of frames to stop flicker effect
-DEF DAMAGE_FLICKER_BITMASK EQU %00000001 ; the multiple we want to compare
-DEF DAMAGE_FLICKER_VALUE EQU 1 ; value to not render
 
-    ENDC ; DEFINITIONS_INC
+; Powerup flicker effect
+; formula: number of times updated in 1s = 60frames / (256 / POWER_UP_FLICKER_UPDATE_SPEED)
+; POWER_UP_FLICKER_EFFECT time in seconds = number of times updated in 1s * time wanted
+DEF INVINCIBILITY_FLICKER_EFFECT_TIME EQU 5
+DEF INVINCIBILITY_FLICKER_EFFECT EQU 60/(256/FLICKER_UPDATE_SPEED) * INVINCIBILITY_FLICKER_EFFECT_TIME
+
+DEF SPEED_FLICKER_EFFECT_TIME EQU 5
+DEF SPEED_FLICKER_EFFECT EQU 60/(256/FLICKER_UPDATE_SPEED) * SPEED_FLICKER_EFFECT_TIME
+
+
+ENDC ; DEFINITIONS_INC

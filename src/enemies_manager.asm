@@ -415,7 +415,7 @@ UpdateEnemySpriteOAM::
 
     ld d, a ; b = FlickerEffect int portion
     ld a, [hl] ; get fractional portion
-    add a, DAMAGE_FLICKER_UPDATE_SPEED
+    add a, FLICKER_UPDATE_SPEED
     ld [hl], a ; update fractional portion
     jr nc, .updateFlickerEffect
 
@@ -428,8 +428,8 @@ UpdateEnemySpriteOAM::
 .updateFlickerEffect
     ; d = FlickerEffect int portion
     ld a, d
-    and a, DAMAGE_FLICKER_BITMASK
-    cp a, DAMAGE_FLICKER_VALUE
+    and a, FLICKER_BITMASK
+    cp a, FLICKER_VALUE
     pop hl ; POP HL = enemy address
     jr z, .end 
 

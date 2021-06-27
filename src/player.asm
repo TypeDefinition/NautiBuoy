@@ -460,7 +460,7 @@ UpdatePlayerShadowOAM::
 
     ld b, a ; b = FlickerEffect int portion
     ld a, [wPlayer_FlickerEffect + 1]
-    add a, DAMAGE_FLICKER_UPDATE_SPEED
+    add a, FLICKER_UPDATE_SPEED
     ld [wPlayer_FlickerEffect + 1], a
     jr nc, .updateFlickerEffect
 
@@ -471,9 +471,16 @@ UpdatePlayerShadowOAM::
 .updateFlickerEffect
     ; b = FlickerEffect int portion
     ld a, b
-    and a, DAMAGE_FLICKER_BITMASK
-    cp a, DAMAGE_FLICKER_VALUE
-    jp z, .end 
+    and a, FLICKER_BITMASK
+    cp a, FLICKER_VALUE
+    jp nz, .startUpdateOAM
+    
+    ld a, [wPlayer_Flags]
+    and a, BIT_MASK_TYPE ; if type is 0, 
+    jr z, .end ; not a power up effect, its damage flicker effect
+
+    ;xor a ; a = 0
+    ; if power up effect, make a reg a = 0 or something
 
 .startUpdateOAM
     ; do a dir check for sprite
@@ -546,6 +553,7 @@ UpdatePlayerShadowOAM::
     inc de
 
     ld a, [de] ; get flags
+    ;or a, OAMF_PAL1
     ld [hli], a
     inc de
 
@@ -563,6 +571,7 @@ UpdatePlayerShadowOAM::
     inc de
 
     ld a, [de] ; get flags
+    ;or a, OAMF_PAL1
     ld [hli], a
 
     ; update the current address of from hl to the wCurrentShadowOAMPtr
