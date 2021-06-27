@@ -77,6 +77,7 @@ Initialise::
     mem_copy EnemyTurtleSprite, _VRAM8000 + TestSprite.end - TestSprite, EnemyTurtleSprite.end - EnemyTurtleSprite
     mem_copy EnemyCSprite, _VRAM8000 + (TestSprite.end - TestSprite) + (EnemyTurtleSprite.end - EnemyTurtleSprite), EnemyCSprite.end - EnemyCSprite
     mem_copy EnemyDSprite, _VRAM8000 + (TestSprite.end - TestSprite) + (EnemyTurtleSprite.end - EnemyTurtleSprite) + (EnemyCSprite.end - EnemyCSprite), EnemyDSprite.end - EnemyDSprite
+    mem_copy PowerUpSprite, _VRAM8000 + (TestSprite.end - TestSprite) + (EnemyTurtleSprite.end - EnemyTurtleSprite) + (EnemyCSprite.end - EnemyCSprite) + (EnemyDSprite.end - EnemyDSprite), PowerUpSprite.end - PowerUpSprite
 
 
     ; Copy tile map into VRAM.
@@ -96,6 +97,7 @@ Initialise::
     call ResetAllBullets
     call ResetDirtyTiles
     call InitEnemiesAndPlaceOnMap
+    call InitPowerupsAndPlaceOnMap
  
     call hOAMDMA ; transfer sprite data to OAM
 
@@ -103,6 +105,10 @@ Initialise::
     ld a, %11100100 ; setting the color palette
     ld [rBGP], a ; render it out
     ld [rOBP0], a ; object palette 0
+
+    ld a, %10010011; setting the other color palette
+    ld [rOBP1], a ; object palette 1
+
 
     xor a ; ld a, 0
     ld [rSCY], a ; make the screen for scroll X and Y start at 0

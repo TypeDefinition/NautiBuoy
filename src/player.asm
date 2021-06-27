@@ -167,7 +167,7 @@ GetUserInput::
 
 /* Update Player Movement */
 UpdatePlayerMovement::
-    call PlayerSpriteCollisionCheck
+    call PlayerSpriteCollisionCheck ; have to check here, in case enemy moves into player instead
 
     ; If the player is still interpolating, do not check for input.
     ld a, [wPlayer_PosY]
@@ -187,6 +187,13 @@ UpdatePlayerMovement::
     jr .end
 .interpolatePosition
     call InterpolatePlayerPosition
+
+    ; to check power up collision
+    ld a, [wPlayer_PosY]
+    ld b, a 
+    ld a, [wPlayer_PosX]
+    ld c, a 
+    call CheckPowerUpCollision
 
 .advancePlayerAnimation
     ld a, [wPlayer_CurrStateMaxAnimFrame]
@@ -300,7 +307,7 @@ PlayerIsHit::
     ret
 
 
-/*  Player check collision with enemy sprite */
+/*  Player check collision with enemy sprites */
 PlayerSpriteCollisionCheck:
     ld a, [wPlayer_PosY]
     ld b, a

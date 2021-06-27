@@ -60,4 +60,15 @@ DEF ENTITIES_INC EQU 1
         words 1, PosX ; The 1st byte of PosY represents the integer portion. The 2nd byte of PosX represents the fractional portion.
     end_struct
 
+    /*  Flags:
+        Bit 0: Inactive/active
+        Bit 2, 3 & 4: Power Up Type
+    */
+    struct PowerUps
+        bytes 1, Flags
+        bytes 1, PosY
+        bytes 1, PosX
+        bytes 1, SpriteID
+    end_struct
+
     ENDC ; ENTITIES_INC

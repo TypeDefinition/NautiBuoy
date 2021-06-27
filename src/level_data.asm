@@ -12,7 +12,7 @@ INCLUDE "./src/include/definitions.inc"
         - velocity
         - initial max animation frame
 */
-SECTION "Enemies Level Data", ROMX, BANK[2]
+SECTION "Level Data", ROMX, BANK[2]
 LevelOneEnemyData::
     db 4 ; number of enemies in level
 .enemyOne
@@ -49,3 +49,18 @@ LevelOneEnemyData::
     dw VELOCITY_VSLOW ; cpu allocate and auto store in little endian
     db ENEMY_TYPEA_WALK_FRAMES
 .endLevelOneEnemyData:
+
+/* Powerup information and data for level 1 */
+LevelOnePowerUpData::
+    db 4 ; number of powerups in level
+.powerUpOne
+    db TYPE_HEALTH_POWERUP | FLAG_ACTIVE
+    db 16 * 8 ; y 
+    db 18 * 8 ; x
+    db HEART_POWERUP_SPRITE_ID
+.powerUpTwo
+    db TYPE_HEALTH_POWERUP | FLAG_ACTIVE
+    db 16 * 8 ; y 
+    db 14 * 8 ; x
+    db HEART_POWERUP_SPRITE_ID
+.endPowerUpOne
