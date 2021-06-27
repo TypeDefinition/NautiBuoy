@@ -25,6 +25,9 @@ InitialiseStageEndUI::
     ret
 
 UpdatePlayerLivesUI::
+    push af ; Do not remove this. Will break stuff.
+    push hl ; Do not remove this. Will break stuff.
+
     ld hl, rSTAT
     ld a, [wPlayer_HP]
     add a, "0"
@@ -32,9 +35,15 @@ UpdatePlayerLivesUI::
     bit 1, [hl]
     jr nz, .waitVRAM
     ld [_SCRN1 + PLAYER_LIVES_UI_TILE_INDEX], a
+
+    pop hl
+    pop af
     ret
 
 UpdateEnemyCounterUI::
+    push af ; Do not remove this. Will break stuff.
+    push hl ; Do not remove this. Will break stuff.
+
     ld hl, rSTAT
     ld a, [wCurrLevelEnemiesNo]
     add a, "0"
@@ -42,4 +51,7 @@ UpdateEnemyCounterUI::
     bit 1, [hl]
     jr nz, .waitVRAM
     ld [_SCRN1 + NUM_ENEMIES_UI_TILE_INDEX], a
+
+    pop hl
+    pop af
     ret

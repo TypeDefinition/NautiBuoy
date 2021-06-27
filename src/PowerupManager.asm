@@ -127,6 +127,8 @@ PowerUpCollisionBehaviour:
     inc a
     ld [wPlayer_HP], a
 
+    call UpdatePlayerLivesUI
+
     jr .end
 .invincibilityPowerup
     cp a, TYPE_INVINCIBILITY_POWERUP
