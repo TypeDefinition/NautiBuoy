@@ -15,21 +15,31 @@ InitialiseGameplayUI::
     ld [rWY], a
     ret
 
-UpdateGameplayUI::
-    ld hl, rSTAT
+InitialiseStageEndUI::
+    set_romx_bank 3
+    mem_copy StageEndUI, _SCRN1, StageEndUI.end-StageEndUI
+    ld a, 7
+    ld [rWX], a
+    xor a
+    ld [rWY], a
+    ret
 
+UpdatePlayerLivesUI::
+    ld hl, rSTAT
     ld a, [wPlayer_HP]
     add a, "0"
-    ld b, a
-    ld a, [wCurrLevelEnemiesNo]
-    add a, "0"
-
 .waitVRAM
     bit 1, [hl]
     jr nz, .waitVRAM
-
-    ld [_SCRN1 + NUM_ENEMIES_UI_TILE_INDEX], a
-    ld a, b
     ld [_SCRN1 + PLAYER_LIVES_UI_TILE_INDEX], a
+    ret
 
+UpdateEnemyCounterUI::
+    ld hl, rSTAT
+    ld a, [wCurrLevelEnemiesNo]
+    add a, "0"
+.waitVRAM
+    bit 1, [hl]
+    jr nz, .waitVRAM
+    ld [_SCRN1 + NUM_ENEMIES_UI_TILE_INDEX], a
     ret

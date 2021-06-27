@@ -69,6 +69,8 @@ InitialisePlayer::
     ld a, PLAYER_WALK_FRAMES
     ld [wPlayer_CurrStateMaxAnimFrame], a
 
+    call UpdatePlayerLivesUI
+
     pop af
     ret
 
@@ -273,6 +275,8 @@ PlayerIsHit::
     ld a, [wPlayer_HP]
     sub a, BULLET_DAMAGE
     ld [wPlayer_HP], a
+
+    call UpdatePlayerLivesUI
 
     ; check health <= 0
     and a

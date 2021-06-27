@@ -99,6 +99,7 @@ InitEnemiesAndPlaceOnMap::
     dec d
     jr nz, .loop
 .endloop
+    call UpdateEnemyCounterUI
     ret
 
 
@@ -626,6 +627,8 @@ HitEnemy::
     ld a, [wCurrLevelEnemiesNo]
     dec a
     ld [wCurrLevelEnemiesNo], a
+
+    call UpdateEnemyCounterUI
 
     ; TODO:: if reach 0, win game
 
