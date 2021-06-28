@@ -701,6 +701,7 @@ PlayerGetsHitEnemyBehavior::
     hl - enemy address
     Return value: 
     - a = 0/1 for false and true
+    - hl = pos X address
     
     Registers changed:
     - af
@@ -711,32 +712,36 @@ CheckEnemyInScreen::
     ld e, 0
 
     ld a, [wShadowSCData] ; get screen pos y
+    ;sub a, SCREEN_UPPER_OFFSET_Y
     ld d, a
 
     inc hl
     inc hl ; offset address to get posY
 
     ld a, [hli] ; get enemy pos Y
+    add a, SCREEN_UPPER_OFFSET_Y
     sub a, d ; enemy y pos - camera pos y
     jr c, .endCheck
 
 .checkWithinYAxis
-    cp a, SCRN_Y ; check if enemy pos is within y screen pos
+    cp a, VIEWPORT_SIZE_Y ; check if enemy pos is within y screen pos
     jr nc, .endCheck
 
 .checkXOffset
     ld a, [wShadowSCData + 1] ; get screen pos x
+    ;sub a, SCREEN_LEFT_OFFSET_X
     ld d, a
 
     inc hl
     inc hl ; offset address to get posX
 
     ld a, [hl]
+    add a, SCREEN_LEFT_OFFSET_X
     sub a, d ; enemy x pos - camera pos x
     jr c, .endCheck
 
 .checkWithinXAxis
-    cp a, SCRN_X
+    cp a, VIEWPORT_SIZE_X
     jr nc, .endCheck
 
     ld e, 1 ; is within screen
