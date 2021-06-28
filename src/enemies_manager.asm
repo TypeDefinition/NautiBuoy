@@ -707,6 +707,8 @@ PlayerGetsHitEnemyBehavior::
     - af
     - de
     - hl
+
+    ; TODO:: FIX AND CHECK THE OFFSETS
 */
 CheckEnemyInScreen::
     ld e, 0

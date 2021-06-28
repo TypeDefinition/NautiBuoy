@@ -60,15 +60,20 @@ LevelOneEnemyData::
 
 /* Powerup information and data for level 1 */
 LevelOnePowerUpData::
-    db 4 ; number of powerups in level
+    db 3 ; number of powerups in level
 .powerUpOne
     db TYPE_HEALTH_POWERUP | FLAG_ACTIVE
-    db 16 * 8 ; y 
-    db 18 * 8 ; x
+    db 9 * 8 ; y 
+    db 25 * 8 ; x
     db HEART_POWERUP_SPRITE_ID
 .powerUpTwo
     db TYPE_INVINCIBILITY_POWERUP | FLAG_ACTIVE
-    db 16 * 8 ; y 
-    db 14 * 8 ; x
+    db 22 * 8 ; y 
+    db 6 * 8 ; x
     db INVINCIBILITY_POWERUP_SPRITE_ID
+.powerUpThree
+    db TYPE_HEALTH_POWERUP | FLAG_ACTIVE
+    db 10 * 8 ; y 
+    db 5 * 8 ; x
+    db HEART_POWERUP_SPRITE_ID
 .endPowerUpOne
