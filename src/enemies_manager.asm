@@ -712,7 +712,6 @@ CheckEnemyInScreen::
     ld e, 0
 
     ld a, [wShadowSCData] ; get screen pos y
-    ;sub a, SCREEN_UPPER_OFFSET_Y
     ld d, a
 
     inc hl
@@ -724,12 +723,11 @@ CheckEnemyInScreen::
     jr c, .endCheck
 
 .checkWithinYAxis
-    cp a, VIEWPORT_SIZE_Y ; check if enemy pos is within y screen pos
+    cp a, VIEWPORT_MAX_Y + SCREEN_UPPER_OFFSET_Y * 2 ; check if enemy pos is within y screen pos
     jr nc, .endCheck
 
 .checkXOffset
     ld a, [wShadowSCData + 1] ; get screen pos x
-    ;sub a, SCREEN_LEFT_OFFSET_X
     ld d, a
 
     inc hl
@@ -741,7 +739,7 @@ CheckEnemyInScreen::
     jr c, .endCheck
 
 .checkWithinXAxis
-    cp a, VIEWPORT_SIZE_X
+    cp a, VIEWPORT_SIZE_X + SCREEN_LEFT_OFFSET_X * 2
     jr nc, .endCheck
 
     ld e, 1 ; is within screen
