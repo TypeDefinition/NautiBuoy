@@ -697,3 +697,52 @@ PlayerGetsHitEnemyBehavior::
 .end
     ret
 
+/*  Checks if enemy is on screen 
+    hl - enemy address
+    Return value: 
+    - a = 0/1 for false and true
+    
+    Registers changed:
+    - af
+    - de
+    - hl
+*/
+CheckEnemyInScreen::
+    ld e, 0
+
+    ld a, [wShadowSCData] ; get screen pos y
+    ld d, a
+
+    inc hl
+    inc hl ; offset address to get posY
+
+    ld a, [hli] ; get enemy pos Y
+    sub a, d ; enemy y pos - camera pos y
+    jr c, .endCheck
+
+.checkWithinYAxis
+    cp a, SCRN_Y ; check if enemy pos is within y screen pos
+    jr nc, .endCheck
+
+.checkXOffset
+    ld a, [wShadowSCData + 1] ; get screen pos x
+    ld d, a
+
+    inc hl
+    inc hl ; offset address to get posX
+
+    ld a, [hl]
+    sub a, d ; enemy x pos - camera pos x
+    jr c, .endCheck
+
+.checkWithinXAxis
+    cp a, SCRN_X
+    jr nc, .endCheck
+
+    ld e, 1 ; is within screen
+
+.endCheck
+    ; e = whether on screen or not
+    ld a, e
+    ret
+

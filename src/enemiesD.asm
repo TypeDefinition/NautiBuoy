@@ -32,34 +32,9 @@ UpdateEnemyD::
     pop hl ; POP HL = enemy address
     push hl ; PUSH HL = enemy address
 
-    ld a, [wShadowSCData] ; get screen pos y
-    ld d, a
-
-    inc hl
-    inc hl ; offset address to get posY
-
-    ld a, [hli] ; get enemy pos Y
-    sub a, d ; enemy y pos - camera pos y
-    jr c, .endUpdateEnemyD
-
-.checkWithinYAxis
-    cp a, SCRN_Y ; check if enemy pos is within y screen pos
-    jr nc, .endUpdateEnemyD
-
-.checkXOffset
-    ld a, [wShadowSCData + 1] ; get screen pos x
-    ld d, a
-
-    inc hl
-    inc hl ; offset address to get posX
-
-    ld a, [hl]
-    sub a, d ; enemy x pos - camera pos x
-    jr c, .endUpdateEnemyD
-
-.checkWithinXAxis
-    cp a, SCRN_X
-    jr nc, .endUpdateEnemyD
+    call CheckEnemyInScreen
+    and a
+    jr z, .endUpdateEnemyD 
 
     jr .updateAnimation ; start waking up
 
