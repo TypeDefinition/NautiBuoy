@@ -187,19 +187,24 @@ UpdateEnemyB::
 
 /* Init enemy B sprite and render */
 InitEnemyBSprite:
-    push hl ; PUSH hl = enemy address
+    call CheckEnemyInScreen
+    and a
+    jr z, .end
 
-    ld de, Character_UpdateFrameCounter + 1
-    add hl, de ; offset hl = updateFrameCounter
+    inc hl ; offset to get direction
+    inc hl
+    ld a, [hli] ; check direction of enemy and init sprite data
+    push af ; PUSH AF = direction 
+
+    inc hl
+    inc hl
+    inc hl
+    inc hl ; offset to get updateFrameCounter
 
     ld a, [hl] ; get int part of updateFrameCounter
     ld d, a ; reg d = updateFrameCounter
 
-    pop hl ; POP hl = enemy address
-    push hl ; PUSH hl = enemy address
-    ld bc, Character_Direction
-    add hl, bc 
-    ld a, [hl] ; check direction of enemy and init sprite data
+    pop af ; POP af = direction
     and a, DIR_BIT_MASK
 
     ASSERT DIR_UP == 0
@@ -253,6 +258,13 @@ InitEnemyBSprite:
     ld bc, EnemyBAnimation.attackRightAnimation
 
 .endDir
-    pop hl ; POP HL = enemy address
+    ld a, l
+    sub a, Character_UpdateFrameCounter + 1
+    ld l, a
+    ld a, h
+    sbc a, 0
+    ld h, a 
+
     call UpdateEnemySpriteOAM
+.end
     ret

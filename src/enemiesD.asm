@@ -34,7 +34,10 @@ UpdateEnemyD::
 
     call CheckEnemyInScreen
     and a
-    jr z, .endUpdateEnemyD 
+    pop hl ; POP HL = enemy address
+    jr z, .end
+
+    push hl ; PUSH HL = enemy address
 
     jr .updateAnimation ; start waking up
 
@@ -119,6 +122,7 @@ UpdateEnemyD::
 .endUpdateEnemyD
     pop hl ; POP HL = enemy address
     call InitEnemyDSprite ; DONT EVEN HAVE TO RENDER IF PLAYER NOT ON SAME SCREEN
+.end
     ret
 
 /*  Reset enemy D state when player dies
