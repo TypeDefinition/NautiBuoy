@@ -1,6 +1,11 @@
 INCLUDE "./src/include/hardware.inc"
 INCLUDE "./src/include/util.inc"
-include "./src/include/hUGE.inc"
+INCLUDE "./src/include/hUGE.inc"
+INCLUDE "./src/include/definitions.inc"
+
+SECTION "HRAM Variables", HRAM
+hLCDC::
+    ds 1
 
 ; $0100 - $0103: Entry Point
 SECTION "Entry Point", ROM0[$0100]
@@ -24,7 +29,8 @@ LCDOn::
     push af
     ; Turn screen on, display background
     ; WARNING/TEMP: might change one of the 9800 to use tilemap 9c00, unsure what effects putting both to 9800 will cause for UI. default is 9800 
-    ld a, LCDCF_ON | LCDCF_WIN9C00 | LCDCF_WINON | LCDCF_BG9800 | LCDCF_OBJ16 | LCDCF_OBJON | LCDCF_BGON ; we want to set back LCDC bit 7 to 1
+    ld a, LCDCF_ON | LCDCF_WIN9C00 | LCDCF_WINON | LCDCF_BG9800 | LCDCF_OBJ16 | LCDCF_OBJON | LCDCF_BGON
+    ld [hLCDC], a ; Store the flags in HRAM.
     ld [rLCDC], a ; turn on the screen
     pop af
     ret
@@ -41,15 +47,17 @@ SoundOn::
 Initialise::
     ld sp, $E000 ; Initialise our stack pointer to the end of the work RAM.
 
-    ; Set Interrupt Flags
-    ld a, IEF_VBLANK ; Enable Interrupts
-    ld [rIE], a
+    ; Set STAT interrupt flags.
+    ld a, VIEWPORT_SIZE_Y
+    ldh [rLYC], a
+    ld a, STATF_LYC
+    ldh [rSTAT], a
 
     ; Initialise Timer (https://gbdev.gg8.se/wiki/articles/Timer_and_Divider_Registers)
-    xor a
-    ld [rTMA], a
-    ld a, TACF_START | TACF_4KHZ ; TACF_START & TACF_4KHZ
-    ld [rTAC], a
+    ; xor a
+    ; ld [rTMA], a
+    ; ld a, TACF_START | TACF_4KHZ ; TACF_START & TACF_4KHZ
+    ; ld [rTAC], a
 
     call CopyDMARoutine ; init the copy of the DMA handler func from RAM to HRAM
 
@@ -131,7 +139,11 @@ Initialise::
     ld hl, CombatBGM
     call hUGE_init
 
-    xor a ; clean up work
+    ; Set Interrupt Flags
+    ld a, IEF_VBLANK | IEF_STAT ; Enable Interrupts
+    ldh [rIE], a
+    xor a ; Clear Pending Interrupts
+    ldh [rIF], a
     ei ; Enable Master Interrupt Switch
 
     jp UpdateLoop ; Go to main game loop

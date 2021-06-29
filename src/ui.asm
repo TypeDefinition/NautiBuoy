@@ -12,7 +12,7 @@ LoadGameplayUI::
     mem_copy GameplayUI, _SCRN1, GameplayUI.end-GameplayUI
     ld a, 7
     ld [rWX], a
-    ld a, SCREEN_SIZE_Y-GAMEPLAY_UI_SIZE_Y
+    ld a, SCRN_Y-GAMEPLAY_UI_SIZE_Y
     ld [rWY], a
     ret
 

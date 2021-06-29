@@ -15,8 +15,12 @@ WaitVBlank::
 
 SECTION "VBlank Handler", ROM0
 VBlankHandler::
-    call hOAMDMA ; Update OAM
+    ; Enable Sprite Rendering
+    ldh a, [hLCDC]
+    ldh [rLCDC], a
     
+    call hOAMDMA ; Update OAM
+
     ; update registers for camera
     ld a, [wShadowSCData]
     ld [rSCY], a

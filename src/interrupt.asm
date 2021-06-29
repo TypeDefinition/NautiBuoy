@@ -24,6 +24,11 @@ SECTION "VBlank Interrupt", ROM0[$0040]
 
 SECTION "STAT Interrupt", ROM0[$0048]
 STATInterrupt::
+    ; Disable Sprite Rendering
+    push hl
+    ld hl, rLCDC
+    res 1, [hl]
+    pop hl
     reti
 
 SECTION "Timer Interrupt", ROM0[$0050]
