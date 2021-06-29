@@ -4,15 +4,6 @@ SECTION "VBlank Data", WRAM0
 wShadowSCData::
     ds 2 ; y pos, then x pos
 
-SECTION "Wait VBlank", ROM0
-/*  Loop until the LCD is in VBlank state.
-    Registers Used: a */
-WaitVBlank::
-    ld a, [rLY] ; rLY is address $FF44, we getting the LCDC Y-Coordinate here to see the current state of the LCDC drawing
-    cp 144 ; Check if the LCD is past VBlank, values between 144 - 153 is VBlank period
-    jr c, WaitVBlank ; We need wait for Vblank before we can turn off the LCD
-    ret
-
 SECTION "VBlank Handler", ROM0
 VBlankHandler::
     ; Enable Sprite Rendering
@@ -31,6 +22,16 @@ VBlankHandler::
     pop hl
     pop de
     pop bc
+
+    ; TODO: Clean this up. Very temp code.
+    ldh a, [hVBlankFlag]
+	and a
+	jr z, .lagFrame
+	xor a
+	ldh [hVBlankFlag], a
+    pop af
+.lagFrame
+
     pop af
 
     reti

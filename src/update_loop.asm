@@ -29,6 +29,6 @@ UpdateLoop::
     set_romx_bank 5
     call _hUGE_dosound
 
-    call WaitVBlank ; Save power, wait for vblank interrupt
+    rst $0010 ; Wait VBlank
 
     jr UpdateLoop

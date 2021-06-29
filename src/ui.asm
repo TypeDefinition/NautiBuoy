@@ -20,7 +20,6 @@ LoadStageClearedUI::
     push af
     push hl
 
-    call WaitVBlank
     call LCDOff
 
     set_romx_bank 3
@@ -57,7 +56,6 @@ LoadStageFailedUI::
     push af
     push hl
 
-    call WaitVBlank
     call LCDOff
 
     set_romx_bank 3

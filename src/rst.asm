@@ -22,7 +22,12 @@ MemSetSmall::
     ret
 
 SECTION "RST $0010", ROM0[$0010]
-    ret
+WaitVBlank::
+    ld a, 1
+    ldh [hVBlankFlag], a
+.wait
+    halt
+    jr .wait
 
 SECTION "RST $0018", ROM0[$0018]
     ret

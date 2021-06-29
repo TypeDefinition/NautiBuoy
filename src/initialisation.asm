@@ -6,6 +6,8 @@ INCLUDE "./src/include/definitions.inc"
 SECTION "HRAM Variables", HRAM
 hLCDC::
     ds 1
+hVBlankFlag::
+    ds 1
 
 ; $0100 - $0103: Entry Point
 SECTION "Entry Point", ROM0[$0100]
@@ -19,6 +21,13 @@ SECTION "Entry Point", ROM0[$0100]
 SECTION "Initialisation", ROM0
 LCDOff::
     push af
+
+    ; Wait for VBlank before shutting off the LCD.
+.waitVBlank::
+    ld a, [rLY] ; rLY is address $FF44, we getting the LCDC Y-Coordinate here to see the current state of the LCDC drawing
+    cp 144 ; Check if the LCD is past VBlank, values between 144 - 153 is VBlank period
+    jr c, .waitVBlank ; We need wait for Vblank before we can turn off the LCD
+
     ; Shut off the LCD.
     xor a; ld a, 0
     ld [rLCDC], a
@@ -61,8 +70,9 @@ Initialise::
 
     call CopyDMARoutine ; init the copy of the DMA handler func from RAM to HRAM
 
-    ; Wait for VBlank before shutting off the LCD.
-    call WaitVBlank
+    ; Reset hVBlankFlag before waiting for VBlank.
+    xor a
+    ld [hVBlankFlag], a
 
     /*  The LCDC register ($FF40) is the LCD Control register.
         Bit 0: Background & Window Display (0 = Off, 1 = On)
