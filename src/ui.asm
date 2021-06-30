@@ -8,7 +8,7 @@ DEF STAGE_RESULT_UI_TILE_INDEX EQU 74
 
 SECTION "Game UI", ROM0
 LoadGameplayUI::
-    set_romx_bank 3
+    set_romx_bank BANK(GameplayUI)
     mem_copy GameplayUI, _SCRN1, GameplayUI.end-GameplayUI
     ld a, 7
     ld [rWX], a
@@ -22,7 +22,7 @@ LoadStageClearedUI::
 
     call LCDOff
 
-    set_romx_bank 3
+    set_romx_bank BANK(StageEndUI)
     mem_copy StageEndUI, _SCRN1, StageEndUI.end-StageEndUI
     ld a, 7
     ld [rWX], a
@@ -58,7 +58,7 @@ LoadStageFailedUI::
 
     call LCDOff
 
-    set_romx_bank 3
+    set_romx_bank BANK(StageEndUI)
     mem_copy StageEndUI, _SCRN1, StageEndUI.end-StageEndUI
     ld a, 7
     ld [rWX], a

@@ -6,11 +6,6 @@ DEF MAX_DIRTY_TILES EQU $10
 ; Collidable Tiles: A tile is assumed to be collidable if it's value is less than 16.
 DEF CHARACTER_COLLIDABLE_TILES EQU $10
 
-SECTION "Game Level Tiles", WRAM0
-GameLevelTiles::
-    ds 1024
-.end::
-
 SECTION "Dirty Tiles", WRAM0
 /* Contains an array of tiles to update in the VRAM.
     Each tile to update is represented using 4 bytes.

@@ -3,10 +3,17 @@ INCLUDE "./src/include/util.inc"
 INCLUDE "./src/include/hUGE.inc"
 INCLUDE "./src/include/definitions.inc"
 
-; $0100 - $0103: Entry Point
-SECTION "Game Level", ROM0[$0100]
+SECTION "Game Level Tiles", WRAM0
+GameLevelTiles::
+    ds 1024
+.end::
+
+SECTION "Game Level", ROM0
 LoadGameLevel::
     di ; Disable Interrupts
+
+    call LCDOff
+    call SoundOff
 
     ; Set STAT interrupt flags.
     ld a, VIEWPORT_SIZE_Y
@@ -14,11 +21,9 @@ LoadGameLevel::
     ld a, STATF_LYC
     ldh [rSTAT], a
 
-    ; Reset hVBlankFlag before waiting for VBlank.
+    ; Reset hVBlankFlag.
     xor a
     ld [hVBlankFlag], a
-
-    call LCDOff
 
     ; Reset OAM & Shadow OAM
     call ResetOAM
@@ -26,34 +31,21 @@ LoadGameLevel::
     xor a
     ld [wCurrentShadowOAMPtr], a
 
-    ; Copy background tile data into VRAM.
+    ; Copy textures into VRAM.
     set_romx_bank BANK(BGWindowTiles)
     mem_copy BGWindowTiles, _VRAM9000, BGWindowTiles.end-BGWindowTiles
-
-    set_romx_bank BANK(PlayerSprite)
-    mem_copy PlayerSprite, _VRAM8000, PlayerSprite.end-PlayerSprite
-
-    set_romx_bank BANK(EnemyTurtleSprite)
-    mem_copy EnemyTurtleSprite, _VRAM8000 + PlayerSprite.end - PlayerSprite, EnemyTurtleSprite.end - EnemyTurtleSprite
-    
-    set_romx_bank BANK(EnemyTurretSprite)
-    mem_copy EnemyTurretSprite, _VRAM8000 + (PlayerSprite.end - PlayerSprite) + (EnemyTurtleSprite.end - EnemyTurtleSprite), EnemyTurretSprite.end - EnemyTurretSprite
-
-    set_romx_bank BANK(EnemyGhostSprite)
-    mem_copy EnemyGhostSprite, _VRAM8000 + (PlayerSprite.end - PlayerSprite) + (EnemyTurtleSprite.end - EnemyTurtleSprite) + (EnemyTurretSprite.end - EnemyTurretSprite), EnemyGhostSprite.end - EnemyGhostSprite
-
-    set_romx_bank BANK(PowerUpSprites)
-    mem_copy PowerUpSprites, _VRAM8000 + (PlayerSprite.end - PlayerSprite) + (EnemyTurtleSprite.end - EnemyTurtleSprite) + (EnemyTurretSprite.end - EnemyTurretSprite) + (EnemyGhostSprite.end - EnemyGhostSprite), PowerUpSprites.end - PowerUpSprites
+    set_romx_bank BANK(Sprites)
+    mem_copy Sprites, _VRAM8000, Sprites.end-Sprites
 
     ; Copy tile map into VRAM.
-    set_romx_bank 3 ; Our tile maps are in Bank 3, so we load that into ROMX.
-    mem_copy Level0, GameLevelTiles, Level0.end-Level0
+    set_romx_bank BANK(Level0TileMap)
+    mem_copy Level0TileMap, GameLevelTiles, Level0TileMap.end-Level0TileMap
     mem_copy GameLevelTiles, _SCRN0, GameLevelTiles.end-GameLevelTiles
 
     call LoadGameplayUI
 
     ; TEMP: Temporary code.
-    set_romx_bank 2
+    set_romx_bank BANK(Sprites)
     ld hl, wShadowOAM
     call InitialisePlayer
     call UpdatePlayerShadowOAM
@@ -66,30 +58,25 @@ LoadGameLevel::
 
     call hOAMDMA ; transfer sprite data to OAM
 
-    ; Initialise BGM
-    set_romx_bank 5
-    ld hl, CombatBGM
-    call hUGE_init
-
+    ; Reset SCY & SCX
     xor a
-    ld [rSCY], a ; make the screen for scroll X and Y start at 0
+    ld [rSCY], a
     ld [rSCX], a
 
     call LCDOn
+
+    ; Turn on BGM
     call SoundOn
+    set_romx_bank BANK(CombatBGM)
+    ld hl, CombatBGM
+    call hUGE_init
 
     ; Set Interrupt Flags
-    ld a, IEF_VBLANK | IEF_STAT ; Enable Interrupts
+    ld a, IEF_VBLANK | IEF_STAT
     ldh [rIE], a
-    xor a ; Clear Pending Interrupts
+    ; Clear Pending Interrupts
+    xor a
     ldh [rIF], a
     ei ; Enable Master Interrupt Switch
 
-    jp UpdateGameLevel
-
-    ret
-
-UpdateGameLevel::
-.loop
-    jr .loop
-    ret
+    jp UpdateLoop

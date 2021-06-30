@@ -12,7 +12,7 @@ INCLUDE "./src/include/definitions.inc"
         - velocity
         - initial max animation frame
 */
-SECTION "Level Data", ROMX, BANK[2]
+SECTION "Level Data", ROMX
 LevelOneEnemyData::
     db 5 ; number of enemies in level
 .enemyOne

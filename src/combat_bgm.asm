@@ -1,6 +1,6 @@
 include "./src/include/hUGE.inc"
 
-SECTION "Song Data", ROMX, BANK[5]
+SECTION "Song Data", ROMX
 
 CombatBGM::
 db 7
