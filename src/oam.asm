@@ -61,7 +61,7 @@ ResetOAM::
     ret
     
 /* Clean up shadowOAM data, can be used anytime, best to use when needing to reinitialise OAM values */
-ResetShawdowOAM::
+ResetShadowOAM::
     ld hl, wShadowOAM
     
     ld a, [wCurrentShadowOAMPtr]

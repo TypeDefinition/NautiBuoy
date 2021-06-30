@@ -10,7 +10,7 @@ UpdateLoop::
     ;ld [rROMB0], a
     call UpdateInput
 
-    call ResetShawdowOAM
+    call ResetShadowOAM
 
     ; insert game logic here and update shadow OAM data
     call UpdatePlayerMovement

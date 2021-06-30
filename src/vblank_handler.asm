@@ -1,5 +1,9 @@
 INCLUDE "./src/include/hardware.inc"
 
+SECTION "VBlank HRAM", HRAM
+hVBlankFlag::
+    ds 1
+
 SECTION "VBlank Data", WRAM0
 wShadowSCData::
     ds 2 ; y pos, then x pos

@@ -121,7 +121,7 @@ UpdateEnemyD::
 
 .endUpdateEnemyD
     pop hl ; POP HL = enemy address
-    call InitEnemyDSprite ; DONT EVEN HAVE TO RENDER IF PLAYER NOT ON SAME SCREEN
+    call InitEnemyGhostSprite ; DONT EVEN HAVE TO RENDER IF PLAYER NOT ON SAME SCREEN
 .end
     ret
 
@@ -178,7 +178,7 @@ ResetEnemyD::
 /*  Init enemy Ghost sprite
     hl - enemy address 
 */
-InitEnemyDSprite:
+InitEnemyGhostSprite:
     push hl ; PUSH hl = enemy address
 
     ld de, Character_UpdateFrameCounter + 1

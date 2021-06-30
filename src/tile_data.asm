@@ -1,15 +1,12 @@
 INCLUDE "./src/include/hardware.inc"
 
-SECTION "Title Tile Data", ROMX, BANK[1]
-TitleTiles::
-.end::
-
-SECTION "Game Tile Data", ROMX, BANK[2]
+SECTION "Background & Window Tiles", ROMX
 BGWindowTiles::
     INCBIN "./tile_data/background_and_ui.2bpp" ; INCBIN copies the binary file contents directly into the ROM.
 .end::
 
-TestSprite::
+SECTION "Sprites", ROMX
+PlayerSprite::
     INCBIN "./tile_data/tempPlayer.2bpp"
 .end::
 
@@ -17,14 +14,14 @@ EnemyTurtleSprite::
     INCBIN "./tile_data/turtleEnemy.2bpp"
 .end::
 
-EnemyCSprite::
+EnemyTurretSprite::
     INCBIN "./tile_data/enemyShootOneDir.2bpp"
 .end::
 
-EnemyDSprite::
+EnemyGhostSprite::
     INCBIN "./tile_data/ghostEnemy.2bpp"
 .end::
 
-PowerUpSprite::
+PowerUpSprites::
     INCBIN "./tile_data/Powerups.2bpp"
 .end::

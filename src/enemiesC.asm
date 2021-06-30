@@ -69,14 +69,14 @@ UpdateEnemyC::
 
 .endUpdateEnemyC
     pop hl ; POP HL = enemy starting address
-    call InitEnemyCSprite
+    call InitEnemyTurretSprite
     ret
 
 
 /*  Init enemy C sprite
     hl - enemy address 
 */
-InitEnemyCSprite:
+InitEnemyTurretSprite:
     call CheckEnemyInScreen
     and a
     jr z, .end
