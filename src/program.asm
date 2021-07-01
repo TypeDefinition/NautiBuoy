@@ -31,18 +31,7 @@ LCDOff::
     ld [rLCDC], a
     ret
 
-LCDOn::
-    ld a, LCDCF_ON | LCDCF_WIN9C00 | LCDCF_WINON | LCDCF_BG9800 | LCDCF_OBJ16 | LCDCF_OBJON | LCDCF_BGON
-    ld [hLCDC], a ; Store a copy of the flags in HRAM.
-    ld [rLCDC], a
-    ret
-
 SECTION "Sound", ROM0
-SoundOff::
-    xor a
-    ld [rAUDENA], a
-    ret
-
 SoundOn::
     ld a, $80
     ld [rAUDENA], a
@@ -67,4 +56,12 @@ LoadProgram::
     ld a, %01001011
     ld [rOBP1], a ; Set Object Palette 1
 
+    ; jp LoadMainMenu
     jp LoadGameLevel
+
+SECTION "VBlank HRAM", HRAM
+hWaitVBlankFlag::
+    ds 1
+; Reserve just enough space for a "jp Immd" instruction.
+hVBlankHandler::
+    ds 3

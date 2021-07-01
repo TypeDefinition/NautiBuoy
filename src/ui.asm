@@ -7,6 +7,12 @@ DEF NUM_ENEMIES_UI_TILE_INDEX EQU 38
 DEF STAGE_RESULT_UI_TILE_INDEX EQU 74
 
 SECTION "Game UI", ROM0
+LCDOn:
+    ld a, LCDCF_ON | LCDCF_WIN9C00 | LCDCF_WINON | LCDCF_BG9800 | LCDCF_OBJ16 | LCDCF_OBJON | LCDCF_BGON
+    ld [hLCDC], a ; Store a copy of the flags in HRAM.
+    ld [rLCDC], a
+    ret
+
 LoadGameplayUI::
     set_romx_bank BANK(GameplayUI)
     mem_copy GameplayUI, _SCRN1, GameplayUI.end-GameplayUI

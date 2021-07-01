@@ -1,7 +1,7 @@
 INCLUDE "./src/include/hardware.inc"
 
 SECTION "Background & Window Tiles", ROMX
-BGWindowTiles::
+BGWindowTileData::
     INCBIN "./tile_data/background_and_ui.2bpp" ; INCBIN copies the binary file contents directly into the ROM.
 .end::
 

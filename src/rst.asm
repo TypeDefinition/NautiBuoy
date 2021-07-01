@@ -23,8 +23,8 @@ MemSetSmall::
 
 SECTION "RST $0010", ROM0[$0010]
 WaitVBlank::
-    ld a, 1
-    ldh [hVBlankFlag], a
+    ld a, $01
+    ldh [hWaitVBlankFlag], a
 .wait
     halt
     jr .wait

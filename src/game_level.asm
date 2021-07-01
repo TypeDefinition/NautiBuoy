@@ -9,10 +9,29 @@ GameLevelTiles::
 .end::
 
 SECTION "Game Level", ROM0
+LCDOn:
+    ld a, LCDCF_ON | LCDCF_WIN9C00 | LCDCF_WINON | LCDCF_BG9800 | LCDCF_OBJ16 | LCDCF_OBJON | LCDCF_BGON
+    ld [hLCDC], a ; Store a copy of the flags in HRAM.
+    ld [rLCDC], a
+    ret
+
+OverridehVBlankHandler:
+    ld  hl, .override
+    ld  c, LOW(hVBlankHandler)
+REPT 3 ; The "jp VBlankHandler" instruction is 3 bytes.
+    ld  a, [hli]
+    ldh [c], a
+    inc c
+ENDR
+    ret
+.override
+    jp VBlankHandler
+
 LoadGameLevel::
     di ; Disable Interrupts
 
     call LCDOff
+    call OverridehVBlankHandler
 
     ; Set STAT interrupt flags.
     ld a, VIEWPORT_SIZE_Y
@@ -20,9 +39,9 @@ LoadGameLevel::
     ld a, STATF_LYC
     ldh [rSTAT], a
 
-    ; Reset hVBlankFlag.
+    ; Reset hWaitVBlankFlag.
     xor a
-    ld [hVBlankFlag], a
+    ld [hWaitVBlankFlag], a
 
     ; Reset OAM & Shadow OAM
     call ResetOAM
@@ -31,8 +50,8 @@ LoadGameLevel::
     ld [wCurrentShadowOAMPtr], a
 
     ; Copy textures into VRAM.
-    set_romx_bank BANK(BGWindowTiles)
-    mem_copy BGWindowTiles, _VRAM9000, BGWindowTiles.end-BGWindowTiles
+    set_romx_bank BANK(BGWindowTileData)
+    mem_copy BGWindowTileData, _VRAM9000, BGWindowTileData.end-BGWindowTileData
     set_romx_bank BANK(Sprites)
     mem_copy Sprites, _VRAM8000, Sprites.end-Sprites
 
@@ -107,3 +126,42 @@ UpdateGameLevel::
     rst $0010 ; Wait VBlank
 
     jr UpdateGameLevel
+
+VBlankHandler:
+    push af
+
+    ; If VBlankHandler was called without waiting for VBlank, the frame lagged.
+    ld a, [hWaitVBlankFlag]
+    and a
+    jr z, .lagFrame
+    ; Reset hWaitVBlankFlag
+    xor a
+    ld [hWaitVBlankFlag], a
+
+    push bc
+    push de
+    push hl
+
+    ; Enable Sprite Rendering
+    ldh a, [hLCDC]
+    ldh [rLCDC], a
+    
+    call hOAMDMA ; Update OAM
+
+    ; Update camera position.
+    ld a, [wShadowSCData]
+    ld [rSCY], a
+    ld a, [wShadowSCData + 1]
+    ld [rSCX], a 
+
+    pop hl
+    pop de
+    pop bc
+    pop af
+.lagFrame
+    pop af
+    reti
+
+SECTION "VBlank Data", WRAM0
+wShadowSCData::
+    ds 2 ; y pos, then x pos
