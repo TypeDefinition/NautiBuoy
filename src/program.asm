@@ -54,10 +54,10 @@ SoundOn::
 
 SECTION "Program", ROM0
 LoadProgram::
-    ld sp, $E000 ; Initialise our stack pointer to the end of the work RAM.
+    ld sp, $E000 ; Initialise our stack pointer to the end of WRAM.
 
     call LCDOff
-    call SoundOff
+    call SoundOn
     call CopyDMARoutine ; Copy DMARoutine from ROM to HRAM.
 
     ; Set Colour Palettes

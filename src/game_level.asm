@@ -13,7 +13,6 @@ LoadGameLevel::
     di ; Disable Interrupts
 
     call LCDOff
-    call SoundOff
 
     ; Set STAT interrupt flags.
     ld a, VIEWPORT_SIZE_Y
@@ -53,6 +52,8 @@ LoadGameLevel::
     call ResetPlayerCamera
     call ResetAllBullets
     call ResetDirtyTiles
+    
+    set_romx_bank BANK(LevelOneEnemyData)
     call InitEnemiesAndPlaceOnMap
     call InitPowerupsAndPlaceOnMap
 
@@ -65,8 +66,7 @@ LoadGameLevel::
 
     call LCDOn
 
-    ; Turn on BGM
-    call SoundOn
+    ; Set BGM
     set_romx_bank BANK(CombatBGM)
     ld hl, CombatBGM
     call hUGE_init
@@ -82,9 +82,7 @@ LoadGameLevel::
     jp UpdateGameLevel
 
 UpdateGameLevel::
-    set_romx_bank BANK(Sprites) ; player, enemy and bullet sprite data is in rombank 2
-    ;ld a, BANK(LevelOneEnemyData)
-    ;ld [rROMB0], a
+    set_romx_bank BANK(Sprites)
     call UpdateInput
 
     call ResetShadowOAM
