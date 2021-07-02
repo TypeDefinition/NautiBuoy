@@ -3,14 +3,24 @@ INCLUDE "./src/include/util.inc"
 INCLUDE "./src/include/hUGE.inc"
 INCLUDE "./src/include/definitions.inc"
 
-DEF MAINMENU_STATE_TITLE EQU $01
-DEF MAINMENU_STATE_CONTINUE EQU $02
-DEF MAINMENU_STATE_NEWGAME EQU $03
+; Main Menu States
+DEF MAINMENU_STATE_TITLE EQU $00
+DEF MAINMENU_STATE_STAGESELECT EQU $01
+DEF MAINMENU_STATE_NEWGAME EQU $02
+
+SECTION "Main Menu WRAM", WRAM0
+wMainMenuStatePrevious:
+    ds 1
+wMainMenuStateCurrent:
+    ds 1
+wSelection:
+    ds 1
 
 SECTION "Main Menu", ROM0
 LCDOn:
+    ; Set LCDC Flags
     ld a, LCDCF_ON | LCDCF_WIN9C00 | LCDCF_WINOFF | LCDCF_BG9800 | LCDCF_OBJ16 | LCDCF_OBJOFF | LCDCF_BGON
-    ld [hLCDC], a ; Store a copy of the flags in HRAM.
+    ld [hLCDC], a
     ld [rLCDC], a
     ret
 
@@ -36,18 +46,11 @@ LoadMainMenu::
     set_romx_bank BANK(BGWindowTileData)
     mem_copy BGWindowTileData, _VRAM9000, BGWindowTileData.end-BGWindowTileData
 
-    ; Copy tile map into VRAM.
-    set_romx_bank BANK(MainMenuTileMap)
-    mem_copy MainMenuTileMap, _SCRN0, MainMenuTileMap.end-MainMenuTileMap
-
-    ; Reset SCY & SCX
-    xor a
-    ld [rSCY], a
-    ld [rSCX], a
-
-    ; Set Default Cursor Pos
-    xor a
-    ld [wCursorPos], a
+    ; Set Default Main Menu State
+    ld a, MAINMENU_STATE_TITLE
+    ld [wMainMenuStateCurrent], a
+    inc a ; Trigger a load on the first update loop.
+    ld [wMainMenuStatePrevious], a
 
     call LCDOn
 
@@ -67,11 +70,45 @@ LoadMainMenu::
     jp UpdateMainMenu
 
 UpdateMainMenu:
+    call UpdateInput
+
     ; Update Sound
     set_romx_bank BANK(CombatBGM)
     call _hUGE_dosound
 
-    rst $0010 ; Wait VBlank
+    ; Update Screen
+.updateBranch
+    ld a, [wMainMenuStatePrevious]
+    ld b, a
+    ld a, [wMainMenuStateCurrent]
+    ASSERT MAINMENU_STATE_TITLE == 0
+    and a, a
+    jr z, .updateTitleScreen
+    ASSERT MAINMENU_STATE_STAGESELECT == 1
+    dec a
+    dec b
+    jr z, .updateStageSelectScreen
+    ASSERT MAINMENU_STATE_NEWGAME > 1
+.updateNewGameScreen
+    xor a, b
+    call nz, LoadNewGameScreen
+    call UpdateNewGameScreen
+    jr .updateMainMenuStatePrevious
+.updateTitleScreen
+    xor a, b
+    call nz, LoadTitleScreen
+    call UpdateTitleScreen
+    jr .updateMainMenuStatePrevious
+.updateStageSelectScreen
+    xor a, b
+    call nz, LoadStageSelectScreen
+    call UpdateStageSelectScreen
+.updateMainMenuStatePrevious
+    ld a, [wMainMenuStateCurrent]
+    ld [wMainMenuStatePrevious], a
+
+.waitVBlank
+    rst $0010
 
     jr UpdateMainMenu
 
@@ -89,9 +126,9 @@ VBlankHandler:
     push hl
 
     ld hl, _SCRN0
-    ld bc, $0163
-    add hl, bc
-    ld [hl], 27
+    ld a, [wSelection]
+    add a, "0"
+    ld [hl], a
 
     pop hl
     pop de
@@ -101,10 +138,6 @@ VBlankHandler:
     pop af
     reti
 
-SECTION "Main Menu WRAM", WRAM0
-wMainMenuState::
-    ds 1
-wSelection::
-    ds 1
-wCursorPos::
-    ds 2
+INCLUDE "./src/main_menu/title_screen.asm_part"
+INCLUDE "./src/main_menu/new_game_screen.asm_part"
+INCLUDE "./src/main_menu/stage_select_screen.asm_part"

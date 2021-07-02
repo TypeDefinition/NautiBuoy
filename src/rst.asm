@@ -7,13 +7,12 @@ INCLUDE "./src/include/hardware.inc"
 SECTION "RST $0000", ROM0[$0000]
     ret
 
-/*  Initialise data in memory to a certain value.
+/*  Set data in memory to a certain value.
     For small data sets, up to size 256.
-    a - Value to init to
-    b - Number of bytes (MUST BE 1 OR MORE)
-    hl - Destination address
-    
-    Registers Used: a, b, h, l */
+    @param a Value to set to.
+    @param b Number of bytes to set. (MUST BE 1 OR GREATER!)
+    @param hl Destination address.
+    @destroy af, b, hl */
 SECTION "RST $0008", ROM0[$0008]
 MemSetSmall::
     ld [hli], a
@@ -21,6 +20,14 @@ MemSetSmall::
     jr nz, MemSetSmall
     ret
 
+; Waits for the next VBlank beginning.
+; Requires the VBlank handler to be able to trigger, otherwise will loop infinitely.
+; This means IME should be set, the VBlank interrupt should be selected in IE, and the LCD should be turned on.
+; WARNING: Be careful if calling this with IME reset (`di`), if this was compiled
+; with the `-h` flag, then a hardware bug is very likely to cause this routine to go horribly wrong.
+; Note: the VBlank handler recognizes being called from this function (through `hVBlankFlag`),
+; and does not try to save registers if so. To be safe, consider all registers to be destroyed.
+; @destroy af, bc, de, hl (The VBlank handler stops preserving anything when executed from this function.)
 SECTION "RST $0010", ROM0[$0010]
 WaitVBlank::
     ld a, $01

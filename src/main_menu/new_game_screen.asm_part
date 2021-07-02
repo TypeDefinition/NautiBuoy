@@ -1,0 +1,5 @@
+LoadNewGameScreen::
+    ret
+
+UpdateNewGameScreen::
+    ret

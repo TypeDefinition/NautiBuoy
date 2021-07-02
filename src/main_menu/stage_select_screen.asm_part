@@ -1,0 +1,5 @@
+LoadStageSelectScreen::
+    ret
+
+UpdateStageSelectScreen::
+    ret

@@ -101,9 +101,9 @@ LoadGameLevel::
     jp UpdateGameLevel
 
 UpdateGameLevel::
-    set_romx_bank BANK(Sprites)
     call UpdateInput
 
+    set_romx_bank BANK(Sprites)
     call ResetShadowOAM
 
     ; insert game logic here and update shadow OAM data

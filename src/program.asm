@@ -8,6 +8,8 @@ hLCDC::
     ds 1
 
 SECTION "LCD", ROM0
+; Turn off the LCD.
+; @destroy af
 LCDOff::
     ; If the LCD is already off, exit.
     ld a, [rLCDC]
@@ -23,6 +25,8 @@ LCDOff::
     ret
 
 SECTION "Sound", ROM0
+; Enable sound.
+; @destroy af
 SoundOn::
     ld a, $80
     ld [rAUDENA], a
@@ -32,12 +36,7 @@ SoundOn::
     ld [rAUDVOL], a
     ret
 
-; $0100 - $0103: Entry Point
 SECTION "Entry Point", ROM0[$0100]
-/*  After booting, the CPU jumps to the actual main program in the cartridge, which is $0100.
-    Usually this 4 byte area contains a NOP instruction, followed by an instruction to jump to $0150. But not always.
-    The reason for the jump is that while the entry point is $100, the header of the game spans from $0104 to $014F.
-    So there's only 4 bytes in which we can run any code before the header. So we use these 4 bytes to jump to after the header. */
     di ; Disable interrupts until we have finish initialisation.
     jp LoadProgram ; Leave this tiny space.
 

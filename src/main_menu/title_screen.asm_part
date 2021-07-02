@@ -1,0 +1,45 @@
+LoadTitleScreen::
+    di
+    call LCDOff
+
+    ; Reset SCY & SCX.
+    xor a
+    ld [rSCY], a
+    ld [rSCX], a
+
+    ; Copy tile map into VRAM.
+    set_romx_bank BANK(TitleScreenTileMap)
+    mem_copy TitleScreenTileMap, _SCRN0, TitleScreenTileMap.end-TitleScreenTileMap
+
+    xor a
+    ld [wSelection], a
+
+    call LCDOn
+    ei
+
+    ret
+
+UpdateTitleScreen::
+    ld a, [wNewlyInputKeys]
+    ld b, a
+    ld a, [wSelection]
+
+.onSelectPrev
+    bit PADB_UP, b
+    jp z, .onSelectNext
+    dec a
+    jr .updateSelected
+.onSelectNext
+    bit PADB_DOWN, b
+    jp z, .updateSelected
+    inc a
+.updateSelected
+    and a, $01 ; Title Screen has only 2 options. This allows the options loop.
+    ld [wSelection], a
+
+.onSubmit
+    bit PADB_A, b
+    jp z, .end
+
+.end
+    ret

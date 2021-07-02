@@ -3,11 +3,9 @@ INCLUDE "./src/include/util.inc"
 
 DEF MAX_DIRTY_TILES EQU $10
 
-; Collidable Tiles: A tile is assumed to be collidable if it's value is less than 16.
-DEF CHARACTER_COLLIDABLE_TILES EQU $10
-
-SECTION "Dirty Tiles", WRAM0
-/* Contains an array of tiles to update in the VRAM.
+SECTION "Tiles WRAM", WRAM0
+/*  Contains an array of dirty tiles.
+    A dirty tile is a tile that needs to be updated in VRAM.
     Each tile to update is represented using 4 bytes.
     Tile Index: 2 bytes
     Tile Value: 1 byte
@@ -22,63 +20,18 @@ DirtyTiles:
     ds (MAX_DIRTY_TILES << 2)
 .end
 
-SECTION "Tile Functions", ROM0
+SECTION "Tiles", ROM0
+; Reset dirty tiles.
+; @destroy af, b, hl
 ResetDirtyTiles::
     mem_set_small NumDirtyTiles, 0, 1
     mem_set_small DirtyTiles, 0, DirtyTiles.end - DirtyTiles
     ret
 
-; Get the index of the tile, given a Y and X position.
-; @ bc: Return Value
-; @ d: PosY
-; @ e: PosX
-GetTileIndex::
-    push af
-    push de
-    push hl
-
-    ; Row = PosY/8
-    ; Col = PosX/8
-    ; Index = Row * 32 + Col
-    
-    ; Calculate Row * 32
-    ld a, d
-    and a, %11111000 ; Equal to Row * 8
-    ld h, 0
-    ld l, a
-    add hl, hl ; Equal to Row * 16
-    add hl, hl ; Equal to Row * 32
-
-    ; Add Col
-    ld d, 0
-    srl e
-    srl e
-    srl e
-    add hl, de
-    ld b, h
-    ld c, l
-
-    pop hl
-    pop de
-    pop af
-    ret
-
-; Get the value of the tile, given a Y and X position.
-; @ a: Return Value
-; @ bc: TileIndex
-GetTileValue::
-    push hl
-
-    ld hl, GameLevelTiles
-    add hl, bc
-    ld a, [hl]
-
-    pop hl
-    ret
-
-; @ a: New Tile Value
-; @ bc: Tile Index
-AddDirtyTile::
+; Add a dirty tile.
+; @param a New Tile Value
+; @param bc Tile Index
+AddDirtyTile:
     push af
     push de
     push hl
@@ -119,8 +72,56 @@ AddDirtyTile::
     pop af
     ret
 
-; Run through the list of dirty tiles, and update them into VRAM.
-; As of now, this is operating during HBlank because we don't even have enough cycles in VBlank.
+; Get the index of the tile, given a Y and X position.
+; @param d PosY
+; @param e PosX
+; @return bc Tile Index
+GetTileIndex::
+    push af
+    push de
+    push hl
+
+    ; Row = PosY/8
+    ; Col = PosX/8
+    ; Index = Row * 32 + Col
+    
+    ; Calculate Row * 32
+    ld a, d
+    and a, %11111000 ; Equal to Row * 8
+    ld h, 0
+    ld l, a
+    add hl, hl ; Equal to Row * 16
+    add hl, hl ; Equal to Row * 32
+
+    ; Add Col
+    ld d, 0
+    srl e
+    srl e
+    srl e
+    add hl, de
+    ld b, h
+    ld c, l
+
+    pop hl
+    pop de
+    pop af
+    ret
+
+; Get the value of the tile, given a tile index.
+; @param bc TileIndex
+; @return a Tile Value
+GetTileValue::
+    push hl
+
+    ld hl, GameLevelTiles
+    add hl, bc
+    ld a, [hl]
+
+    pop hl
+    ret
+
+; Run through the list of dirty tiles, and update them into VRAM during HBlank or VBlank.
+; @destroy af, bc, de, hl
 UpdateDirtyTiles::
     ; d = NumDirtyTiles
     ld a, [NumDirtyTiles]
@@ -168,8 +169,9 @@ UpdateDirtyTiles::
     ld [NumDirtyTiles], a
     ret
 
-; @ a: New Tile Value
-; @ bc: Tile Index
+; Set a tile to be updated.
+; @param a New Tile Value
+; @param bc Tile Index
 SetTile::
     push af
     push hl
