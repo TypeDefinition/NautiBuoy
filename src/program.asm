@@ -32,6 +32,28 @@ SoundOn::
     ld [rAUDVOL], a
     ret
 
+; Set VBlankCallback. The callback instruction must be 3 bytes, such as a "jp Immd" instruction.
+; @param hl The address of the 3 bytes callback instruction.
+SetVBlankCallback::
+    ld  c, LOW(hVBlankCallback)
+REPT 3
+    ld  a, [hli]
+    ldh [c], a
+    inc c
+ENDR
+    ret
+
+; Set ProgramLoopCallback. The callback instruction must be 3 bytes, such as a "jp Immd" instruction.
+; @param hl The address of the 3 bytes callback instruction.
+SetProgramLoopCallback::
+    ld  c, LOW(hProgramLoopCallback)
+REPT 3
+    ld  a, [hli]
+    ldh [c], a
+    inc c
+ENDR
+    ret
+
 SECTION "Entry Point", ROM0[$0100]
     di ; Disable interrupts until we have finish initialisation.
     jp RunProgram ; Leave this tiny space.
@@ -56,11 +78,11 @@ RunProgram:
     ld [rOBP1], a ; Set Object Palette 1
 
     ; Set Default Scene
-    ; call LoadMainMenu
-    call LoadGameLevel
+    call LoadMainMenu
 
 .loop
     call hProgramLoopCallback
+    rst $0010 ; Wait for VBlank
     jr .loop
 
 SECTION "Program HRAM", HRAM

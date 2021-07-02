@@ -1,5 +1,10 @@
-LoadNewGameScreen::
+JumpLoadNewGameScreen:
+    jp LoadNewGameScreen
+JumpUpdateNewGameScreen:
+    jp UpdateNewGameScreen
+
+LoadNewGameScreen:
     ret
 
-UpdateNewGameScreen::
+UpdateNewGameScreen:
     ret

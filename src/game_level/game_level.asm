@@ -9,42 +9,27 @@ GameLevelTiles::
 .end::
 
 SECTION "Game Level", ROM0
+JumpLoadGameLevel::
+    jp LoadGameLevel
+JumpVBlankHandler:
+    jp VBlankHandler
+JumpOnUpdate:
+    jp OnUpdate
+
 LCDOn:
     ld a, LCDCF_ON | LCDCF_WIN9C00 | LCDCF_WINON | LCDCF_BG9800 | LCDCF_OBJ16 | LCDCF_OBJON | LCDCF_BGON
     ld [hLCDC], a ; Store a copy of the flags in HRAM.
     ld [rLCDC], a
     ret
 
-OverrideVBlankCallback:
-    ld  hl, .override
-    ld  c, LOW(hVBlankCallback)
-REPT 3 ; The "jp VBlankHandler" instruction is 3 bytes.
-    ld  a, [hli]
-    ldh [c], a
-    inc c
-ENDR
-    ret
-.override
-    jp VBlankHandler
-
-OverrideProgramLoopCallback:
-    ld  hl, .override
-    ld  c, LOW(hProgramLoopCallback)
-REPT 3 ; The "jp VBlankHandler" instruction is 3 bytes.
-    ld  a, [hli]
-    ldh [c], a
-    inc c
-ENDR
-    ret
-.override
-    jp OnUpdate
-
 LoadGameLevel::
     di ; Disable Interrupts
 
     call LCDOff
-    call OverrideVBlankCallback
-    call OverrideProgramLoopCallback
+    ld hl, JumpVBlankHandler
+    call SetVBlankCallback
+    ld hl, JumpOnUpdate
+    call SetProgramLoopCallback
 
     ; Set STAT interrupt flags.
     ld a, VIEWPORT_SIZE_Y
@@ -135,8 +120,6 @@ OnUpdate:
     ; Update Sound
     set_romx_bank BANK(CombatBGM)
     call _hUGE_dosound
-
-    rst $0010 ; Wait VBlank
 
     ret
 

@@ -1,19 +1,27 @@
-LoadTitleScreen::
+JumpLoadTitleScreen:
+    jp LoadTitleScreen
+JumpUpdateTitleScreen:
+    jp UpdateTitleScreen
+
+LoadTitleScreen:
     di
     call LCDOff
+
+    ; Copy tile map into VRAM.
+    set_romx_bank BANK(TitleScreenTileMap)
+    mem_copy TitleScreenTileMap, _SCRN0, TitleScreenTileMap.end-TitleScreenTileMap
+
+    ld hl, JumpUpdateTitleScreen
+    call SetProgramLoopCallback
+
+    call ResetDirtyTiles
 
     ; Reset SCY & SCX.
     xor a
     ld [rSCY], a
     ld [rSCX], a
 
-    call ResetDirtyTiles
-
-    ; Copy tile map into VRAM.
-    set_romx_bank BANK(TitleScreenTileMap)
-    mem_copy TitleScreenTileMap, _SCRN0, TitleScreenTileMap.end-TitleScreenTileMap
-
-    ; Reset Selection
+    ; Reset SelectedOption
     xor a
     ld [wSelectedOption], a
 
@@ -35,8 +43,14 @@ LoadTitleScreen::
 
     ret
 
-UpdateTitleScreen::
-.clearOldCursor
+UpdateTitleScreen:
+    call UpdateInput
+
+    ; Update Sound
+    set_romx_bank BANK(CombatBGM)
+    call _hUGE_dosound
+
+    ; Clear Old Cursor
     call GetCursorTileIndex
     ld a, EMPTY_TILE
     call SetTile
@@ -45,43 +59,42 @@ UpdateTitleScreen::
     ld a, [wNewlyInputKeys]
     ld b, a
 
-    ; Choose Option
+    ; Select Previous/Next Option
     ld a, [wSelectedOption]
-.onSelectPrev
+.onUp
     bit PADB_UP, b
-    jp z, .onSelectNext
+    jr z, .onDown
     dec a
     jr .updateSelectedOption
-.onSelectNext
+.onDown
     bit PADB_DOWN, b
-    jp z, .updateSelectedOption
+    jr z, .updateSelectedOption
     inc a
 .updateSelectedOption
     and a, $01 ; Title Screen has only 2 options. This allows the cursor to loop.
     ld [wSelectedOption], a
 
-    ; Submit Option
-.onSubmit
+    ; Enter Selected Option
+.onEnter
     bit PADB_A, b
-    jp z, .setNewCursor
-    ld a, [wSelectedOption]
+    jr z, .end
+.selectContinue
     ASSERT TITLE_OPT_CONTINUE == 0
     and a
-    jr z, .goToStageSelect
+    jr nz, .selectNewGame
+    ld hl, JumpLoadGameLevel
+    call SetProgramLoopCallback
+    jr .end
+.selectNewGame
     ASSERT TITLE_OPT_NEWGAME > 0
-.goToNewGame
-    ld a, MAINMENU_STATE_NEWGAME
-    jr .updateMainMenuState
-.goToStageSelect
-    ld a, MAINMENU_STATE_STAGESELECT
-.updateMainMenuState
-    ld [wMainMenuStateCurrent], a
+    ld hl, JumpLoadNewGameScreen
+    call SetProgramLoopCallback
 
+.end
     ; Set New Cursor
-.setNewCursor
     call GetCursorTileIndex
     ld a, 27
     call SetTile
+    call UpdateDirtyTiles
 
-.end
     ret

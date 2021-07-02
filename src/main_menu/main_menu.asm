@@ -3,11 +3,6 @@ INCLUDE "./src/include/util.inc"
 INCLUDE "./src/include/hUGE.inc"
 INCLUDE "./src/include/definitions.inc"
 
-; Main Menu States
-DEF MAINMENU_STATE_TITLE EQU $00
-DEF MAINMENU_STATE_STAGESELECT EQU $01
-DEF MAINMENU_STATE_NEWGAME EQU $02
-
 ; Title Options
 DEF TITLE_OPT_CONTINUE EQU $00
 DEF TITLE_OPT_NEWGAME EQU $01
@@ -16,46 +11,21 @@ DEF TITLE_OPT_NEWGAME EQU $01
 DEF CURSOR_START_TITLE EQU $0163
 
 SECTION "Main Menu WRAM", WRAM0
-wMainMenuStatePrevious:
-    ds 1
-wMainMenuStateCurrent:
-    ds 1
 wSelectedOption:
     ds 1
 wCursorTileIndices:
     ds 32 ; Stores 16 tile indices. Each tile index is 2 bytes.
 
 SECTION "Main Menu", ROM0
+JumpVBlankHandler:
+    jp VBlankHandler
+
 LCDOn:
     ; Set LCDC Flags
     ld a, LCDCF_ON | LCDCF_WIN9C00 | LCDCF_WINOFF | LCDCF_BG9800 | LCDCF_OBJ16 | LCDCF_OBJOFF | LCDCF_BGON
     ld [hLCDC], a
     ld [rLCDC], a
     ret
-
-OverrideVBlankCallback:
-    ld  hl, .override
-    ld  c, LOW(hVBlankCallback)
-REPT 3 ; The "jp VBlankHandler" instruction is 3 bytes.
-    ld  a, [hli]
-    ldh [c], a
-    inc c
-ENDR
-    ret
-.override
-    jp VBlankHandler
-
-OverrideProgramLoopCallback:
-    ld  hl, .override
-    ld  c, LOW(hProgramLoopCallback)
-REPT 3 ; The "jp VBlankHandler" instruction is 3 bytes.
-    ld  a, [hli]
-    ldh [c], a
-    inc c
-ENDR
-    ret
-.override
-    jp OnUpdate
 
 ; Get the cursor tile index.
 ; @return bc Cursor Tile Index
@@ -83,18 +53,15 @@ LoadMainMenu::
     di ; Disable Interrupts
 
     call LCDOff
-    call OverrideVBlankCallback
-    call OverrideProgramLoopCallback
+
+    ld hl, JumpVBlankHandler
+    call SetVBlankCallback
+    ld hl, JumpLoadTitleScreen
+    call SetProgramLoopCallback
 
     ; Copy tile data into VRAM.
     set_romx_bank BANK(BGWindowTileData)
     mem_copy BGWindowTileData, _VRAM9000, BGWindowTileData.end-BGWindowTileData
-
-    ; Set Default Main Menu State
-    ld a, MAINMENU_STATE_TITLE
-    ld [wMainMenuStateCurrent], a
-    inc a ; Trigger a load on the first update loop.
-    ld [wMainMenuStatePrevious], a
 
     call LCDOn
 
@@ -103,58 +70,12 @@ LoadMainMenu::
     ld hl, CombatBGM
     call hUGE_init
 
-    ; Set Interrupt Flags
+    ; Set interrupt flags, clear pending interrupts, and enable master interrupt switch.
     ld a, IEF_VBLANK
     ldh [rIE], a
-    ; Clear Pending Interrupts
     xor a
     ldh [rIF], a
-    ei ; Enable Master Interrupt Switch
-
-    ret
-
-OnUpdate:
-    call UpdateInput
-
-    ; Update Sound
-    set_romx_bank BANK(CombatBGM)
-    call _hUGE_dosound
-
-    ; Update Screen
-.updateBranch
-    ld a, [wMainMenuStatePrevious]
-    ld b, a
-    ld a, [wMainMenuStateCurrent]
-    ASSERT MAINMENU_STATE_TITLE == 0
-    and a, a
-    jr z, .updateTitleScreen
-    ASSERT MAINMENU_STATE_STAGESELECT == 1
-    dec a
-    dec b
-    jr z, .updateStageSelectScreen
-    ASSERT MAINMENU_STATE_NEWGAME > 1
-.updateNewGameScreen
-    xor a, b
-    call nz, LoadNewGameScreen
-    call UpdateNewGameScreen
-    jr .updateMainMenuStatePrevious
-.updateTitleScreen
-    xor a, b
-    call nz, LoadTitleScreen
-    call UpdateTitleScreen
-    jr .updateMainMenuStatePrevious
-.updateStageSelectScreen
-    xor a, b
-    call nz, LoadStageSelectScreen
-    call UpdateStageSelectScreen
-.updateMainMenuStatePrevious
-    ld a, [wMainMenuStateCurrent]
-    ld [wMainMenuStatePrevious], a
-
-    call UpdateDirtyTiles
-
-.waitVBlank
-    rst $0010
+    ei
 
     ret
 
