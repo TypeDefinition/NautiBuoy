@@ -129,7 +129,6 @@ UpdateGameLevel::
 
 VBlankHandler:
     push af
-
     ; If VBlankHandler was called without waiting for VBlank, the frame lagged.
     ld a, [hWaitVBlankFlag]
     and a
@@ -137,7 +136,6 @@ VBlankHandler:
     ; Reset hWaitVBlankFlag
     xor a
     ld [hWaitVBlankFlag], a
-
     push bc
     push de
     push hl

@@ -3,15 +3,6 @@ INCLUDE "./src/include/util.inc"
 INCLUDE "./src/include/hUGE.inc"
 INCLUDE "./src/include/definitions.inc"
 
-; $0100 - $0103: Entry Point
-SECTION "Entry Point", ROM0[$0100]
-/*  After booting, the CPU jumps to the actual main program in the cartridge, which is $0100.
-    Usually this 4 byte area contains a NOP instruction, followed by an instruction to jump to $0150. But not always.
-    The reason for the jump is that while the entry point is $100, the header of the game spans from $0104 to $014F.
-    So there's only 4 bytes in which we can run any code before the header. So we use these 4 bytes to jump to after the header. */
-    di ; Disable interrupts until we have finish initialisation.
-    jp LoadProgram ; Leave this tiny space.
-
 SECTION "LCD HRAM", HRAM
 hLCDC::
     ds 1
@@ -41,6 +32,15 @@ SoundOn::
     ld [rAUDVOL], a
     ret
 
+; $0100 - $0103: Entry Point
+SECTION "Entry Point", ROM0[$0100]
+/*  After booting, the CPU jumps to the actual main program in the cartridge, which is $0100.
+    Usually this 4 byte area contains a NOP instruction, followed by an instruction to jump to $0150. But not always.
+    The reason for the jump is that while the entry point is $100, the header of the game spans from $0104 to $014F.
+    So there's only 4 bytes in which we can run any code before the header. So we use these 4 bytes to jump to after the header. */
+    di ; Disable interrupts until we have finish initialisation.
+    jp LoadProgram ; Leave this tiny space.
+
 SECTION "Program", ROM0
 LoadProgram::
     ld sp, $E000 ; Initialise our stack pointer to the end of WRAM.
@@ -48,6 +48,10 @@ LoadProgram::
     call LCDOff
     call SoundOn
     call CopyDMARoutine ; Copy DMARoutine from ROM to HRAM.
+
+    ; Reset hWaitVBlankFlag.
+    xor a
+    ld [hWaitVBlankFlag], a
 
     ; Set Colour Palettes
     ld a, %11100100
