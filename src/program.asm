@@ -3,10 +3,6 @@ INCLUDE "./src/include/util.inc"
 INCLUDE "./src/include/hUGE.inc"
 INCLUDE "./src/include/definitions.inc"
 
-SECTION "LCD HRAM", HRAM
-hLCDC::
-    ds 1
-
 SECTION "LCD", ROM0
 ; Turn off the LCD.
 ; @destroy af
@@ -38,10 +34,10 @@ SoundOn::
 
 SECTION "Entry Point", ROM0[$0100]
     di ; Disable interrupts until we have finish initialisation.
-    jp LoadProgram ; Leave this tiny space.
+    jp RunProgram ; Leave this tiny space.
 
 SECTION "Program", ROM0
-LoadProgram::
+RunProgram:
     ld sp, $E000 ; Initialise our stack pointer to the end of WRAM.
 
     call LCDOff
@@ -59,12 +55,25 @@ LoadProgram::
     ld a, %01001011
     ld [rOBP1], a ; Set Object Palette 1
 
-    ; jp LoadMainMenu
-    jp LoadGameLevel
+    ; Set Default Scene
+    ; call LoadMainMenu
+    call LoadGameLevel
 
-SECTION "VBlank HRAM", HRAM
+.loop
+    call hProgramLoopCallback
+    jr .loop
+
+SECTION "Program HRAM", HRAM
+; LCD
+hLCDC::
+    ds 1
+
+; VBlank
 hWaitVBlankFlag::
     ds 1
-; Reserve just enough space for a "jp Immd" instruction.
-hVBlankHandler::
-    ds 3
+hVBlankCallback::
+    ds 3 ; Reserve just enough space for a "jp Immd" instruction.
+
+; Program Loop
+hProgramLoopCallback::
+    ds 3 ; Reserve just enough space for a "jp Immd" instruction.

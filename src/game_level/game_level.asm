@@ -15,9 +15,9 @@ LCDOn:
     ld [rLCDC], a
     ret
 
-OverridehVBlankHandler:
+OverrideVBlankCallback:
     ld  hl, .override
-    ld  c, LOW(hVBlankHandler)
+    ld  c, LOW(hVBlankCallback)
 REPT 3 ; The "jp VBlankHandler" instruction is 3 bytes.
     ld  a, [hli]
     ldh [c], a
@@ -27,11 +27,24 @@ ENDR
 .override
     jp VBlankHandler
 
+OverrideProgramLoopCallback:
+    ld  hl, .override
+    ld  c, LOW(hProgramLoopCallback)
+REPT 3 ; The "jp VBlankHandler" instruction is 3 bytes.
+    ld  a, [hli]
+    ldh [c], a
+    inc c
+ENDR
+    ret
+.override
+    jp OnUpdate
+
 LoadGameLevel::
     di ; Disable Interrupts
 
     call LCDOff
-    call OverridehVBlankHandler
+    call OverrideVBlankCallback
+    call OverrideProgramLoopCallback
 
     ; Set STAT interrupt flags.
     ld a, VIEWPORT_SIZE_Y
@@ -98,9 +111,9 @@ LoadGameLevel::
     ldh [rIF], a
     ei ; Enable Master Interrupt Switch
 
-    jp UpdateGameLevel
+    ret
 
-UpdateGameLevel::
+OnUpdate:
     call UpdateInput
 
     set_romx_bank BANK(Sprites)
@@ -125,7 +138,7 @@ UpdateGameLevel::
 
     rst $0010 ; Wait VBlank
 
-    jr UpdateGameLevel
+    ret
 
 VBlankHandler:
     push af

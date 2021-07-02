@@ -33,9 +33,9 @@ LCDOn:
     ld [rLCDC], a
     ret
 
-OverridehVBlankHandler:
+OverrideVBlankCallback:
     ld  hl, .override
-    ld  c, LOW(hVBlankHandler)
+    ld  c, LOW(hVBlankCallback)
 REPT 3 ; The "jp VBlankHandler" instruction is 3 bytes.
     ld  a, [hli]
     ldh [c], a
@@ -45,6 +45,17 @@ ENDR
 .override
     jp VBlankHandler
 
+OverrideProgramLoopCallback:
+    ld  hl, .override
+    ld  c, LOW(hProgramLoopCallback)
+REPT 3 ; The "jp VBlankHandler" instruction is 3 bytes.
+    ld  a, [hli]
+    ldh [c], a
+    inc c
+ENDR
+    ret
+.override
+    jp OnUpdate
 
 ; Get the cursor tile index.
 ; @return bc Cursor Tile Index
@@ -72,7 +83,8 @@ LoadMainMenu::
     di ; Disable Interrupts
 
     call LCDOff
-    call OverridehVBlankHandler
+    call OverrideVBlankCallback
+    call OverrideProgramLoopCallback
 
     ; Copy tile data into VRAM.
     set_romx_bank BANK(BGWindowTileData)
@@ -99,9 +111,9 @@ LoadMainMenu::
     ldh [rIF], a
     ei ; Enable Master Interrupt Switch
 
-    jp UpdateMainMenu
+    ret
 
-UpdateMainMenu:
+OnUpdate:
     call UpdateInput
 
     ; Update Sound
@@ -144,7 +156,7 @@ UpdateMainMenu:
 .waitVBlank
     rst $0010
 
-    jr UpdateMainMenu
+    ret
 
 VBlankHandler:
     push af

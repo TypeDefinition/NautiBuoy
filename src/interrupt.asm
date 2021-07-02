@@ -15,7 +15,7 @@ INCLUDE "./src/include/hardware.inc"
     So if there is an Timer interrupt, the CPU would essentially do "call $0050". */
 SECTION "VBlank Interrupt", ROM0[$0040]
 VBlankInterrupt::
-    jp hVBlankHandler
+    jp hVBlankCallback
 
 SECTION "STAT Interrupt", ROM0[$0048]
 STATInterrupt::
