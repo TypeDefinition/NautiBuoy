@@ -7,12 +7,28 @@ LoadTitleScreen::
     ld [rSCY], a
     ld [rSCX], a
 
+    call ResetDirtyTiles
+
     ; Copy tile map into VRAM.
     set_romx_bank BANK(TitleScreenTileMap)
     mem_copy TitleScreenTileMap, _SCRN0, TitleScreenTileMap.end-TitleScreenTileMap
 
+    ; Reset Selection
     xor a
-    ld [wSelection], a
+    ld [wSelectedOption], a
+
+    ; Set Cursor Positions
+    ld hl, wCursorTileIndices
+    ld bc, CURSOR_START_TITLE
+    ld a, b
+    ld [hli], a
+    ld a, c
+    ld [hli], a
+    ld bc, CURSOR_START_TITLE+64
+    ld a, b
+    ld [hli], a
+    ld a, c
+    ld [hli], a
 
     call LCDOn
     ei
@@ -20,26 +36,52 @@ LoadTitleScreen::
     ret
 
 UpdateTitleScreen::
+.clearOldCursor
+    call GetCursorTileIndex
+    ld a, EMPTY_TILE
+    call SetTile
+
+    ; Get Input
     ld a, [wNewlyInputKeys]
     ld b, a
-    ld a, [wSelection]
 
+    ; Choose Option
+    ld a, [wSelectedOption]
 .onSelectPrev
     bit PADB_UP, b
     jp z, .onSelectNext
     dec a
-    jr .updateSelected
+    jr .updateSelectedOption
 .onSelectNext
     bit PADB_DOWN, b
-    jp z, .updateSelected
+    jp z, .updateSelectedOption
     inc a
-.updateSelected
-    and a, $01 ; Title Screen has only 2 options. This allows the options loop.
-    ld [wSelection], a
+.updateSelectedOption
+    and a, $01 ; Title Screen has only 2 options. This allows the cursor to loop.
+    ld [wSelectedOption], a
 
+    ; Submit Option
 .onSubmit
     bit PADB_A, b
-    jp z, .end
+    jp z, .setNewCursor
+    ld a, [wSelectedOption]
+    ASSERT TITLE_OPT_CONTINUE == 0
+    and a
+    jr z, .goToStageSelect
+    ASSERT TITLE_OPT_NEWGAME > 0
+.goToNewGame
+    ld a, MAINMENU_STATE_NEWGAME
+    jr .updateMainMenuState
+.goToStageSelect
+    ld a, MAINMENU_STATE_STAGESELECT
+.updateMainMenuState
+    ld [wMainMenuStateCurrent], a
+
+    ; Set New Cursor
+.setNewCursor
+    call GetCursorTileIndex
+    ld a, 27
+    call SetTile
 
 .end
     ret

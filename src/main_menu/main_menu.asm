@@ -8,13 +8,22 @@ DEF MAINMENU_STATE_TITLE EQU $00
 DEF MAINMENU_STATE_STAGESELECT EQU $01
 DEF MAINMENU_STATE_NEWGAME EQU $02
 
+; Title Options
+DEF TITLE_OPT_CONTINUE EQU $00
+DEF TITLE_OPT_NEWGAME EQU $01
+
+; Cursor Starting Positions
+DEF CURSOR_START_TITLE EQU $0163
+
 SECTION "Main Menu WRAM", WRAM0
 wMainMenuStatePrevious:
     ds 1
 wMainMenuStateCurrent:
     ds 1
-wSelection:
+wSelectedOption:
     ds 1
+wCursorTileIndices:
+    ds 32 ; Stores 16 tile indices. Each tile index is 2 bytes.
 
 SECTION "Main Menu", ROM0
 LCDOn:
@@ -35,6 +44,29 @@ ENDR
     ret
 .override
     jp VBlankHandler
+
+
+; Get the cursor tile index.
+; @return bc Cursor Tile Index
+GetCursorTileIndex:
+    push af
+    push hl
+
+    ld h, 0
+    ld a, [wSelectedOption]
+    ld l, a
+    ld bc, wCursorTileIndices
+
+    add hl, hl
+    add hl, bc
+    ld a, [hli]
+    ld b, a
+    ld a, [hl]
+    ld c, a
+
+    pop hl
+    pop af
+    ret
 
 LoadMainMenu::
     di ; Disable Interrupts
@@ -107,6 +139,8 @@ UpdateMainMenu:
     ld a, [wMainMenuStateCurrent]
     ld [wMainMenuStatePrevious], a
 
+    call UpdateDirtyTiles
+
 .waitVBlank
     rst $0010
 
@@ -125,10 +159,7 @@ VBlankHandler:
     push de
     push hl
 
-    ld hl, _SCRN0
-    ld a, [wSelection]
-    add a, "0"
-    ld [hl], a
+    ; Code Goes Here
 
     pop hl
     pop de
