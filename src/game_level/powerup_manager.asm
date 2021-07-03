@@ -134,14 +134,12 @@ PowerUpCollisionBehaviour:
     cp a, TYPE_INVINCIBILITY_POWERUP
     jr nz, .timePowerup
 
-    ;ld a, [wPlayer_Flags]
-    ;or a, TYPE_INVINCIBILITY_POWERUP
-    ;ld [wPlayer_Flags], a ; activate the invincibility flag for player
-
-    ;ld a, INVINCIBILITY_FLICKER_EFFECT
-    ;ld [wPlayer_FlickerEffect], a
     ld a, INVINCIBILITY_POWER_UP_EFFECT
     ld [wPlayerEffects_InvincibilityPowerUpTimer], a
+
+    ld a, [wPlayer_Flags]
+    or a, FLICKER_EFFECT_FLAG ; add flicker effect
+    ld [wPlayer_Flags], a 
 
     jr .end
 .timePowerup
@@ -152,24 +150,20 @@ PowerUpCollisionBehaviour:
     cp a, TYPE_SPEED_POWERUP
     jr nz, .damagePowerup
 
-    ; increase speed
-    ;ld a, [wPlayer_Flags]
-    ;or a, TYPE_SPEED_POWERUP
-    ;ld [wPlayer_Flags], a ; activate the speed flag for player
-
-    ;ld a, SPEED_FLICKER_EFFECT
-    ;ld [wPlayer_FlickerEffect], a
     ld a, SPEED_POWER_UP_EFFECT
     ld [wPlayerEffects_SpeedPowerUpTimer], a
 
-    ; TODO:: ninit new speed here
+    ; TODO:: init new speed here
 
     jr .end
 .damagePowerup
     ; damage output increase
-    ld a, [wPlayer_Flags]
-    or a, TYPE_DAMAGE_POWERUP
-    ld [wPlayer_Flags], a ; activate the damage inc flag for player
+    ;ld a, [wPlayer_Flags]
+    ;or a, TYPE_DAMAGE_POWERUP
+    ;ld [wPlayer_Flags], a ; activate the damage inc flag for player
+    ; TODO:: give player a number of bullets
+
+
     jr .end
 .end
     xor a

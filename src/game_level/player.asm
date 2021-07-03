@@ -76,7 +76,6 @@ InitialisePlayer::
     ld [hli], a ; speed power up timer = 0
     ld [hli], a
     ld [hli], a ; invincibility power up
-    ld [hli], a
     ld [hli], a ; bullet power up
     ld [hli], a
     ld [hli], a ; damage invincibility power up
@@ -182,12 +181,10 @@ GetUserInput::
 /* Update Player Movement */
 UpdatePlayerMovement::
     ld a, [wPlayer_Flags]
-    and a, BIT_MASK_TYPE ; check if there is invincibility powerup
-    cp a, TYPE_INVINCIBILITY_POWERUP
-    jr z, .updateMovement
+    and a, FLICKER_EFFECT_FLAG ; flicker belongs to the invincibility frames
+    jr nz, .updateMovement
 
     call PlayerSpriteCollisionCheck ; have to check here, in case enemy moves into player instead
-    call UpdatePlayerEffects
 
 .updateMovement
     ; If the player is still interpolating, do not check for input.
@@ -229,6 +226,8 @@ UpdatePlayerMovement::
     ld [wPlayer_CurrAnimationFrame], a
 
 .end
+    call UpdatePlayerEffects
+    
     ret
 
 /*  For checking player inputs that allow them to attack
@@ -328,9 +327,13 @@ PlayerIsHit::
     ld [wPlayer_PosY + 1], a
     ld [wPlayer_PosX + 1], a
 
+    ; remove possible powerups
+    ld [wPlayerEffects_SpeedPowerUpTimer], a 
+
     ld a, [wPlayer_Flags]
-    and a, BIT_MASK_TYPE_REMOVE
-    ld [wPlayer_Flags], a ; remove any power up on player
+    and a, BIT_MASK_TYPE_REMOVE ; remove any effects on player
+    or a, FLICKER_EFFECT_FLAG ; add flicker effect
+    ld [wPlayer_Flags], a 
 
     call PlayerGetsHitEnemyBehavior ; update enemy behavior for getting hit
     jr .end
@@ -483,25 +486,10 @@ UpdatePlayerCamera::
 
 UpdatePlayerEffects:
 
-.invincibilityPowerUp
-    ld a, [wPlayerEffects_InvincibilityPowerUpTimer]
-    and a, a
-    jr z, .speedPowerUp
-
-.speedPowerUp
-    ld a, [wPlayerEffects_SpeedPowerUpTimer]
-    and a, a
-    jr z, .bulletPowerUp
-
-.bulletPowerUp
-    ld a, [wPlayerEffects_BulletPowerUpTimer]
-    and a, a
-    jr z, .damageInvincibility
-
 .damageInvincibility
     ld a, [wPlayerEffects_DamageInvincibilityTimer]
     and a, a
-    jr z, .endUpdatePlayerEffects
+    jr z, .invincibilityPowerUp
 
     ld b, a ; b = the int portion of the timer
     ld a, [wPlayerEffects_DamageInvincibilityTimer + 1]
@@ -512,6 +500,56 @@ UpdatePlayerEffects:
     dec b
     ld a, b
     ld [wPlayerEffects_DamageInvincibilityTimer], a ; update the new value
+    
+    jr nz, .endUpdatePlayerEffects
+    ld a, [wPlayer_Flags] ; reset the effect flags
+    xor a, FLICKER_EFFECT_FLAG
+    ld [wPlayer_Flags], a
+
+.invincibilityPowerUp
+    ld a, [wPlayerEffects_InvincibilityPowerUpTimer]
+    and a, a
+    jr z, .speedPowerUp
+
+    ; update the value
+    ld b, a ; b = the int portion of the timer
+    ld a, [wPlayerEffects_InvincibilityPowerUpTimer + 1]
+    add a, DAMAGE_INVINCIBILITY_UPDATE_SPEED
+    ld [wPlayerEffects_InvincibilityPowerUpTimer + 1], a
+    jr nc, .speedPowerUp
+
+    dec b
+    ld a, b
+    ld [wPlayerEffects_InvincibilityPowerUpTimer], a ; update the new value
+
+    jr nz, .speedPowerUp
+    ld a, [wPlayer_Flags] ; reset the effect flags
+    xor a, FLICKER_EFFECT_FLAG
+    ld [wPlayer_Flags], a
+    
+.speedPowerUp
+    ld a, [wPlayerEffects_SpeedPowerUpTimer]
+    and a, a
+    jr z, .endUpdatePlayerEffects
+
+    ; update the value
+    ld b, a ; b = the int portion of the timer
+    ld a, [wPlayerEffects_SpeedPowerUpTimer + 1]
+    add a, DAMAGE_INVINCIBILITY_UPDATE_SPEED
+    ld [wPlayerEffects_SpeedPowerUpTimer + 1], a
+    jr nc, .speedPowerUp
+
+    dec b
+    ld a, b
+    ld [wPlayerEffects_SpeedPowerUpTimer], a ; update the new value
+    jr z, .endUpdatePlayerEffects
+
+    ; reset velocity as effect is gone
+    ld hl, VELOCITY_NORMAL
+    ld a, h
+    ld [wPlayer_Velocity], a
+    ld a, l
+    ld [wPlayer_Velocity + 1], a
 
 .endUpdatePlayerEffects
     ret
@@ -523,8 +561,8 @@ UpdatePlayerShadowOAM::
     xor a
     push af ; PUSH AF = power up flag
 
-    ld a, [wPlayerEffects_DamageInvincibilityTimer]
-    and a, a
+    ld a, [wPlayer]
+    and a, FLICKER_EFFECT_FLAG ; check if flicker flag is on
     jr z, .startUpdateOAM
     
     ld a, [wPlayer_FlickerEffect + 1]
@@ -538,14 +576,13 @@ UpdatePlayerShadowOAM::
 .updateFlickerEffect
     ; a = FlickerEffect int portion
     and a, FLICKER_BITMASK
-    cp a, FLICKER_VALUE
     jp nz, .startUpdateOAM
 
     pop af ; POP AF = power up flag
     
-    ld a, [wPlayer_Flags]
-    and a, BIT_MASK_TYPE ; if type is 0, 
-    jr z, .end ; not a power up effect, its damage flicker effect
+    ld a, [wPlayerEffects_DamageInvincibilityTimer]
+    and a, a
+    jr nz, .end ; not a power up effect, its damage flicker effect
 
     ld a, OAMF_PAL1
     push af ; PUSH AF = power up flag

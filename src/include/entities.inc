@@ -44,7 +44,7 @@ DEF ENTITIES_INC EQU 1
     struct PlayerEffects
         words 1, SpeedPowerUpTimer
         words 1, InvincibilityPowerUpTimer
-        words 1, BulletPowerUpTimer
+        bytes 1, BulletPowerUpCounter
         words 1, DamageInvincibilityTimer
     end_struct
 
