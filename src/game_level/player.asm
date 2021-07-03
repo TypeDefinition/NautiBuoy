@@ -187,6 +187,7 @@ UpdatePlayerMovement::
     jr z, .updateMovement
 
     call PlayerSpriteCollisionCheck ; have to check here, in case enemy moves into player instead
+    call UpdatePlayerEffects
 
 .updateMovement
     ; If the player is still interpolating, do not check for input.
@@ -481,6 +482,25 @@ UpdatePlayerCamera::
     ret
 
 
+UpdatePlayerEffects:
+    ld a, [wPlayerEffects_DamageInvincibilityTimer]
+    and a, a
+    jr z, .endUpdatePlayerEffects
+
+    ; TODO:: CHANGE THE VALUE TO A PROPER ONE
+    ld b, a ; b = the int portion of the timer
+    ld a, [wPlayerEffects_DamageInvincibilityTimer + 1]
+    add a, PLAYER_FLICKER_UPDATE_SPEED
+    ld [wPlayerEffects_DamageInvincibilityTimer + 1], a
+    jr nc, .endUpdatePlayerEffects
+
+    dec b
+    ld a, b
+    ld [wPlayerEffects_DamageInvincibilityTimer], a ; update the new value
+
+.endUpdatePlayerEffects
+    ret
+
 /*  Update shadow OAM for player
     Update sprite ID according to current frame of animation and direction
 */
@@ -491,31 +511,17 @@ UpdatePlayerShadowOAM::
     ld a, [wPlayerEffects_DamageInvincibilityTimer]
     and a, a
     jr z, .startUpdateOAM
-
-    ;ld a, [wPlayer_FlickerEffect]
-    ;and a, a
-    ;jr z, .startUpdateOAM
-
-    ;ld b, a ; b = FlickerEffect int portion
     
     ld a, [wPlayer_FlickerEffect + 1]
     add a, PLAYER_FLICKER_UPDATE_SPEED
     ld [wPlayer_FlickerEffect + 1], a
-    ;jr nc, .updateFlickerEffect
 
     ld a, [wPlayer_FlickerEffect]
     adc a, 0
     ld [wPlayer_FlickerEffect], a ; update new interger portion value
-    ;jr nz, .updateFlickerEffect ; check if reach 0
-
-    ;and a, BIT_MASK_TYPE_REMOVE
-    ;ld a, [wPlayer_Flags]
-    ;ld [wPlayer_Flags], a ; remove any power up on player
-    ;jr .startUpdateOAM
 
 .updateFlickerEffect
     ; a = FlickerEffect int portion
-    ;ld a, b
     and a, FLICKER_BITMASK
     cp a, FLICKER_VALUE
     jp nz, .startUpdateOAM
