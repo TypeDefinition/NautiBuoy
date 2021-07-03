@@ -5,17 +5,34 @@ INCLUDE "./src/include/definitions.inc"
 
 ; Title Options
 RSRESET
-DEF title_opt_CONTINUE RB
-DEF title_opt_NEWGAME RB
+DEF opt_title_CONTINUE RB
+DEF opt_title_NEWGAME RB
+
+; Tile Screen Cursor Tile Indices
+DEF CTI_TITLE_OPT_CONTINUE EQU $0163
+DEF CTI_TITLE_OPT_NEWGAME EQU $01A3
 
 ; New Game Options
 RSRESET
-DEF newgame_opt_NO RB
-DEF newgame_opt_YES RB
+DEF opt_newgame_NO RB
+DEF opt_newgame_YES RB
 
-; Cursor Starting Positions
-DEF CURSOR_START_TITLE EQU $0163
-DEF CURSOR_START_NEWGAME EQU $0163
+; New Game Screen Cursor Tile Indices
+DEF CTI_NEWGAME_OPT_NO EQU $0163
+DEF CTI_NEWGAME_OPT_YES EQU $01A3
+
+/*  Add a Tile Index to wCursorTileIndices.
+    ld hl, wCursorTileIndices should be invoked right before
+    the first invokation of this macro.
+    @param \1 Tile Index
+    @destroy af, bc, hl */
+MACRO add_cti
+    ld bc, \1
+    ld a, b
+    ld [hli], a
+    ld a, c
+    ld [hli], a
+ENDM
 
 SECTION "Main Menu WRAM", WRAM0
 wSelectedOption:

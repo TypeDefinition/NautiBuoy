@@ -27,16 +27,8 @@ LoadNewGameScreen:
 
     ; Set Cursor Positions
     ld hl, wCursorTileIndices
-    ld bc, CURSOR_START_NEWGAME
-    ld a, b
-    ld [hli], a
-    ld a, c
-    ld [hli], a
-    ld bc, CURSOR_START_NEWGAME+64
-    ld a, b
-    ld [hli], a
-    ld a, c
-    ld [hli], a
+    add_cti CTI_NEWGAME_OPT_NO
+    add_cti CTI_NEWGAME_OPT_YES
 
     call LCDOn
     ei
@@ -79,14 +71,14 @@ UpdateNewGameScreen:
     bit PADB_A, b
     jr z, .end
 .no
-    ASSERT newgame_opt_NO == 0
+    ASSERT opt_newgame_NO == 0
     and a
     jr nz, .yes
     ld hl, JumpLoadTitleScreen
     call SetProgramLoopCallback
     jr .end
 .yes
-    ASSERT newgame_opt_YES == 1
+    ASSERT opt_newgame_YES == 1
     ld hl, JumpLoadTitleScreen
     call SetProgramLoopCallback
 

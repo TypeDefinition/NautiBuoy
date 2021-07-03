@@ -27,16 +27,8 @@ LoadTitleScreen:
 
     ; Set Cursor Positions
     ld hl, wCursorTileIndices
-    ld bc, CURSOR_START_TITLE
-    ld a, b
-    ld [hli], a
-    ld a, c
-    ld [hli], a
-    ld bc, CURSOR_START_TITLE+64
-    ld a, b
-    ld [hli], a
-    ld a, c
-    ld [hli], a
+    add_cti CTI_TITLE_OPT_CONTINUE
+    add_cti CTI_TITLE_OPT_NEWGAME
 
     call LCDOn
     ei
@@ -79,14 +71,14 @@ UpdateTitleScreen:
     bit PADB_A, b
     jr z, .end
 .selectContinue
-    ASSERT title_opt_CONTINUE == 0
+    ASSERT opt_title_CONTINUE == 0
     and a
     jr nz, .selectNewGame
     ld hl, JumpLoadGameLevel
     call SetProgramLoopCallback
     jr .end
 .selectNewGame
-    ASSERT title_opt_NEWGAME == 1
+    ASSERT opt_title_NEWGAME == 1
     ld hl, JumpLoadNewGameScreen
     call SetProgramLoopCallback
 
