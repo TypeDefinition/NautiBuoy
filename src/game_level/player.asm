@@ -7,6 +7,7 @@ INCLUDE "./src/include/movement.inc"
 
 SECTION "Player Data", WRAM0
     dstruct Character, wPlayer
+    dstruct PlayerEffects, wPlayerEffects
     
 SECTION "Player Camera Data", WRAM0
     dstruct PlayerCamera, wPlayerCamera
@@ -68,6 +69,17 @@ InitialisePlayer::
     ld [wPlayer_FlickerEffect + 1], a
     ld a, PLAYER_WALK_FRAMES
     ld [wPlayer_CurrStateMaxAnimFrame], a
+
+    xor a
+    ld hl, wPlayerEffects
+    ld [hli], a
+    ld [hli], a ; speed power up timer = 0
+    ld [hli], a
+    ld [hli], a ; invincibility power up
+    ld [hli], a
+    ld [hli], a ; bullet power up
+    ld [hli], a
+    ld [hli], a ; damage invincibility power up
 
     call UpdatePlayerLivesUI
 
@@ -173,6 +185,7 @@ UpdatePlayerMovement::
     and a, BIT_MASK_TYPE ; check if there is invincibility powerup
     cp a, TYPE_INVINCIBILITY_POWERUP
     jr z, .updateMovement
+
     call PlayerSpriteCollisionCheck ; have to check here, in case enemy moves into player instead
 
 .updateMovement
@@ -294,11 +307,14 @@ PlayerIsHit::
     cp a, 127
     jr nc, .dead ; value underflowed, go to dead 
 
-.damageEffect ; not dead, set damage flicker effect and teleport to spawn
-    ld a, DAMAGE_FLICKER_EFFECT
-    ld [wPlayer_FlickerEffect], a
+.damageEffect ; not dead, set damage flicker effect and teleport to spawn    
     xor a
+    ld [wPlayer_FlickerEffect], a
     ld [wPlayer_FlickerEffect + 1], a 
+
+    ; TEMP TO CHANGE THIS VALUE TO A PROPER ONE LATER
+    ld a, DAMAGE_FLICKER_EFFECT
+    ld [wPlayerEffects_DamageInvincibilityTimer], a
 
     ; TODO:: teleport back to spawn
     ; TODO:: have variable of spawn location in level to teleport
@@ -310,7 +326,7 @@ PlayerIsHit::
 
     xor a
     ld [wPlayer_PosY + 1], a
-    ld [wPlayer_PosY + 1], a
+    ld [wPlayer_PosX + 1], a
 
     ld a, [wPlayer_Flags]
     and a, BIT_MASK_TYPE_REMOVE
@@ -472,29 +488,34 @@ UpdatePlayerShadowOAM::
     xor a
     push af ; PUSH AF = power up flag
 
-    ld a, [wPlayer_FlickerEffect]
+    ld a, [wPlayerEffects_DamageInvincibilityTimer]
     and a, a
     jr z, .startUpdateOAM
 
-    ld b, a ; b = FlickerEffect int portion
+    ;ld a, [wPlayer_FlickerEffect]
+    ;and a, a
+    ;jr z, .startUpdateOAM
+
+    ;ld b, a ; b = FlickerEffect int portion
+    
     ld a, [wPlayer_FlickerEffect + 1]
     add a, PLAYER_FLICKER_UPDATE_SPEED
     ld [wPlayer_FlickerEffect + 1], a
-    jr nc, .updateFlickerEffect
+    ;jr nc, .updateFlickerEffect
 
-    dec b
-    ld a, b
+    ld a, [wPlayer_FlickerEffect]
+    adc a, 0
     ld [wPlayer_FlickerEffect], a ; update new interger portion value
-    jr nz, .updateFlickerEffect ; check if reach 0
+    ;jr nz, .updateFlickerEffect ; check if reach 0
 
-    ld a, [wPlayer_Flags]
-    and a, BIT_MASK_TYPE_REMOVE
-    ld [wPlayer_Flags], a ; remove any power up on player
-    jr .startUpdateOAM
+    ;and a, BIT_MASK_TYPE_REMOVE
+    ;ld a, [wPlayer_Flags]
+    ;ld [wPlayer_Flags], a ; remove any power up on player
+    ;jr .startUpdateOAM
 
 .updateFlickerEffect
-    ; b = FlickerEffect int portion
-    ld a, b
+    ; a = FlickerEffect int portion
+    ;ld a, b
     and a, FLICKER_BITMASK
     cp a, FLICKER_VALUE
     jp nz, .startUpdateOAM

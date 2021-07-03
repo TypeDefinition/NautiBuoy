@@ -138,8 +138,8 @@ PowerUpCollisionBehaviour:
     or a, TYPE_INVINCIBILITY_POWERUP
     ld [wPlayer_Flags], a ; activate the invincibility flag for player
 
-    ld a, INVINCIBILITY_FLICKER_EFFECT
-    ld [wPlayer_FlickerEffect], a
+    ;ld a, INVINCIBILITY_FLICKER_EFFECT
+    ;ld [wPlayer_FlickerEffect], a
 
     jr .end
 .timePowerup
@@ -155,8 +155,8 @@ PowerUpCollisionBehaviour:
     or a, TYPE_SPEED_POWERUP
     ld [wPlayer_Flags], a ; activate the speed flag for player
 
-    ld a, SPEED_FLICKER_EFFECT
-    ld [wPlayer_FlickerEffect], a
+    ;ld a, SPEED_FLICKER_EFFECT
+    ;ld [wPlayer_FlickerEffect], a
 
     ; TODO:: ninit new speed here
 
@@ -165,7 +165,7 @@ PowerUpCollisionBehaviour:
     ; damage output increase
     ld a, [wPlayer_Flags]
     or a, TYPE_DAMAGE_POWERUP
-    ld [wPlayer_Flags], a ; activate the invincibility flag for player
+    ld [wPlayer_Flags], a ; activate the damage inc flag for player
     jr .end
 .end
     xor a

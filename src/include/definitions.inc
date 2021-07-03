@@ -60,7 +60,7 @@ DEF BIT_FLAG_ACTIVE EQU $0 ; 0 bit
 DEF BIT_FLAG_PLAYER EQU $1 ; 1 bit
 
 DEF BIT_MASK_TYPE EQU %00011100 ; to do bit masking for power up type/enemy type
-DEF BIT_MASK_TYPE_REMOVE EQU %11100011
+DEF BIT_MASK_TYPE_REMOVE EQU %00000011
 
 ; Directions
 ; can use cp to compare, takes reg A, but takes only 1 cycle and 1 byte
