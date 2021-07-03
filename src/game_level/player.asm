@@ -57,7 +57,7 @@ InitialisePlayer::
     ld a, PLAYER_HEALTH
     ld [wPlayer_HP], a
     ; Set Velocity
-    ld hl, VELOCITY_NORMAL
+    ld hl, PLAYER_DEFAULT_VELOCITY
     ld a, h
     ld [wPlayer_Velocity], a
     ld a, l
@@ -327,8 +327,13 @@ PlayerIsHit::
     ld [wPlayer_PosY + 1], a
     ld [wPlayer_PosX + 1], a
 
-    ; remove possible powerups
-    ld [wPlayerEffects_SpeedPowerUpTimer], a 
+    ; remove possible powerups and reset things properly
+    ld [wPlayerEffects_SpeedPowerUpTimer], a
+    ld bc, PLAYER_DEFAULT_VELOCITY
+    ld a, b
+    ld [wPlayer_Velocity], a
+    ld a, c
+    ld [wPlayer_Velocity + 1], a
 
     ld a, [wPlayer_Flags]
     and a, BIT_MASK_TYPE_REMOVE ; remove any effects on player
@@ -521,8 +526,8 @@ UpdatePlayerEffects:
     dec b
     ld a, b
     ld [wPlayerEffects_InvincibilityPowerUpTimer], a ; update the new value
-
     jr nz, .speedPowerUp
+
     ld a, [wPlayer_Flags] ; reset the effect flags
     xor a, FLICKER_EFFECT_FLAG
     ld [wPlayer_Flags], a
@@ -535,17 +540,17 @@ UpdatePlayerEffects:
     ; update the value
     ld b, a ; b = the int portion of the timer
     ld a, [wPlayerEffects_SpeedPowerUpTimer + 1]
-    add a, DAMAGE_INVINCIBILITY_UPDATE_SPEED
+    add a, SPEED_POWER_UP_UPDATE_SPEED
     ld [wPlayerEffects_SpeedPowerUpTimer + 1], a
-    jr nc, .speedPowerUp
+    jr nc, .endUpdatePlayerEffects
 
     dec b
     ld a, b
     ld [wPlayerEffects_SpeedPowerUpTimer], a ; update the new value
-    jr z, .endUpdatePlayerEffects
+    jr nz, .endUpdatePlayerEffects
 
     ; reset velocity as effect is gone
-    ld hl, VELOCITY_NORMAL
+    ld hl, PLAYER_DEFAULT_VELOCITY
     ld a, h
     ld [wPlayer_Velocity], a
     ld a, l

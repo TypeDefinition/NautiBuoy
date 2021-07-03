@@ -145,6 +145,10 @@ PowerUpCollisionBehaviour:
 .timePowerup
     cp a, TYPE_TIME_POWERUP
     jr nz, .speedPowerup
+
+    ; TODO:: ADD BACK TO TIMER AMT
+
+
     jr .end
 .speedPowerup
     cp a, TYPE_SPEED_POWERUP
@@ -153,16 +157,19 @@ PowerUpCollisionBehaviour:
     ld a, SPEED_POWER_UP_EFFECT
     ld [wPlayerEffects_SpeedPowerUpTimer], a
 
-    ; TODO:: init new speed here
-
+    ; init new speed
+    ld bc, PLAYER_INCREASED_VELOCITY
+    ld a, b
+    ld [wPlayer_Velocity], a
+    ld a, c
+    ld [wPlayer_Velocity + 1], a
+    
     jr .end
 .damagePowerup
-    ; damage output increase
-    ;ld a, [wPlayer_Flags]
-    ;or a, TYPE_DAMAGE_POWERUP
-    ;ld [wPlayer_Flags], a ; activate the damage inc flag for player
-    ; TODO:: give player a number of bullets
-
+    ; give player a number of increased damage bullets
+    ld a, [wPlayerEffects_BulletPowerUpCounter]
+    add a, BULLET_POWER_UP_NUMBER
+    ld [wPlayerEffects_BulletPowerUpCounter], a
 
     jr .end
 .end
