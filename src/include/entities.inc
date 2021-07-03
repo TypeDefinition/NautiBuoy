@@ -15,9 +15,6 @@ DEF ENTITIES_INC EQU 1
             101 - Effects type F / Enemy F
             110 - Effects type G / Enemy G
             111 - Effects type H / Enemy H
-        Bit 5: TBC
-        Bit 6: TBC
-        Bit 7: TBC
 
         Direction:
         Bit 0-1: direction entity is moving/facing

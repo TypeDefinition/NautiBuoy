@@ -313,16 +313,15 @@ PlayerIsHit::
     ld [wPlayer_FlickerEffect], a
     ld [wPlayer_FlickerEffect + 1], a 
 
-    ; TEMP TO CHANGE THIS VALUE TO A PROPER ONE LATER
-    ld a, DAMAGE_FLICKER_EFFECT
+    ld a, DAMAGE_INVINCIBILITY_EFFECT
     ld [wPlayerEffects_DamageInvincibilityTimer], a
 
-    ; TODO:: teleport back to spawn
-    ; TODO:: have variable of spawn location in level to teleport
-    ld a, 128
+    ld a, [wPlayer_SpawnPosition]
     ld [wPlayer_PosYInterpolateTarget], a
-    ld [wPlayer_PosXInterpolateTarget], a
     ld [wPlayer_PosY], a
+
+    ld a, [wPlayer_SpawnPosition + 1]
+    ld [wPlayer_PosXInterpolateTarget], a
     ld [wPlayer_PosX], a 
 
     xor a
@@ -483,14 +482,30 @@ UpdatePlayerCamera::
 
 
 UpdatePlayerEffects:
+
+.invincibilityPowerUp
+    ld a, [wPlayerEffects_InvincibilityPowerUpTimer]
+    and a, a
+    jr z, .speedPowerUp
+
+.speedPowerUp
+    ld a, [wPlayerEffects_SpeedPowerUpTimer]
+    and a, a
+    jr z, .bulletPowerUp
+
+.bulletPowerUp
+    ld a, [wPlayerEffects_BulletPowerUpTimer]
+    and a, a
+    jr z, .damageInvincibility
+
+.damageInvincibility
     ld a, [wPlayerEffects_DamageInvincibilityTimer]
     and a, a
     jr z, .endUpdatePlayerEffects
 
-    ; TODO:: CHANGE THE VALUE TO A PROPER ONE
     ld b, a ; b = the int portion of the timer
     ld a, [wPlayerEffects_DamageInvincibilityTimer + 1]
-    add a, PLAYER_FLICKER_UPDATE_SPEED
+    add a, DAMAGE_INVINCIBILITY_UPDATE_SPEED
     ld [wPlayerEffects_DamageInvincibilityTimer + 1], a
     jr nc, .endUpdatePlayerEffects
 
