@@ -8,6 +8,11 @@ GameLevelTiles::
     ds 1024
 .end::
 
+SECTION "Game Level Data", WRAM0
+wGameTimer::
+    ds 2 ; first half is fraction, second half is int
+.end
+
 SECTION "Game Level", ROM0
 JumpLoadGameLevel::
     jp LoadGameLevel
@@ -82,6 +87,11 @@ LoadGameLevel::
     ld [rSCY], a
     ld [rSCX], a
 
+    ; reset timer values
+    ld [wGameTimer], a
+    ld a, LEVEL_TIME
+    ld [wGameTimer + 1], a
+
     call LCDOn
 
     ; Set BGM
@@ -107,6 +117,7 @@ OnUpdate:
     call ResetShadowOAM
 
     ; insert game logic here and update shadow OAM data
+    call UpdateLevelTimer ; update timer
     call UpdatePlayerMovement
     call UpdatePlayerAttack
     call UpdatePlayerCamera
@@ -123,6 +134,23 @@ OnUpdate:
     set_romx_bank BANK(GameLevelBGM)
     call _hUGE_dosound
 
+    ret
+
+UpdateLevelTimer:
+    ; update timer
+    ld hl, wGameTimer
+    ld a, [hl]
+    add a, TIMER_UPDATE_SPEED
+    ld [hli], a
+    cp a, TIMER_AMT_PER_SEC
+    jr nz, .end
+
+    dec [hl] ; update the actual time
+    jr nz, .end
+
+    ; TODO:: set all the proper variables for losing here
+
+.end
     ret
 
 VBlankHandler:
