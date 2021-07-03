@@ -4,7 +4,97 @@ JumpUpdateNewGameScreen:
     jp UpdateNewGameScreen
 
 LoadNewGameScreen:
+    di
+    call LCDOff
+
+    ; Copy tile map into VRAM.
+    set_romx_bank BANK(NewGameScreenTileMap)
+    mem_copy NewGameScreenTileMap, _SCRN0, NewGameScreenTileMap.end-NewGameScreenTileMap
+
+    ld hl, JumpUpdateNewGameScreen
+    call SetProgramLoopCallback
+
+    call ResetDirtyTiles
+
+    ; Reset SCY & SCX.
+    xor a
+    ld [rSCY], a
+    ld [rSCX], a
+
+    ; Reset SelectedOption
+    xor a
+    ld [wSelectedOption], a
+
+    ; Set Cursor Positions
+    ld hl, wCursorTileIndices
+    ld bc, CURSOR_START_NEWGAME
+    ld a, b
+    ld [hli], a
+    ld a, c
+    ld [hli], a
+    ld bc, CURSOR_START_NEWGAME+64
+    ld a, b
+    ld [hli], a
+    ld a, c
+    ld [hli], a
+
+    call LCDOn
+    ei
+
     ret
 
 UpdateNewGameScreen:
+    call UpdateInput
+
+    ; Update Sound
+    set_romx_bank BANK(MainMenuBGM)
+    call _hUGE_dosound
+
+    ; Clear Old Cursor
+    call GetCursorTileIndex
+    ld a, EMPTY_TILE
+    call SetTile
+
+    ; Get Input
+    ld a, [wNewlyInputKeys]
+    ld b, a
+
+    ; Select Previous/Next Option
+    ld a, [wSelectedOption]
+.onUp
+    bit PADB_UP, b
+    jr z, .onDown
+    dec a
+    jr .updateSelectedOption
+.onDown
+    bit PADB_DOWN, b
+    jr z, .updateSelectedOption
+    inc a
+.updateSelectedOption
+    and a, $01 ; Title Screen has only 2 options. This allows the cursor to loop.
+    ld [wSelectedOption], a
+
+    ; Enter Selected Option
+.onEnter
+    bit PADB_A, b
+    jr z, .end
+.no
+    ASSERT newgame_opt_NO == 0
+    and a
+    jr nz, .yes
+    ld hl, JumpLoadTitleScreen
+    call SetProgramLoopCallback
+    jr .end
+.yes
+    ASSERT newgame_opt_YES == 1
+    ld hl, JumpLoadTitleScreen
+    call SetProgramLoopCallback
+
+.end
+    ; Set New Cursor
+    call GetCursorTileIndex
+    ld a, 27
+    call SetTile
+    call UpdateDirtyTiles
+
     ret

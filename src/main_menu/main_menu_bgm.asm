@@ -1,8 +1,9 @@
 include "./src/include/hUGE.inc"
 
-SECTION "Song Data", ROMX
+; GB-Studio-Community Assets: Great Melody 01
+SECTION "Main Menu BGM Data", ROMX
 
-CombatBGM::
+MainMenuBGM::
 db 7
 dw order_cnt
 dw order1, order2, order3, order4

@@ -4,11 +4,18 @@ INCLUDE "./src/include/hUGE.inc"
 INCLUDE "./src/include/definitions.inc"
 
 ; Title Options
-DEF TITLE_OPT_CONTINUE EQU $00
-DEF TITLE_OPT_NEWGAME EQU $01
+RSRESET
+DEF title_opt_CONTINUE RB
+DEF title_opt_NEWGAME RB
+
+; New Game Options
+RSRESET
+DEF newgame_opt_NO RB
+DEF newgame_opt_YES RB
 
 ; Cursor Starting Positions
 DEF CURSOR_START_TITLE EQU $0163
+DEF CURSOR_START_NEWGAME EQU $0163
 
 SECTION "Main Menu WRAM", WRAM0
 wSelectedOption:
@@ -53,6 +60,7 @@ LoadMainMenu::
     di ; Disable Interrupts
 
     call LCDOff
+    call SoundOff
 
     ld hl, JumpVBlankHandler
     call SetVBlankCallback
@@ -66,8 +74,9 @@ LoadMainMenu::
     call LCDOn
 
     ; Set BGM
-    set_romx_bank BANK(CombatBGM)
-    ld hl, CombatBGM
+    call SoundOn
+    set_romx_bank BANK(MainMenuBGM)
+    ld hl, MainMenuBGM
     call hUGE_init
 
     ; Set interrupt flags, clear pending interrupts, and enable master interrupt switch.

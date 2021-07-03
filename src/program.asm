@@ -21,6 +21,13 @@ LCDOff::
     ret
 
 SECTION "Sound", ROM0
+; Disable sound.
+; @destroy af
+SoundOff::
+    xor a
+    ld [rAUDENA], a
+    ret
+
 ; Enable sound.
 ; @destroy af
 SoundOn::

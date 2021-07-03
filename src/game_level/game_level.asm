@@ -26,6 +26,7 @@ LoadGameLevel::
     di ; Disable Interrupts
 
     call LCDOff
+    call SoundOff
     ld hl, JumpVBlankHandler
     call SetVBlankCallback
     ld hl, JumpOnUpdate
@@ -84,8 +85,9 @@ LoadGameLevel::
     call LCDOn
 
     ; Set BGM
-    set_romx_bank BANK(CombatBGM)
-    ld hl, CombatBGM
+    call SoundOn
+    set_romx_bank BANK(GameLevelBGM)
+    ld hl, GameLevelBGM
     call hUGE_init
 
     ; Set Interrupt Flags
@@ -118,7 +120,7 @@ OnUpdate:
     call UpdateDirtyTiles
 
     ; Update Sound
-    set_romx_bank BANK(CombatBGM)
+    set_romx_bank BANK(GameLevelBGM)
     call _hUGE_dosound
 
     ret

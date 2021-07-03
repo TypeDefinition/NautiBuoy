@@ -47,7 +47,7 @@ UpdateTitleScreen:
     call UpdateInput
 
     ; Update Sound
-    set_romx_bank BANK(CombatBGM)
+    set_romx_bank BANK(MainMenuBGM)
     call _hUGE_dosound
 
     ; Clear Old Cursor
@@ -79,14 +79,14 @@ UpdateTitleScreen:
     bit PADB_A, b
     jr z, .end
 .selectContinue
-    ASSERT TITLE_OPT_CONTINUE == 0
+    ASSERT title_opt_CONTINUE == 0
     and a
     jr nz, .selectNewGame
     ld hl, JumpLoadGameLevel
     call SetProgramLoopCallback
     jr .end
 .selectNewGame
-    ASSERT TITLE_OPT_NEWGAME > 0
+    ASSERT title_opt_NEWGAME == 1
     ld hl, JumpLoadNewGameScreen
     call SetProgramLoopCallback
 
