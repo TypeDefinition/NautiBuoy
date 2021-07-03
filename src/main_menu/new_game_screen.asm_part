@@ -85,7 +85,7 @@ UpdateNewGameScreen:
 .end
     ; Set New Cursor
     call GetCursorTileIndex
-    ld a, 27
+    ld a, CURSOR_TILE
     call SetTile
     call UpdateDirtyTiles
 
