@@ -34,9 +34,10 @@ SECTION "Bullets", ROM0
 /* Local Functions */
 ; Destroy A Tile
 ; @ bc: Tile Index
+; @ l: bullet destrutable tile type
 BulletDestroyTile:
     push af
-    cp a, BULLET_DESTRUCTIBLE_TILES
+    cp a, l
     ld a, EMPTY_TILE
     call c, SetTile
     pop af
@@ -51,8 +52,18 @@ BulletTileCollisionCheck:
 
     ; d = PosY
     ; e = PosX
-    ld de, Bullet_PosY
-    add hl, de
+    ld a, [hli] ; get flags
+    and a, BIT_MASK_TYPE
+    ld b, BULLET_DESTRUCTIBLE_TILES
+    jr z, .initInfo
+
+    ld b, POWER_BULLET_DESTRUCTIBLE_TILES ; it is a power bullet
+
+.initInfo
+    inc hl
+    inc hl
+    inc hl
+
     ld a, [hli]
     ld d, a
     inc hl
@@ -61,6 +72,7 @@ BulletTileCollisionCheck:
 
     ; h = Destroy Bullet Flag.
     ld h, 0
+    ld l, b ; l = bullet type
 
 .topLeft
     push de

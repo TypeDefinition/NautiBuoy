@@ -94,7 +94,7 @@ DEF TILE_SIZE EQU $08
 DEF CHARACTER_COLLIDABLE_TILES EQU $10 ; Collidable Tiles: A tile is assumed to be collidable by characters if it's value is less than 16.
 DEF BULLET_COLLIDABLE_TILES EQU $09 ; Collidable Tiles: A tile is assumed to be collidable by bullets if it's value is less than 9.
 DEF BULLET_DESTRUCTIBLE_TILES EQU $01 ; Collidable Tiles: A tile is assumed to be collidable by bullets if it's value is less than 1.
-DEF BOMB_DESTRUCTIBLE_TILES EQU $02 ; Collidable Tiles: A tile is assumed to be collidable by bullets if it's value is less than 2.
+DEF POWER_BULLET_DESTRUCTIBLE_TILES EQU $02 ; Collidable Tiles: A tile is assumed to be collidable by bullets if it's value is less than 2.
 DEF EMPTY_TILE EQU $20
 DEF CURSOR_TILE EQU $1B
 
