@@ -50,8 +50,6 @@ BulletDestroyTile:
 BulletTileCollisionCheck:
     push hl
 
-    ; d = PosY
-    ; e = PosX
     ld a, [hli] ; get flags
     and a, BIT_MASK_TYPE
     ld b, BULLET_DESTRUCTIBLE_TILES
@@ -60,6 +58,8 @@ BulletTileCollisionCheck:
     ld b, POWER_BULLET_DESTRUCTIBLE_TILES ; it is a power bullet
 
 .initInfo
+    ; d = PosY
+    ; e = PosX
     inc hl
     inc hl
     inc hl
