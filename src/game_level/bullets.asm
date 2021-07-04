@@ -162,6 +162,18 @@ BulletTileCollisionCheck:
 ;   - DE
 ;   - HL
 UpdateBulletShadowOAM:
+    ld a, [hl]
+    and a, BIT_MASK_TYPE ; get the type of bullet
+    sla a ; shift left by 1, we want a multiple of 8
+    ld d, a 
+
+    ld a, c ; offset the bullet sprite address
+    add a, d
+    ld c, a
+    ld a, b
+    adc a, 0
+    ld b, a 
+
     ld de, Bullet_PosY
     add hl, de ; offset hl by 4
 
