@@ -253,8 +253,16 @@ UpdatePlayerAttack::
     bit BIT_FLAG_ACTIVE, a
     jr nz, .finishAttack ; if active, finish attack
 
-    ; set the variables
-    ld a, FLAG_ACTIVE | FLAG_PLAYER
+    ld a, [wPlayerEffects_BulletPowerUpCounter]
+    and a, a ; check if a = 0, if 0 means default
+    jr z, .initBullet
+
+    dec a
+    ld [wPlayerEffects_BulletPowerUpCounter], a ; reduce the bullet
+    ld a, TYPE_BULLET_POWER_UP ; set type
+
+.initBullet ; set the variables
+    or a, FLAG_ACTIVE | FLAG_PLAYER
     ld [hli], a ; its alive
 
     ld a, [wPlayer_Direction]

@@ -176,8 +176,6 @@ UpdateBulletShadowOAM:
 
     ld de, Bullet_PosY
     add hl, de ; offset hl by 4
-
-    ; TODO:: bc need add by an offset
     
     ; translate to screen pos
     ld a, [wShadowSCData]
