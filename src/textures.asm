@@ -15,19 +15,29 @@ Sprites::
 .end::
 
 BulletSprites::
-.upSprite::
+.upDefaultSprite::
     db 18 ; sprite ID
     db OAMF_PAL0 
-
-.downSprite::
+.downDefaultSprite::
     db 18 ; sprite ID
     db OAMF_PAL0 | OAMF_YFLIP
-
-.rightSprite::
+.rightDefaultSprite::
     db 20 ; sprite ID
     db OAMF_PAL0
-    
-.leftSprite::
+.leftDefaultSprite::
+    db 20 ; sprite ID
+    db OAMF_PAL0 | OAMF_XFLIP
+
+.upPowerUpBulletSprite
+    db 18 ; sprite ID
+    db OAMF_PAL0 
+.downPowerUpBulletDefaultSprite
+    db 18 ; sprite ID
+    db OAMF_PAL0 | OAMF_YFLIP
+.rightPowerUpBulletDefaultSprite
+    db 20 ; sprite ID
+    db OAMF_PAL0
+.leftPowerUpBulletDefaultSprite
     db 20 ; sprite ID
     db OAMF_PAL0 | OAMF_XFLIP
 

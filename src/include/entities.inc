@@ -51,6 +51,7 @@ DEF ENTITIES_INC EQU 1
     /*  Flags:
         Bit 0: Inactive/Active
         Bit 1: Player/Enemy
+        Other bits: Bullet type
     */
     struct Bullet
         bytes 1, Flags

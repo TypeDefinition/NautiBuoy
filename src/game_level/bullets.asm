@@ -154,7 +154,7 @@ BulletTileCollisionCheck:
 
 
 ; Update Bullet Shadow OAM
-; @ bc: Bullet Sprite
+; @ bc: Bullet Sprite address
 ; @ hl: Bullet Memory Address
 ; Register change:
 ;   - AF
@@ -164,6 +164,8 @@ BulletTileCollisionCheck:
 UpdateBulletShadowOAM:
     ld de, Bullet_PosY
     add hl, de ; offset hl by 4
+
+    ; TODO:: bc need add by an offset
     
     ; translate to screen pos
     ld a, [wShadowSCData]
@@ -297,21 +299,21 @@ UpdateBullets::
     inc hl
     inc hl
     interpolate_pos_inc_reg
-    ld bc, BulletSprites.rightSprite
+    ld bc, BulletSprites.rightDefaultSprite
     jr .translationEnd
 .translateUp
     interpolate_pos_dec_reg
-    ld bc, BulletSprites.upSprite
+    ld bc, BulletSprites.upDefaultSprite
     jr .translationEnd
 .translateDown
     interpolate_pos_inc_reg
-    ld bc, BulletSprites.downSprite
+    ld bc, BulletSprites.downDefaultSprite
     jr .translationEnd
 .translateLeft
     inc hl
     inc hl
     interpolate_pos_dec_reg
-    ld bc, BulletSprites.leftSprite
+    ld bc, BulletSprites.leftDefaultSprite
 .translationEnd
     pop hl ; POP HL = bullet address
     push hl ; PUSH HL = bullet address
@@ -354,9 +356,8 @@ BulletSpriteCollisionCheck:
 .checkCollisionWithPlayer ; bullet belongs to enemy
     ; b = bullet posY, c = bullet pos X
     ld a, [wPlayer_Flags]
-    and a, BIT_MASK_TYPE ; check if there is invincibility powerup
-    cp a, TYPE_INVINCIBILITY_POWERUP
-    jr z, .end
+    and a, FLICKER_EFFECT_FLAG ; check if got invincibility frame on
+    jr nz, .end
 
     ld a, [wPlayer_PosYInterpolateTarget]
     ld d, a
