@@ -48,9 +48,54 @@ UpdateEnemyD::
     inc hl
     inc hl ; offset address to get posY
 
+    ; bc = player pos y and x, de = enemy pos y and z
     ld a, [wPlayer_PosYInterpolateTarget]
     ld b, a
+    ld a, [wPlayer_PosXInterpolateTarget]
+    ld c, a
+
     ld a, [hli]
+    and a, %11111000
+    ld d, a
+    inc hl
+    inc hl ; get x pos
+    ld a, [hli]
+    and a, %11111000
+    ld e, a
+
+    ; d - b, e - c, then compare which one is larger
+    sub a, c ; get x offset
+    jr nc, .compareY
+
+    cpl ; invert the value as it underflowed
+    inc a
+    
+.compareY
+    ld h, a ; h = x offset
+
+    ld a, d ; a = enemy pos y
+    sub a, b ; get y offset
+    jr nc, .compareOffset
+
+    cpl ; invert the value as it underflowed
+    inc a
+
+.compareOffset
+    ld l, a ; l = y offset
+
+    sub a, h ; y offset - x offset 
+    jr nc, .checkOffset
+
+    cpl ; invert the value as it underflowed
+    inc a
+
+.checkOffset
+    ld a, l
+    cp a, h ; y offset - x offset: 
+    jr c, .checkHorizontal ; move in the direction with the biggest offset dist 
+   
+.checkVertical
+    ld a, d ; a = enemy pos y
     cp a, b
     jr z, .checkHorizontal
     ld c, DIR_DOWN
@@ -59,13 +104,9 @@ UpdateEnemyD::
     jr .finishFindingPlayer
 
 .checkHorizontal 
-    inc hl
-    inc hl ; get x pos
-
-    ld a,  [wPlayer_PosXInterpolateTarget]
-    ld b, a
-    ld a, [hl]
-    cp a, b
+    ; c = player pos x, e = enemy pos x
+    ld a, e
+    cp a, c
     ld c, DIR_RIGHT
     jr c, .finishFindingPlayer ; player on right of enemy
     ld c, DIR_LEFT
