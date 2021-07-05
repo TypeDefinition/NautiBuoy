@@ -140,8 +140,9 @@ UpdateEnemyD::
 .updateFrames
     ; hl = enemy update frame counter + 1 address
     ld a, [hl]
-    inc a
-    ; TODO:: make sure to check for overflow when attack mode
+    add a, 1 ; inc doesnt set the carry flag
+    sbc a, 0 ; prevents overflow
+    
     ld [hli], a ; int part of update frame counter
     
     ld a, [hli]
