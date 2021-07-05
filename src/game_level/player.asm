@@ -8,6 +8,7 @@ INCLUDE "./src/include/movement.inc"
 SECTION "Player Data", WRAM0
     dstruct Character, wPlayer
     dstruct PlayerEffects, wPlayerEffects
+wPlayerFireRate:: ds 2 ; first half is fraction, second half is int
     
 SECTION "Player Camera Data", WRAM0
     dstruct PlayerCamera, wPlayerCamera
@@ -79,6 +80,10 @@ InitialisePlayer::
     ld [hli], a ; bullet power up
     ld [hli], a
     ld [hli], a ; damage invincibility power up
+
+    ld hl, wPlayerFireRate
+    ld [hli], a
+    ld [hli], a
 
     call UpdatePlayerLivesUI
 
@@ -233,18 +238,38 @@ UpdatePlayerMovement::
 /*  For checking player inputs that allow them to attack
     Current attacks:
     - Shooting (press A)
-    - Bombs maybe?
 */
 UpdatePlayerAttack::
-    ; SHOOTING
+    ld hl, wPlayerFireRate + 1
+    ld a, [hl]
+    and a, a
+    jr z, .startShooting ; have yet to reach the firerate
+
+    ld b, a ; b = int portion
+
+    dec hl
+    ld a, [hl]
+    add a, FIRE_RATE_UPDATE_SPEED
+    ld [hli], a
+
+    ld a, b
+    sbc a, 0
+    ld [hl], a
+    jr nz, .finishAttack
+
+.startShooting ; SHOOTING
     ld a, [wNewlyInputKeys]
     bit PADB_A, a
     jr z, .finishAttack ; if player doesnt PRESS A
 
-/*
-    Over here we only want to initialise the bullets
-    Make it alive, set pos x, pos y
-*/
+    ; update the fire rate
+    ld a, FIRE_RATE
+    ld [hl], a 
+    dec hl
+    xor a
+    ld [hl], a
+
+    ; init bullets
     ld hl, wBulletObjects
     ld b, PLAYER_BULLET_NUMBER
     call GetInactiveBullet
