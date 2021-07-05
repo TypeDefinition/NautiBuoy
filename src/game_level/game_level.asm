@@ -14,8 +14,10 @@ wGameTimer::
 .end
 
 SECTION "Game Level", ROM0
+; Global Jumps
 JumpLoadGameLevel::
     jp LoadGameLevel
+; Local Jumps
 JumpVBlankHandler:
     jp VBlankHandler
 JumpOnUpdate:

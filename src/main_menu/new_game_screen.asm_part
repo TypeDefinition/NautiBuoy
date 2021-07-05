@@ -1,8 +1,3 @@
-JumpLoadNewGameScreen:
-    jp LoadNewGameScreen
-JumpUpdateNewGameScreen:
-    jp UpdateNewGameScreen
-
 LoadNewGameScreen:
     di
     call LCDOff

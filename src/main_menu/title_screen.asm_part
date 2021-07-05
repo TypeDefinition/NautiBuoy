@@ -1,8 +1,3 @@
-JumpLoadTitleScreen:
-    jp LoadTitleScreen
-JumpUpdateTitleScreen:
-    jp UpdateTitleScreen
-
 LoadTitleScreen:
     di
     call LCDOff
@@ -74,7 +69,7 @@ UpdateTitleScreen:
     ASSERT opt_title_CONTINUE == 0
     and a
     jr nz, .selectNewGame
-    ld hl, JumpLoadGameLevel
+    ld hl, JumpLoadStageSelectScreen
     call SetProgramLoopCallback
     jr .end
 .selectNewGame

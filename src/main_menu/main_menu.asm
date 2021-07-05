@@ -38,11 +38,27 @@ SECTION "Main Menu WRAM", WRAM0
 wSelectedOption:
     ds 1
 wCursorTileIndices:
-    ds 32 ; Stores 16 tile indices. Each tile index is 2 bytes.
+    ds 8 ; Stores 4 tile indices. Each tile index is 2 bytes.
 
 SECTION "Main Menu", ROM0
+; Global Jumps
+JumpLoadMainMenu::
+    jp LoadMainMenu
+; Local Jumps
 JumpVBlankHandler:
     jp VBlankHandler
+JumpLoadTitleScreen:
+    jp LoadTitleScreen
+JumpUpdateTitleScreen:
+    jp UpdateTitleScreen
+JumpLoadNewGameScreen:
+    jp LoadNewGameScreen
+JumpUpdateNewGameScreen:
+    jp UpdateNewGameScreen
+JumpLoadStageSelectScreen:
+    jp LoadStageSelectScreen
+JumpUpdateStageSelectScreen:
+    jp UpdateStageSelectScreen
 
 LCDOn:
     ; Set LCDC Flags

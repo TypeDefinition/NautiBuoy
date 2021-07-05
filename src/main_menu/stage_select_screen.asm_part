@@ -1,10 +1,55 @@
-JumpLoadStageSelectScreen:
-    jp LoadStageSelectScreen
-JumpUpdateStageSelectScreen:
-    jp UpdateStageSelectScreen
-
 LoadStageSelectScreen:
+    di
+    call LCDOff
+
+    ; Copy tile map into VRAM.
+    set_romx_bank BANK(StageSelectTileMap)
+    mem_copy StageSelectTileMap, _SCRN0, StageSelectTileMap.end-StageSelectTileMap
+
+    ld hl, JumpUpdateStageSelectScreen
+    call SetProgramLoopCallback
+
+    call ResetDirtyTiles
+
+    ; Reset SCY & SCX.
+    xor a
+    ld [rSCY], a
+    ld [rSCX], a
+
+    ; Reset SelectedOption
+    xor a
+    ld [wSelectedOption], a
+
+    call LCDOn
+    ei
+
     ret
 
 UpdateStageSelectScreen:
+    call UpdateInput
+
+    ; Update Sound
+    set_romx_bank BANK(MainMenuBGM)
+    call _hUGE_dosound
+
+    ; Get Input
+    ld a, [wNewlyInputKeys]
+    ld b, a
+
+    ; Enter Selected Option
+.onStart
+    bit PADB_A, b
+    jr z, .onBack
+    ld hl, JumpLoadGameLevel
+    call SetProgramLoopCallback
+    jr .end
+.onBack
+    bit PADB_B, b
+    jr z, .end
+    ld hl, JumpLoadTitleScreen
+    call SetProgramLoopCallback
+
+.end
+    call UpdateDirtyTiles
+
     ret

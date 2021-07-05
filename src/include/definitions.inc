@@ -4,7 +4,7 @@ INCLUDE "./src/include/hardware.inc"
 DEF DEFINITIONS_INC EQU 1
 
 ; viewport info
-DEF GAMEPLAY_UI_SIZE_Y EQU 8*2
+DEF GAMEPLAY_UI_SIZE_Y EQU 8*1
 DEF MAP_SIZE_Y EQU 256
 DEF MAP_SIZE_X EQU 256
 DEF VIEWPORT_SIZE_Y EQU SCRN_Y - GAMEPLAY_UI_SIZE_Y
@@ -96,7 +96,7 @@ DEF BULLET_COLLIDABLE_TILES EQU $09 ; Collidable Tiles: A tile is assumed to be 
 DEF BULLET_DESTRUCTIBLE_TILES EQU $01 ; Collidable Tiles: A tile is assumed to be collidable by bullets if it's value is less than 1.
 DEF POWER_BULLET_DESTRUCTIBLE_TILES EQU $02 ; Collidable Tiles: A tile is assumed to be collidable by bullets if it's value is less than 2.
 DEF EMPTY_TILE EQU $20
-DEF CURSOR_TILE EQU $1B
+DEF CURSOR_TILE EQU $19
 
 ; Velocity
 DEF VELOCITY_VSLOW EQU $0040
