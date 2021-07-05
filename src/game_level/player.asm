@@ -299,27 +299,16 @@ UpdatePlayerAttack::
 PlayerIsHit::
     ld a, [wPlayer_HP]
 
-    ; If HP is already 0, go to the end.
-    and a
-    jr z, .end
-
-    ; deduct health first
-    sub a, BULLET_DAMAGE
+    ; deduct health 
+    dec a
     ld [wPlayer_HP], a
 
     call UpdatePlayerLivesUI
 
-    ; check health <= 0
-    and a
+    and a ; check health <= 0
     jr z, .dead
-    cp a, 127
-    jr nc, .dead ; value underflowed, go to dead 
 
 .damageEffect ; not dead, set damage flicker effect and teleport to spawn    
-    xor a
-    ld [wPlayer_FlickerEffect], a
-    ld [wPlayer_FlickerEffect + 1], a 
-
     ld a, DAMAGE_INVINCIBILITY_EFFECT
     ld [wPlayerEffects_DamageInvincibilityTimer], a
 
@@ -334,6 +323,8 @@ PlayerIsHit::
     xor a
     ld [wPlayer_PosY + 1], a
     ld [wPlayer_PosX + 1], a
+    ld [wPlayer_FlickerEffect], a
+    ld [wPlayer_FlickerEffect + 1], a 
 
     ; remove possible powerups and reset things properly
     ld [wPlayerEffects_SpeedPowerUpTimer], a
@@ -349,14 +340,11 @@ PlayerIsHit::
     ld [wPlayer_Flags], a 
 
     call PlayerGetsHitEnemyBehavior ; update enemy behavior for getting hit
-    jr .end
-.dead
-    /* TODO:: if dead, put gameover screen or something */
-    call LoadStageFailedUI
-
-.end
     ret
 
+.dead /* TODO:: if dead, put gameover screen or something */
+    call LoadStageFailedUI
+    ret
 
 /*  Player check collision with enemy sprites */
 PlayerSpriteCollisionCheck:
@@ -370,9 +358,7 @@ PlayerSpriteCollisionCheck:
  
     call CheckEnemyCollisionLoop
     and a, a
-    jr z, .end
-
-    call PlayerIsHit
+    call nz, PlayerIsHit
 
 .end
     ret
