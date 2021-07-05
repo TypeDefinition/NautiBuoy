@@ -504,6 +504,8 @@ UpdatePlayerEffects:
     ld a, [wPlayer_Flags] ; reset the effect flags
     xor a, FLICKER_EFFECT_FLAG
     ld [wPlayer_Flags], a
+    
+    jr .endUpdatePlayerEffects
 
 .invincibilityPowerUp
     ld a, [wPlayerEffects_InvincibilityPowerUpTimer]
@@ -557,13 +559,15 @@ UpdatePlayerEffects:
     Update sprite ID according to current frame of animation and direction
 */
 UpdatePlayerShadowOAM::
-    xor a
-    push af ; PUSH AF = power up flag
-
     ld a, [wPlayer]
     and a, FLICKER_EFFECT_FLAG ; check if flicker flag is on
     jr z, .startUpdateOAM
     
+    ld a, [wPlayerEffects_InvincibilityPowerUpTimer]
+    and a, a
+    jr nz, .invincibilityFlicker
+
+.damageFlicker
     ld a, [wPlayer_FlickerEffect + 1]
     add a, PLAYER_FLICKER_UPDATE_SPEED
     ld [wPlayer_FlickerEffect + 1], a
@@ -572,25 +576,43 @@ UpdatePlayerShadowOAM::
     adc a, 0
     ld [wPlayer_FlickerEffect], a ; update new interger portion value
 
-.updateFlickerEffect
-    ; a = FlickerEffect int portion
-    and a, FLICKER_BITMASK
-    jp nz, .startUpdateOAM
+    and a, FLICKER_BITMASK ; every alternate update we dont render
+    jr z, .startUpdateOAM
 
-    pop af ; POP AF = power up flag
-    
-    ld a, [wPlayerEffects_DamageInvincibilityTimer]
-    and a, a
-    jr nz, .end ; not a power up effect, its damage flicker effect
+    ret ; early return 
+
+.invincibilityFlicker
+    ; a = InvincibilityPowerUpTimer amount
+    cp a, INVINCIBILITY_POWER_UP_FLICKER_SLOW_EFFECT
+
+    ld a, [wPlayer_FlickerEffect + 1]
+    ld b, PLAYER_FLICKER_UPDATE_SPEED
+    jr nc, .continueInvincibilityFlicker
+
+    ld b, PLAYER_FLICKER_SLOW_UPDATE_SPEED
+
+.continueInvincibilityFlicker
+    ; b = flicker speed
+    add a, b
+    ld [wPlayer_FlickerEffect + 1], a
+
+    ld a, [wPlayer_FlickerEffect]
+    adc a, 0
+    ld [wPlayer_FlickerEffect], a ; update new interger portion value
+
+    and a, FLICKER_BITMASK ; every alternate update we dont render
+    jr z, .startUpdateOAM
 
     ld a, OAMF_PAL1
-    push af ; PUSH AF = power up flag
 
 .startUpdateOAM
-    ; do a dir check for sprite
+    ; a = power up flag
+    push af ; PUSH AF = power up flag
+
     ld a, [wPlayer_Direction]
 
-    ASSERT DIR_UP == 0
+    ; do a dir check for sprite
+    ASSERT DIR_UP == 0 
     and a, a ; cp a, 0
     jr z, .upSprite
     ASSERT DIR_DOWN == 1
