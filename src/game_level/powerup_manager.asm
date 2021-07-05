@@ -146,8 +146,9 @@ PowerUpCollisionBehaviour:
     cp a, TYPE_TIME_POWERUP
     jr nz, .speedPowerup
 
-    ; TODO:: ADD BACK TO TIMER AMT
-
+    ld a, [wGameTimer + 1]
+    add a, TIMER_POWER_UP_INC_AMT
+    ld [wGameTimer + 1], a
 
     jr .end
 .speedPowerup
