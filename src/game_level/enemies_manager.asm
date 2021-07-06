@@ -589,7 +589,7 @@ CheckEnemyCollisionLoop::
 
 /*  Call this when enemy has been hit 
     hl - enemy address
-    TODO:: pass in the amount of damage 
+    b - bullet damage
 
     WARNING: this is assuming health < 127. Want to prevent underflow, we defined bit 7 to be for -ve
 
@@ -622,7 +622,7 @@ HitEnemy::
     ld de, Character_HP
     add hl, de
     ld a, [hl]
-    sub a, BULLET_DAMAGE ; deduct health
+    sub a, b ; deduct health
     ld [hl], a ; update hp
 
     ; check health <= 0
@@ -633,7 +633,6 @@ HitEnemy::
 
 .flickerEffect ; not dead, set damage flicker effect
     pop hl ; POP HL = enemy address
-    push hl ; PUSH HL = enemy address
     
     ld a, DAMAGE_FLICKER_EFFECT
     ld de, Character_FlickerEffect
@@ -642,8 +641,7 @@ HitEnemy::
     xor a
     ld [hl], a ; reset the fractional portion
 
-    pop hl ; POP HL = enemy address
-    jr .end
+    ret
 
 .dead ; dead, turn it inactive
     pop hl ; POP HL = enemy address
