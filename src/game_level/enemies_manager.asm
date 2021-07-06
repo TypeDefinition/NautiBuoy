@@ -429,9 +429,8 @@ UpdateEnemySpriteOAM::
     ; d = FlickerEffect int portion
     ld a, d
     and a, FLICKER_BITMASK
-    cp a, FLICKER_VALUE
     pop hl ; POP HL = enemy address
-    jr z, .end 
+    jr nz, .end 
 
     push hl ; PUSH HL = enemy address
 
@@ -622,7 +621,7 @@ HitEnemy::
     cp a, 127
     jr nc, .dead ; value underflowed, go to dead
 
-.FlickerEffect ; not dead, set damage flicker effect
+.flickerEffect ; not dead, set damage flicker effect
     pop hl ; POP HL = enemy address
     push hl ; PUSH HL = enemy address
     
@@ -648,9 +647,7 @@ HitEnemy::
 
     call UpdateEnemyCounterUI
 
-    ; TODO:: if reach 0, win game
-    jr nz, .end
-    call LoadStageClearedUI
+    call z, LoadStageClearedUI
 
 .end
     ret
@@ -725,7 +722,7 @@ CheckEnemyInScreen::
     jr c, .endCheck
 
 .checkWithinYAxis
-    cp a, VIEWPORT_MAX_Y + SCREEN_UPPER_OFFSET_Y * 2 ; check if enemy pos is within y screen pos
+    cp a, VIEWPORT_SIZE_Y + SCREEN_UPPER_OFFSET_Y * 2 ; check if enemy pos is within y screen pos
     jr nc, .endCheck
 
 .checkXOffset
