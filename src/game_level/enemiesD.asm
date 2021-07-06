@@ -222,7 +222,10 @@ ResetEnemyD::
 */
 InitEnemyGhostSprite:
     push hl ; PUSH hl = enemy address
+    call UpdateEnemyEffects
+    pop hl
 
+    push hl
     ld de, Character_UpdateFrameCounter + 1
     add hl, de ; offset hl = updateFrameCounter
 

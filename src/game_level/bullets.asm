@@ -360,6 +360,9 @@ UpdateBullets::
 BulletSpriteCollisionCheck:
     push hl
 
+    ld a, [hl]
+    push af ; PUSH AF = flags
+
     ; b = bullet posY, c = bullet pos X
     ld de, Bullet_PosY 
     add hl, de
@@ -369,9 +372,7 @@ BulletSpriteCollisionCheck:
     ld a, [hl]
     ld c, a
 
-    pop hl ; POP HL = bullet address
-    push hl ; Push HL = bullet address
-    ld a, [hl]
+    pop af ; POP AF = flags
     bit BIT_FLAG_PLAYER, a ; check first bit, 0 = player, 1 = enemy
     jr z, .checkCollisionWithEnemy
 
@@ -394,32 +395,44 @@ BulletSpriteCollisionCheck:
     jr z, .end
 
     pop hl  ; POP HL = bullet address
-    push hl ; Push HL = bullet address
     ld a, FLAG_INACTIVE ; bullet collision behavior
     ld [hl], a
 
     call PlayerIsHit ; player collision behavior
-    jr .end
+    ret
     
 .checkCollisionWithEnemy ; bullet belongs to player
     ; b = bullet posY, c = bullet pos X
+    push af ; PUSH AF = bullet flags
 
     ld d, BULLET_COLLIDER_SIZE
     ld e, ENEMY_BULLET_COLLIDER_SIZE
 
     call CheckEnemyCollisionLoop
     and a
-    jr z, .end
+    jr z, .endNoHitEnemey
 
+    pop af ; POP AF = bullet flags
+    ld b, BULLET_DAMAGE
+
+    and a, BIT_MASK_TYPE ; check type
+    cp a, TYPE_BULLET_POWER_UP
+    jr nz, .hitEnemy
+
+    ld b, BULLET_POWER_UP_DAMAGE
+
+.hitEnemy
     call HitEnemy
     
     pop hl  ; POP HL = bullet address
-    push hl ; Push HL = bullet address
     ld a, FLAG_INACTIVE ; bullet collision behavior
     ld [hl], a
+    ret
+
+.endNoHitEnemey
+    pop af ; POP AF = bullet flags
 
 .end
     pop hl
-
     ret
 

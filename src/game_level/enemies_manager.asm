@@ -227,8 +227,7 @@ EnemyShoot::
     ld a, c ; a = c = dir
     ld [hli], a ; load direction
 
-    ; TODO:: SET VELOCITY FOR BULLET BASED ON TYPE LATER
-    ld a, $02
+    ld a, BULLET_VELOCITY
     ld [hli], a ; velocity
     xor a
     ld [hli], a ; second part of velocity
@@ -398,6 +397,37 @@ EnemyMoveBasedOnDir::
 .end
     ret
 
+
+/*  Update the flicker effect in enemy 
+    Parameters:
+        - hl: address of enemy
+    Registers changed:
+        - af
+        - de
+        - hl
+*/
+UpdateEnemyEffects::
+    ld de, Character_FlickerEffect
+    add hl, de
+    ld a, [hli]
+    and a, a
+    jr z, .end
+    
+    ld d, a ; b = FlickerEffect int portion
+    ld a, [hl] ; get fractional portion
+    add a, ENEMY_FLICKER_UPDATE_SPEED
+    ld [hl], a ; update fractional portion
+    jr nc, .end
+
+    dec d
+    ld a, d
+    dec hl
+    ld [hl], a ; update new interger portion value
+
+.end
+    ret
+
+
 /*  Render and set enemy OAM data and animation 
     Parameters:
         - hl: address of enemy
@@ -409,38 +439,17 @@ UpdateEnemySpriteOAM::
     ; check if should render this frame
     ld de, Character_FlickerEffect
     add hl, de
-    ld a, [hli]
-    and a
-    jr z, .startUpdateOAM 
+    ld a, [hl]
 
-    ld d, a ; b = FlickerEffect int portion
-    ld a, [hl] ; get fractional portion
-    add a, ENEMY_FLICKER_UPDATE_SPEED
-    ld [hl], a ; update fractional portion
-    jr nc, .updateFlickerEffect
-
-    dec d
-    ld a, d
-
-    dec hl
-    ld [hl], a ; update new interger portion value
-
-.updateFlickerEffect
-    ; d = FlickerEffect int portion
-    ld a, d
     and a, FLICKER_BITMASK
-    cp a, FLICKER_VALUE
-    pop hl ; POP HL = enemy address
-    jr z, .end 
+    jr z, .startUpdateOAM
 
-    push hl ; PUSH HL = enemy address
+    pop hl
+    ret
 
 .startUpdateOAM
-    pop hl ; POP HL = enemy address
-    push hl ; PUSH HL = enemy address
-
-    ld de, Character_CurrAnimationFrame
-    add hl, de
+    dec hl
+    dec hl
     ld a, [hl] ; get curr frame
 
     sla a 
@@ -580,7 +589,7 @@ CheckEnemyCollisionLoop::
 
 /*  Call this when enemy has been hit 
     hl - enemy address
-    TODO:: pass in the amount of damage 
+    b - bullet damage
 
     WARNING: this is assuming health < 127. Want to prevent underflow, we defined bit 7 to be for -ve
 
@@ -613,7 +622,7 @@ HitEnemy::
     ld de, Character_HP
     add hl, de
     ld a, [hl]
-    sub a, BULLET_DAMAGE ; deduct health
+    sub a, b ; deduct health
     ld [hl], a ; update hp
 
     ; check health <= 0
@@ -622,9 +631,8 @@ HitEnemy::
     cp a, 127
     jr nc, .dead ; value underflowed, go to dead
 
-.FlickerEffect ; not dead, set damage flicker effect
+.flickerEffect ; not dead, set damage flicker effect
     pop hl ; POP HL = enemy address
-    push hl ; PUSH HL = enemy address
     
     ld a, DAMAGE_FLICKER_EFFECT
     ld de, Character_FlickerEffect
@@ -633,8 +641,7 @@ HitEnemy::
     xor a
     ld [hl], a ; reset the fractional portion
 
-    pop hl ; POP HL = enemy address
-    jr .end
+    ret
 
 .dead ; dead, turn it inactive
     pop hl ; POP HL = enemy address
@@ -648,9 +655,7 @@ HitEnemy::
 
     call UpdateEnemyCounterUI
 
-    ; TODO:: if reach 0, win game
-    jr nz, .end
-    call LoadStageClearedUI
+    call z, LoadStageClearedUI
 
 .end
     ret
@@ -707,8 +712,6 @@ PlayerGetsHitEnemyBehavior::
     - af
     - de
     - hl
-
-    ; TODO:: FIX AND CHECK THE OFFSETS
 */
 CheckEnemyInScreen::
     ld e, 0
@@ -725,7 +728,7 @@ CheckEnemyInScreen::
     jr c, .endCheck
 
 .checkWithinYAxis
-    cp a, VIEWPORT_MAX_Y + SCREEN_UPPER_OFFSET_Y * 2 ; check if enemy pos is within y screen pos
+    cp a, VIEWPORT_SIZE_Y + SCREEN_UPPER_OFFSET_Y * 2 ; check if enemy pos is within y screen pos
     jr nc, .endCheck
 
 .checkXOffset

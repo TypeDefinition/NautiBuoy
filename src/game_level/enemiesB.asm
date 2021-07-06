@@ -187,6 +187,10 @@ UpdateEnemyB::
 
 /* Init enemy B sprite and render */
 InitEnemyBSprite:
+    push hl
+    call UpdateEnemyEffects
+    pop hl
+
     call CheckEnemyInScreen
     and a
     jr z, .end

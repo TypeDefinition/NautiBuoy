@@ -30,7 +30,7 @@ UpdateEnemyA::
     jr nc, .endUpdateEnemyA
 
     ; update frames
-    adc a, 0 ; add the carry
+    inc a ; add the carry
 
     cp a, ENEMY_TYPEA_ATTACK_FRAME ; check if shoot
     jr nz, .attackFinish
@@ -91,6 +91,7 @@ UpdateEnemyA::
 
 .endUpdateEnemyA
     pop hl ; POP hl = enemy address
+    
     call InitEnemyASprite
 
     ret
@@ -100,6 +101,10 @@ UpdateEnemyA::
     hl - enemy address 
 */
 InitEnemyASprite:
+    push hl
+    call UpdateEnemyEffects
+    pop hl
+
     call CheckEnemyInScreen
     and a
     jr z, .end
