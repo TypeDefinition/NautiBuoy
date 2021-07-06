@@ -293,8 +293,7 @@ UpdatePlayerAttack::
     ld a, [wPlayer_Direction]
     ld [hli], a ; direction
  
-    ; TODO:: SET VELOCITY FOR BULLET BASED ON TYPE LATER
-    ld a, $02
+    ld a, BULLET_VELOCITY
     ld [hli], a ; velocity
     xor a
     ld [hli], a ; second part of velocity
@@ -317,7 +316,6 @@ UpdatePlayerAttack::
     ret
 
 /*  Player has been hit by enemy/projectile 
-    TODO:: get proper damage
 
     WARNING: this is assuming health < 127. Want to prevent underflow, we defined bit 7 to be for -ve
 */
@@ -367,7 +365,7 @@ PlayerIsHit::
     call PlayerGetsHitEnemyBehavior ; update enemy behavior for getting hit
     ret
 
-.dead /* TODO:: if dead, put gameover screen or something */
+.dead 
     call LoadStageFailedUI
     ret
 

@@ -227,8 +227,7 @@ EnemyShoot::
     ld a, c ; a = c = dir
     ld [hli], a ; load direction
 
-    ; TODO:: SET VELOCITY FOR BULLET BASED ON TYPE LATER
-    ld a, $02
+    ld a, BULLET_VELOCITY
     ld [hli], a ; velocity
     xor a
     ld [hli], a ; second part of velocity
