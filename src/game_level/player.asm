@@ -85,7 +85,7 @@ InitialisePlayer::
     ld [hli], a
     ld [hli], a
 
-    call UpdatePlayerLivesUI
+    call UpdatePlayerHPUI
 
     pop af
     ret
@@ -328,7 +328,7 @@ PlayerIsHit::
     dec a
     ld [wPlayer_HP], a
 
-    call UpdatePlayerLivesUI
+    call UpdatePlayerHPUI
 
     and a ; check health <= 0
     jr z, .dead

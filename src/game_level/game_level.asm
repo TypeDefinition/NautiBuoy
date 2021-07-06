@@ -10,7 +10,9 @@ GameLevelTiles::
 
 SECTION "Game Level Data", WRAM0
 wGameTimer::
-    ds 2 ; first half is fraction, second half is int
+    ds 2 ; Store the timer as Binary-Coded-Decimals (BCD)
+wGameTimerFrac::
+    ds 1
 .end
 
 SECTION "Game Level", ROM0
@@ -90,9 +92,13 @@ LoadGameLevel::
     ld [rSCX], a
 
     ; reset timer values
+    xor a
+    ld [wGameTimerFrac], a
+    ld a, $01
     ld [wGameTimer], a
-    ld a, LEVEL_TIME
+    ld a, $20
     ld [wGameTimer + 1], a
+    call UpdateGameTimerUI
 
     call LCDOn
 
@@ -139,18 +145,40 @@ OnUpdate:
     ret
 
 UpdateLevelTimer:
-    ; update timer
-    ld hl, wGameTimer
-    ld a, [hl]
+    ; Update timer
+    ld a, [wGameTimerFrac]
     add a, TIMER_UPDATE_SPEED
-    ld [hli], a
-    cp a, TIMER_AMT_PER_SEC
-    jr nz, .end
+    ld [wGameTimerFrac], a
+    ret nc
 
-    dec [hl] ; update the actual time
-    jr nz, .end
+    ; Load game timer value into hl.
+    ld a, [wGameTimer]
+    ld h, a
+    ld a, [wGameTimer+1]
+    ld l, a
 
-    ; TODO:: set all the proper variables for losing here
+    ; hl - 1
+    sub a, $01
+    daa
+    ld l, a
+    ld a, h
+    sbc a, $00
+    daa
+    ld h, a
+
+    ; Save new game timer value.
+    ld a, h
+    ld [wGameTimer], a
+    ld a, l
+    ld [wGameTimer+1], a
+
+    call UpdateGameTimerUI
+
+    ; If h == l == 0, HP == 0. If HP == 0, lose.
+    xor a
+    xor h
+    xor l
+    jr nz, .end
 
 .end
     ret

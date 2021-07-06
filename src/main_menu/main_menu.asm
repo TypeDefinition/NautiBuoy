@@ -38,7 +38,7 @@ SECTION "Main Menu WRAM", WRAM0
 wSelectedOption:
     ds 1
 wCursorTileIndices:
-    ds 8 ; Stores 4 tile indices. Each tile index is 2 bytes.
+    ds 4*2 ; Stores 4 tile indices. Each tile index is 2 bytes.
 
 SECTION "Main Menu", ROM0
 ; Global Jumps

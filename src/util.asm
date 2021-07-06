@@ -49,3 +49,24 @@ REPT 5
     add hl, hl
 ENDR
     ret
+
+; Divides c by d.
+; @param c The dividend.
+; @param d The denominator.
+; @return a The remainder.
+; @return c The quotient.
+; @destroy b, f
+CDivD::
+    ld b, 8 ; We want to loop 8 times since there's 8 bits.
+    xor a
+
+:   sla c
+    rla
+    cp d
+    jr c, :+
+    inc c
+    sub d
+:   dec b
+    jr nz, :--
+
+    ret
