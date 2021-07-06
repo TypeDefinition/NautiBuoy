@@ -68,6 +68,18 @@ DEF ENTITIES_INC EQU 1
 
     /*  Flags:
         Bit 0: Inactive/active
+        bit 1: Animation/no animation
+        Bit 2, 3 & 4: Particle Effect Type
+    */
+    struct ParticleEffect
+        bytes 1, Flags
+        bytes 1, PosY
+        bytes 1, PosX
+        words 1, UpdateTimer
+    end_struct
+
+    /*  Flags:
+        Bit 0: Inactive/active
         bit 1: -
         Bit 2, 3 & 4: Power Up Type
     */
