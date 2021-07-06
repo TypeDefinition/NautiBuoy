@@ -77,6 +77,10 @@ UpdateEnemyC::
     hl - enemy address 
 */
 InitEnemyTurretSprite:
+    push hl
+    call UpdateEnemyEffects
+    pop hl
+    
     call CheckEnemyInScreen
     and a
     jr z, .end

@@ -398,6 +398,37 @@ EnemyMoveBasedOnDir::
 .end
     ret
 
+
+/*  Update the flicker effect in enemy 
+    Parameters:
+        - hl: address of enemy
+    Registers changed:
+        - af
+        - de
+        - hl
+*/
+UpdateEnemyEffects::
+    ld de, Character_FlickerEffect
+    add hl, de
+    ld a, [hli]
+    and a, a
+    jr z, .end
+    
+    ld d, a ; b = FlickerEffect int portion
+    ld a, [hl] ; get fractional portion
+    add a, ENEMY_FLICKER_UPDATE_SPEED
+    ld [hl], a ; update fractional portion
+    jr nc, .end
+
+    dec d
+    ld a, d
+    dec hl
+    ld [hl], a ; update new interger portion value
+
+.end
+    ret
+
+
 /*  Render and set enemy OAM data and animation 
     Parameters:
         - hl: address of enemy
@@ -409,37 +440,17 @@ UpdateEnemySpriteOAM::
     ; check if should render this frame
     ld de, Character_FlickerEffect
     add hl, de
-    ld a, [hli]
-    and a
-    jr z, .startUpdateOAM 
+    ld a, [hl]
 
-    ld d, a ; b = FlickerEffect int portion
-    ld a, [hl] ; get fractional portion
-    add a, ENEMY_FLICKER_UPDATE_SPEED
-    ld [hl], a ; update fractional portion
-    jr nc, .updateFlickerEffect
-
-    dec d
-    ld a, d
-
-    dec hl
-    ld [hl], a ; update new interger portion value
-
-.updateFlickerEffect
-    ; d = FlickerEffect int portion
-    ld a, d
     and a, FLICKER_BITMASK
-    pop hl ; POP HL = enemy address
-    jr nz, .end 
+    jr z, .startUpdateOAM
 
-    push hl ; PUSH HL = enemy address
+    pop hl
+    ret
 
 .startUpdateOAM
-    pop hl ; POP HL = enemy address
-    push hl ; PUSH HL = enemy address
-
-    ld de, Character_CurrAnimationFrame
-    add hl, de
+    dec hl
+    dec hl
     ld a, [hl] ; get curr frame
 
     sla a 

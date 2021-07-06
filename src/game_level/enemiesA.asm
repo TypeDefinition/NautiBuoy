@@ -91,6 +91,7 @@ UpdateEnemyA::
 
 .endUpdateEnemyA
     pop hl ; POP hl = enemy address
+    
     call InitEnemyASprite
 
     ret
@@ -100,6 +101,10 @@ UpdateEnemyA::
     hl - enemy address 
 */
 InitEnemyASprite:
+    push hl
+    call UpdateEnemyEffects
+    pop hl
+
     call CheckEnemyInScreen
     and a
     jr z, .end
