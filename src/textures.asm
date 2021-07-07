@@ -12,7 +12,25 @@ Sprites::
     INCBIN "./tile_data/enemyShootOneDir.2bpp"
     INCBIN "./tile_data/ghostEnemy.2bpp"
     INCBIN "./tile_data/Powerups.2bpp"
+    INCBIN "./tile_data/ParticleEffects.2bpp"
 .end::
+
+ParticleEffectSprites::
+.smallExplosion::
+    db $6E ; sprite ID
+    db OAMF_PAL0 
+    db $70 ; sprite ID
+    db OAMF_PAL0 
+.mediumExplosion::
+    db $72 ; sprite ID
+    db OAMF_PAL0 
+    db $74 ; sprite ID
+    db OAMF_PAL0 
+.bigExplosion
+    db $76 ; sprite ID
+    db OAMF_PAL0 
+    db $78 ; sprite ID
+    db OAMF_PAL0
 
 BulletSprites::
 .upDefaultSprite::

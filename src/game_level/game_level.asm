@@ -83,6 +83,7 @@ LoadGameLevel::
     set_romx_bank BANK(LevelOneEnemyData)
     call InitEnemiesAndPlaceOnMap
     call InitPowerupsAndPlaceOnMap
+    call InitParticleEffects
 
     call hOAMDMA ; transfer sprite data to OAM
 
@@ -134,6 +135,7 @@ OnUpdate:
     call UpdateAllEnemies    
     call UpdateBullets
     call UpdatePowerUpShadowOAM
+    call UpdateParticleEffectsShadowOAM
 
     ; Dirty tiles get updated during HBlank.
     call UpdateBGWindow

@@ -157,11 +157,18 @@ BulletTileCollisionCheck:
     ; Destroy the bullet if the bullet destoyed flag is set.
 .end
     ld a, h
-    pop hl
     and a
     jr z, .bulletNotDestroyed
+
+    ld b, TYPE_PARTICLE_DESTROY_BLOCK
+    call SpawnParticleEffect
+
+    pop hl
     ld [hl], FLAG_INACTIVE
+    
+    ret
 .bulletNotDestroyed
+    pop hl
     ret
 
 

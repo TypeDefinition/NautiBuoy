@@ -68,6 +68,13 @@ DEF BIT_FLAG_PLAYER EQU $1 ; 1 bit
 DEF BIT_MASK_TYPE EQU %11111100 ; to do bit masking for power up type/enemy type
 DEF BIT_MASK_TYPE_REMOVE EQU %00000011
 
+; Particle Effects
+DEF FLAG_PARTICLE_EFFECT_ANIMATION EQU $02 ; bit 1, %0000 00 1 0
+DEF TYPE_PARTICLE_DESTROY_BLOCK EQU 0 ; bit 2, 3 & 4, %000 000 00
+DEF TYPE_PARTICLE_DESTROY_POWER_COLLISION EQU 4 ; bit 2, 3 & 4, %000 001 00
+DEF TYPE_PARTICLE_KILL_ENEMY EQU 8 ; bit 2, 3 & 4, %000 010 00
+DEF TYPE_PARTICLE_POWER_KILL_ENEMY EQU 12 ; bit 2, 3 & 4, %000 011 00
+
 ; Directions
 ; can use cp to compare, takes reg A, but takes only 1 cycle and 1 byte
 DEF DIR_UP EQU 0
