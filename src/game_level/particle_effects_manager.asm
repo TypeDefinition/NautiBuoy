@@ -35,9 +35,9 @@ InitParticleEffects::
 
 /* Spawn particle effect, look for particle effects that are available
     Parameters:
-    - b: y pos
-    - c: x pos
-    - d: type of effect
+    - d: y pos
+    - e: x pos
+    - b: type of effect
     Register change:
     - af
     - bc
@@ -56,21 +56,21 @@ SpawnParticleEffect::
     ; GO TO NEXT LOOP
     
 .end
-    ld a, d
-    ld d, FLAG_ACTIVE
+    ld a, b
+    ld b, FLAG_ACTIVE
     cp a, TYPE_PARTICLE_KILL_ENEMY ; check type for animation
     jr c, .initData
 
-    ld d, FLAG_ACTIVE | FLAG_PARTICLE_EFFECT_ANIMATION
+    ld b, FLAG_ACTIVE | FLAG_PARTICLE_EFFECT_ANIMATION
 
 .initData
-    or a, d 
+    or a, b
     ld [hli], a ; init flags
     
-    ld a, b
+    ld a, d
     ld [hli], a ; init y pos
 
-    ld a, c
+    ld a, e
     ld [hli], a ; init x pos
 
     xor a ; reset UpdateTimer
