@@ -45,76 +45,76 @@ PlayerAnimation::
 .upAnimation::
     ; Frame 1
     db 0
-    db OAMF_PAL0
+    db OAMF_PAL0 | OAMF_PRI
     db 0
-    db OAMF_PAL0 | OAMF_XFLIP
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
 
     ; Frame 2
     db 2
-    db OAMF_PAL0
+    db OAMF_PAL0 | OAMF_PRI
     db 2
-    db OAMF_PAL0 | OAMF_XFLIP
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
 
     ; Frame 3
     db 4
-    db OAMF_PAL0
+    db OAMF_PAL0 | OAMF_PRI
     db 4
-    db OAMF_PAL0 | OAMF_XFLIP
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
 
 .downAnimation::
     ; Frame 1
     db 0
-    db OAMF_PAL0 | OAMF_YFLIP
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
     db 0
-    db OAMF_PAL0 | OAMF_XFLIP | OAMF_YFLIP
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_YFLIP | OAMF_PRI
 
     ; Frame 2
     db 2
-    db OAMF_PAL0 | OAMF_YFLIP
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
     db 2
-    db OAMF_PAL0 | OAMF_XFLIP | OAMF_YFLIP
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_YFLIP | OAMF_PRI
 
     ; Frame 3
     db 4
-    db OAMF_PAL0 | OAMF_YFLIP
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
     db 4
-    db OAMF_PAL0 | OAMF_XFLIP | OAMF_YFLIP
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_YFLIP | OAMF_PRI
 
 .rightAnimation::
     db 6
-    db OAMF_PAL0
+    db OAMF_PAL0 | OAMF_PRI
     db 8
-    db OAMF_PAL0
+    db OAMF_PAL0 | OAMF_PRI
 
     ; Frame 2
     db 10
-    db OAMF_PAL0
+    db OAMF_PAL0 | OAMF_PRI
     db 12
-    db OAMF_PAL0
+    db OAMF_PAL0 | OAMF_PRI
 
     ; Frame 3
     db 14
-    db OAMF_PAL0
+    db OAMF_PAL0 | OAMF_PRI
     db 16
-    db OAMF_PAL0
+    db OAMF_PAL0 | OAMF_PRI
 
 .leftAnimation::
     db 8
-    db OAMF_PAL0 | OAMF_XFLIP
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
     db 6
-    db OAMF_PAL0 | OAMF_XFLIP
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
 
     ; Frame 2
     db 12
-    db OAMF_PAL0 | OAMF_XFLIP
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
     db 10
-    db OAMF_PAL0 | OAMF_XFLIP
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
 
     ; Frame 3
     db 16
-    db OAMF_PAL0 | OAMF_XFLIP
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
     db 14
-    db OAMF_PAL0 | OAMF_XFLIP
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
 
 /* Animation, sprite IDs for the enemy*/
 EnemyAAnimation::
