@@ -3,42 +3,16 @@ INCLUDE "./src/include/util.inc"
 INCLUDE "./src/include/hUGE.inc"
 INCLUDE "./src/include/definitions.inc"
 
-; Title Options
-RSRESET
-DEF opt_title_CONTINUE RB
-DEF opt_title_NEWGAME RB
+; Cursor Tile Value
+DEF CURSOR_TILE_VALUE EQU $10
 
-; Tile Screen Cursor Tile Indices
-DEF CTI_TITLE_OPT_CONTINUE EQU $0163
-DEF CTI_TITLE_OPT_NEWGAME EQU $01A3
-
-; New Game Options
-RSRESET
-DEF opt_newgame_NO RB
-DEF opt_newgame_YES RB
-
-; New Game Screen Cursor Tile Indices
-DEF CTI_NEWGAME_OPT_NO EQU $0163
-DEF CTI_NEWGAME_OPT_YES EQU $01A3
-
-/*  Add a Tile Index to wCursorTileIndices.
-    ld hl, wCursorTileIndices should be invoked right before
-    the first invokation of this macro.
-    @param \1 Tile Index
-    @destroy af, bc, hl */
-MACRO add_cti
-    ld bc, \1
-    ld a, b
-    ld [hli], a
-    ld a, c
-    ld [hli], a
-ENDM
+; Cursor Tile Index
+DEF CTI_OPT_NO EQU $01E2
+DEF CTI_OPT_YES EQU $01ED
 
 SECTION "Main Menu WRAM", WRAM0
 wSelectedOption:
     ds 1
-wCursorTileIndices:
-    ds 4*2 ; Stores 4 tile indices. Each tile index is 2 bytes.
 
 SECTION "Main Menu", ROM0
 ; Global Jumps
@@ -51,10 +25,10 @@ JumpLoadTitleScreen:
     jp LoadTitleScreen
 JumpUpdateTitleScreen:
     jp UpdateTitleScreen
-JumpLoadNewGameScreen:
-    jp LoadNewGameScreen
-JumpUpdateNewGameScreen:
-    jp UpdateNewGameScreen
+JumpLoadResetScreen:
+    jp LoadResetScreen
+JumpUpdateResetScreen:
+    jp UpdateResetScreen
 JumpLoadStageSelectScreen:
     jp LoadStageSelectScreen
 JumpUpdateStageSelectScreen:
@@ -65,28 +39,6 @@ LCDOn:
     ld a, LCDCF_ON | LCDCF_WIN9C00 | LCDCF_WINOFF | LCDCF_BG9800 | LCDCF_OBJ16 | LCDCF_OBJOFF | LCDCF_BGON
     ld [hLCDC], a
     ld [rLCDC], a
-    ret
-
-; Get the cursor tile index.
-; @return bc Cursor Tile Index
-GetCursorTileIndex:
-    push af
-    push hl
-
-    ld h, 0
-    ld a, [wSelectedOption]
-    ld l, a
-    ld bc, wCursorTileIndices
-
-    add hl, hl
-    add hl, bc
-    ld a, [hli]
-    ld b, a
-    ld a, [hl]
-    ld c, a
-
-    pop hl
-    pop af
     ret
 
 LoadMainMenu::
@@ -145,5 +97,5 @@ VBlankHandler:
     reti
 
 INCLUDE "./src/main_menu/title_screen.asm_part"
-INCLUDE "./src/main_menu/new_game_screen.asm_part"
+INCLUDE "./src/main_menu/reset_screen.asm_part"
 INCLUDE "./src/main_menu/stage_select_screen.asm_part"

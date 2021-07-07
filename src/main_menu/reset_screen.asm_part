@@ -1,0 +1,107 @@
+LoadResetScreen:
+    di
+    call LCDOff
+
+    ; Copy tile map into VRAM.
+    set_romx_bank BANK(ResetScreenTileMap)
+    mem_copy ResetScreenTileMap, _SCRN0, ResetScreenTileMap.end-ResetScreenTileMap
+
+    ld hl, JumpUpdateResetScreen
+    call SetProgramLoopCallback
+
+    call ResetBGWindowUpdateQueue
+
+    ; Reset SCY & SCX.
+    xor a
+    ld [rSCY], a
+    ld [rSCX], a
+
+    ; Reset SelectedOption
+    xor a
+    ld [wSelectedOption], a
+
+    ; Set left cursor.
+    ld a, CURSOR_TILE_VALUE
+    ld bc, CTI_OPT_NO
+    call QueueBGTile
+
+    call LCDOn
+    ei
+
+    ret
+
+UpdateResetScreen:
+    call UpdateInput
+
+    ; Update Sound
+    set_romx_bank BANK(MainMenuBGM)
+    call _hUGE_dosound
+
+    ; Get Input
+    ld a, [wNewlyInputKeys]
+    ld d, a
+    
+
+    ; Select Previous/Next Option
+    ld a, [wSelectedOption]
+.onLeft
+    bit PADB_LEFT, d
+    jr z, .onRight
+
+    ; Set left cursor.
+    ld a, CURSOR_TILE_VALUE
+    ld bc, CTI_OPT_NO
+    call QueueBGTile
+
+    ; Clear right cursor.
+    ld a, EMPTY_TILE_VALUE
+    ld bc, CTI_OPT_YES
+    call QueueBGTile
+
+    ; Update Selected Option
+    xor a
+    ld [wSelectedOption], a
+    
+    jr .onEnter
+.onRight
+    bit PADB_RIGHT, d
+    jr z, .onBack
+    
+    ; Set left cursor.
+    ld a, EMPTY_TILE_VALUE
+    ld bc, CTI_OPT_NO
+    call QueueBGTile
+
+    ; Clear right cursor.
+    ld a, CURSOR_TILE_VALUE
+    ld bc, CTI_OPT_YES
+    call QueueBGTile
+
+    ; Update Selected Option
+    ld a, $01
+    ld [wSelectedOption], a
+
+    ; Cancel
+.onBack
+    bit PADB_B, d
+    jr z, .onEnter
+    ld hl, JumpLoadTitleScreen
+    call SetProgramLoopCallback
+    jr .end
+    ; Enter Selected Option
+.onEnter
+    bit PADB_A, d
+    jr z, .end
+.selectNo
+    and a
+    jr nz, .selectYes
+    ld hl, JumpLoadTitleScreen
+    call SetProgramLoopCallback
+    jr .end
+.selectYes
+    ld hl, JumpLoadTitleScreen
+    call SetProgramLoopCallback
+
+.end
+    call UpdateBGWindow
+    ret

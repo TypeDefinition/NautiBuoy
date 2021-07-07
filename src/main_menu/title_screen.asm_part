@@ -16,15 +16,6 @@ LoadTitleScreen:
     ld [rSCY], a
     ld [rSCX], a
 
-    ; Reset SelectedOption
-    xor a
-    ld [wSelectedOption], a
-
-    ; Set Cursor Positions
-    ld hl, wCursorTileIndices
-    add_cti CTI_TITLE_OPT_CONTINUE
-    add_cti CTI_TITLE_OPT_NEWGAME
-
     call LCDOn
     ei
 
@@ -37,51 +28,22 @@ UpdateTitleScreen:
     set_romx_bank BANK(MainMenuBGM)
     call _hUGE_dosound
 
-    ; Clear Old Cursor
-    call GetCursorTileIndex
-    ld a, EMPTY_TILE
-    call QueueBGTile
-
     ; Get Input
     ld a, [wNewlyInputKeys]
     ld b, a
-
-    ; Select Previous/Next Option
-    ld a, [wSelectedOption]
-.onUp
-    bit PADB_UP, b
-    jr z, .onDown
-    dec a
-    jr .updateSelectedOption
-.onDown
-    bit PADB_DOWN, b
-    jr z, .updateSelectedOption
-    inc a
-.updateSelectedOption
-    and a, $01 ; Title Screen has only 2 options. This allows the cursor to loop.
-    ld [wSelectedOption], a
-
-    ; Enter Selected Option
-.onEnter
+    ; Level Select
+.onLevelSelect
     bit PADB_A, b
-    jr z, .end
-.selectContinue
-    ASSERT opt_title_CONTINUE == 0
-    and a
-    jr nz, .selectNewGame
+    jr z, .onReset
     ld hl, JumpLoadStageSelectScreen
     call SetProgramLoopCallback
     jr .end
-.selectNewGame
-    ASSERT opt_title_NEWGAME == 1
-    ld hl, JumpLoadNewGameScreen
+    ; Reset
+.onReset
+    bit PADB_SELECT, b
+    jr z, .end
+    ld hl, JumpLoadResetScreen
     call SetProgramLoopCallback
 
 .end
-    ; Set New Cursor
-    call GetCursorTileIndex
-    ld a, CURSOR_TILE
-    call QueueBGTile
-    call UpdateBGWindow
-
     ret

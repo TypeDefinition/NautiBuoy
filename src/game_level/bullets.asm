@@ -38,7 +38,7 @@ SECTION "Bullets", ROM0
 BulletDestroyTile:
     push af
     cp a, l
-    ld a, EMPTY_TILE
+    ld a, EMPTY_TILE_VALUE
     call c, SetGameLevelTile
     pop af
     ret
