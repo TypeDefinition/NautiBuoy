@@ -39,7 +39,7 @@ BulletDestroyTile:
     push af
     cp a, l
     ld a, EMPTY_TILE
-    call c, SetTile
+    call c, SetGameLevelTile
     pop af
     ret
 

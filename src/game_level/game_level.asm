@@ -5,7 +5,7 @@ INCLUDE "./src/include/definitions.inc"
 
 SECTION "Game Level Tiles", WRAM0
 GameLevelTiles::
-    ds 1024
+    ds 1024 ; Every game level is made of 1024 tiles.
 .end::
 
 SECTION "Game Level Data", WRAM0
@@ -68,17 +68,17 @@ LoadGameLevel::
     mem_copy Level0TileMap, GameLevelTiles, Level0TileMap.end-Level0TileMap
     mem_copy GameLevelTiles, _SCRN0, GameLevelTiles.end-GameLevelTiles
 
-    call LoadGameplayUI
+    call LoadGameLevelUI
+
+    call ResetPlayerCamera
+    call ResetAllBullets
+    call ResetBGWindowUpdateQueue
 
     ; TEMP: Temporary code.
     set_romx_bank BANK(Sprites)
     ld hl, wShadowOAM
     call InitialisePlayer
     call UpdatePlayerShadowOAM
-
-    call ResetPlayerCamera
-    call ResetAllBullets
-    call ResetDirtyTiles
     
     set_romx_bank BANK(LevelOneEnemyData)
     call InitEnemiesAndPlaceOnMap
@@ -136,12 +136,72 @@ OnUpdate:
     call UpdatePowerUpShadowOAM
 
     ; Dirty tiles get updated during HBlank.
-    call UpdateDirtyTiles
+    call UpdateBGWindow
 
     ; Update Sound
     set_romx_bank BANK(GameLevelBGM)
     call _hUGE_dosound
 
+    ret
+
+VBlankHandler:
+    push af
+    ; If VBlankHandler was called without waiting for VBlank, the frame lagged.
+    ld a, [hWaitVBlankFlag]
+    and a
+    jr z, .lagFrame
+    ; Reset hWaitVBlankFlag
+    xor a
+    ld [hWaitVBlankFlag], a
+    push bc
+    push de
+    push hl
+
+    ; Enable Sprite Rendering
+    ldh a, [hLCDC]
+    ldh [rLCDC], a
+    
+    call hOAMDMA ; Update OAM
+
+    ; Update camera position.
+    ld a, [wShadowSCData]
+    ld [rSCY], a
+    ld a, [wShadowSCData + 1]
+    ld [rSCX], a 
+
+    pop hl
+    pop de
+    pop bc
+    pop af
+.lagFrame
+    pop af
+    reti
+
+; Get the value of the tile, given a tile index.
+; @param bc TileIndex
+; @return a Tile Value
+GetTileValue::
+    push hl
+
+    ld hl, GameLevelTiles
+    add hl, bc
+    ld a, [hl]
+
+    pop hl
+    ret
+
+; Set a tile to be updated.
+; @param a New Tile Value
+; @param bc Tile Index
+SetGameLevelTile::
+    push af
+    push hl
+    ld hl, GameLevelTiles
+    add hl, bc
+    ld [hl], a
+    pop hl
+    pop af
+    call QueueBGTile
     ret
 
 UpdateLevelTimer:
@@ -182,39 +242,6 @@ UpdateLevelTimer:
 
 .end
     ret
-
-VBlankHandler:
-    push af
-    ; If VBlankHandler was called without waiting for VBlank, the frame lagged.
-    ld a, [hWaitVBlankFlag]
-    and a
-    jr z, .lagFrame
-    ; Reset hWaitVBlankFlag
-    xor a
-    ld [hWaitVBlankFlag], a
-    push bc
-    push de
-    push hl
-
-    ; Enable Sprite Rendering
-    ldh a, [hLCDC]
-    ldh [rLCDC], a
-    
-    call hOAMDMA ; Update OAM
-
-    ; Update camera position.
-    ld a, [wShadowSCData]
-    ld [rSCY], a
-    ld a, [wShadowSCData + 1]
-    ld [rSCX], a 
-
-    pop hl
-    pop de
-    pop bc
-    pop af
-.lagFrame
-    pop af
-    reti
 
 SECTION "VBlank Data", WRAM0
 wShadowSCData::

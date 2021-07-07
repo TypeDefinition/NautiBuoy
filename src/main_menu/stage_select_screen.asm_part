@@ -9,7 +9,7 @@ LoadStageSelectScreen:
     ld hl, JumpUpdateStageSelectScreen
     call SetProgramLoopCallback
 
-    call ResetDirtyTiles
+    call ResetBGWindowUpdateQueue
 
     ; Reset SCY & SCX.
     xor a
@@ -50,6 +50,6 @@ UpdateStageSelectScreen:
     call SetProgramLoopCallback
 
 .end
-    call UpdateDirtyTiles
+    call UpdateBGWindow
 
     ret

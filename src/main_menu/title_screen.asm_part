@@ -9,7 +9,7 @@ LoadTitleScreen:
     ld hl, JumpUpdateTitleScreen
     call SetProgramLoopCallback
 
-    call ResetDirtyTiles
+    call ResetBGWindowUpdateQueue
 
     ; Reset SCY & SCX.
     xor a
@@ -40,7 +40,7 @@ UpdateTitleScreen:
     ; Clear Old Cursor
     call GetCursorTileIndex
     ld a, EMPTY_TILE
-    call SetTile
+    call QueueBGTile
 
     ; Get Input
     ld a, [wNewlyInputKeys]
@@ -81,7 +81,7 @@ UpdateTitleScreen:
     ; Set New Cursor
     call GetCursorTileIndex
     ld a, CURSOR_TILE
-    call SetTile
-    call UpdateDirtyTiles
+    call QueueBGTile
+    call UpdateBGWindow
 
     ret
