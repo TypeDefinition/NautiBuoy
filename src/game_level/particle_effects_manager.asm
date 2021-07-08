@@ -24,7 +24,7 @@ InitParticleEffects::
     ld [hl], a ; just make it inactive
 
     ld de, sizeof_ParticleEffect
-    add hl, bc
+    add hl, de
 
     dec b
     jr nz, .startLoop
@@ -38,7 +38,7 @@ InitParticleEffects::
     - d: y pos
     - e: x pos
     - b: type of effect
-    - c: time before effect dispawn
+    - c: time before effect despawn
     Register change:
     - af
     - bc
@@ -49,14 +49,30 @@ SpawnParticleEffect::
     ld hl, wParticleEffectsData
     ld a, PARTICLE_EFFECT_NO
 
+    push bc ; PUSH BC = type of effect and time
+    push de ; PUSH DE = pos Y and X
+    ld b, a
+    ld de, sizeof_ParticleEffect
 .startLoop
+    ; b = counter, hl = particle effect address
     ld a, [hl]
     and a, a ; check if alive
-    ;jr z, .end ; not alive can end loop
+    jr z, .endLoop ; not alive can end loop
 
     ; GO TO NEXT LOOP
-    
-.end
+    add hl, de
+
+    dec b
+    jr nz, .startLoop
+
+    pop de ; POP de  = pos Y and X
+    pop bc ; POP BC = type of effect and time
+    ret ; no effects
+
+.endLoop
+    pop de ; POP de  = pos Y and X
+    pop bc ; POP BC = type of effect and time
+
     ld a, b
     ld b, FLAG_ACTIVE
     cp a, TYPE_PARTICLE_KILL_ENEMY ; check type for animation
@@ -88,15 +104,17 @@ SpawnParticleEffect::
 /* Update particle effects */
 UpdateParticleEffect::
     ld hl, wParticleEffectsData
+    ld a, PARTICLE_EFFECT_NO
+    ld b, a
     
 .startLoop
+    push bc ; PUSH BC = loop counter
+
     ld a, [hl]
     and a, a ; check active
-    ret z ; TODO:: GO TO NEXT LOOP
-    ;jr z, .nextLoop
+    jr z, .nextLoop
 
     push hl ; PUSH HL = particle effect address
-
     ld b, a ; b = flags
 
     inc hl
@@ -107,14 +125,12 @@ UpdateParticleEffect::
 
     ld a, [hl]
     dec a
-    jr nz, .continueUpdateParticle
+    jr nz, .continueUpdateParticle ; check if alive time is over
 
-    
     pop hl ; POP HL = particle effect address
-    xor a 
+    xor a
     ld [hl], a ; set it inactive
-    ret
-    ;jr .nextLoop
+    jr .nextLoop
 
 .continueUpdateParticle
     ld [hli], a
@@ -126,24 +142,37 @@ UpdateParticleEffect::
     ; animation
     ld a, [hl] 
     inc a
-    ld [hli], a  ; make sure to clamp the animation
+    ld [hli], a  ; TODO:: make sure to clamp the animation
 
 .updateSprite
-    pop hl
-    push hl
+    pop hl ; POP HL = particle effect address
+    push hl ; PUSH HL = particle effect address
     call UpdateParticleEffectsShadowOAM
 
     pop hl ; POP HL = particle effect address
 
 .nextLoop
-    ; add to hl to go next
+    ; hl = starting address of particle 
+    ld de, sizeof_ParticleEffect
+    add hl, de
 
-    ;jr .startLoop
+    pop bc ; POP BC = loop counter
+    dec b
+    jr nz, .startLoop
 
 .endLoop
     ret
 
-/*  Update particle effects for shadown oam */
+
+/*  Update particle effects for shadown oam 
+    parameters:
+        - hl = particle effect address
+    registers changed:
+        - af
+        - bc
+        - de
+        - hl
+*/
 UpdateParticleEffectsShadowOAM::
     ld a, [hli] ; get flags
 
@@ -181,22 +210,15 @@ UpdateParticleEffectsShadowOAM::
     add a, 8 ; sprite y offset = 8
     ld d, a
 
-;    cp a, $0A
-;    jr nz, .test
-;
-;    ld d, a
-;
-;.test
-.initShadowOAM
-    ; d = pos y, e = pos x, bc = sprite address
     ld a, [wShadowSCData + 1]
     ld e, a
     ld a, [hl] ; pos x
     sub a, e ; decrease by screen offset
     ld e, a
 
-    ; get the current address of shadow OAM to hl
-    ld a, [wCurrentShadowOAMPtr]
+.initShadowOAM
+    ; d = pos y, e = pos x, bc = sprite address
+    ld a, [wCurrentShadowOAMPtr]  ; get the current address of shadow OAM to hl
     ld l, a
     ld h, HIGH(wShadowOAM)
 
