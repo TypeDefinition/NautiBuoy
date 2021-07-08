@@ -123,7 +123,8 @@ UpdateParticleEffect::
     and a, FLAG_PARTICLE_EFFECT_ANIMATION
     jr z, .updateSprite ; check if need update animation
 
-    ld a, [hl] ; animation
+    ; animation
+    ld a, [hl] 
     inc a
     ld [hli], a  ; make sure to clamp the animation
 
@@ -148,10 +149,23 @@ UpdateParticleEffectsShadowOAM::
 
     ; check type 
     ; TODO:: IF GOT ANIMATION, later need add by the offset
+    inc hl ; skip flags
+    inc hl ; skip 
     inc hl
-    inc hl
-    inc hl
-    inc hl
+
+    ; use flags to check type
+    ld bc, ParticleEffectSprites.smallExplosion
+
+    ; add animation here
+    ld a, [hli] ; get current animation frame
+    sla a ; add a
+    sla a 
+
+    add a, c
+    ld c, a
+    ld a, b
+    adc a, 0 ; add offset to animation address: bc + a
+    ld b, a 
 
     ; check type
     ld a, [wShadowSCData]
@@ -170,7 +184,7 @@ UpdateParticleEffectsShadowOAM::
 
     ld a, [wShadowSCData + 1]
     ld e, a
-    ld a, [hli] ; pos x
+    ld a, [hl] ; pos x
     sub a, e ; decrease by screen offset
     ld e, a
 
