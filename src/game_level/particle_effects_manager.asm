@@ -101,7 +101,7 @@ UpdateParticleEffect::
 
     inc hl
     ld a, [hl]
-    add a, TILE_UPDATE_FRAME_TIME
+    add a, PARTICLE_UPDATE_FRAME_TIME
     ld [hli], a
     jr nc, .updateSprite
 
@@ -109,10 +109,10 @@ UpdateParticleEffect::
     dec a
     jr nz, .continueUpdateParticle
 
-    ; set it inactive
+    
     pop hl ; POP HL = particle effect address
     xor a 
-    ld [hl], a
+    ld [hl], a ; set it inactive
     ret
     ;jr .nextLoop
 
@@ -145,18 +145,24 @@ UpdateParticleEffect::
 
 /*  Update particle effects for shadown oam */
 UpdateParticleEffectsShadowOAM::
-    ; check got animation or not
+    ld a, [hli] ; get flags
 
-    ; check type 
-    ; TODO:: IF GOT ANIMATION, later need add by the offset
-    inc hl ; skip flags
-    inc hl ; skip 
+    inc hl ; skip update frame counter
     inc hl
 
-    ; use flags to check type
+    and a, BIT_MASK_TYPE ; check type
+
+.powerDestroySprite
+    cp a, TYPE_PARTICLE_DESTROY_POWER_COLLISION
+    jr nz, .defaultExplosionSprite
+    
+    ld bc, ParticleEffectSprites.mediumExplosion
+    jr .initAnimation
+
+.defaultExplosionSprite
     ld bc, ParticleEffectSprites.smallExplosion
 
-    ; add animation here
+.initAnimation
     ld a, [hli] ; get current animation frame
     sla a ; add a
     sla a 
@@ -165,7 +171,7 @@ UpdateParticleEffectsShadowOAM::
     ld c, a
     ld a, b
     adc a, 0 ; add offset to animation address: bc + a
-    ld b, a 
+    ld b, a
 
     ; check type
     ld a, [wShadowSCData]
@@ -175,13 +181,14 @@ UpdateParticleEffectsShadowOAM::
     add a, 8 ; sprite y offset = 8
     ld d, a
 
-    cp a, $0A
-    jr nz, .test
-
-    ld d, a
-
-.test
-
+;    cp a, $0A
+;    jr nz, .test
+;
+;    ld d, a
+;
+;.test
+.initShadowOAM
+    ; d = pos y, e = pos x, bc = sprite address
     ld a, [wShadowSCData + 1]
     ld e, a
     ld a, [hl] ; pos x
@@ -193,18 +200,19 @@ UpdateParticleEffectsShadowOAM::
     ld l, a
     ld h, HIGH(wShadowOAM)
 
-    ; TODO:: INIT THE SHADOW OAM STUFF PROPERLY
     ld a, d
     ld [hli], a ; update y pos
 
     ld a, e
     ld [hli], a ; update x pos
 
-    ld a, $6E
+    ld a, [bc]
     ld [hli], a
+    inc bc
 
-    ld a, OAMF_PAL0
+    ld a, [bc]
     ld [hli], a
+    inc bc
 
     ld a, d
     ld [hli], a ; update y pos
@@ -213,10 +221,11 @@ UpdateParticleEffectsShadowOAM::
     add a, 8 ; offset by 8
     ld [hli], a ; update x pos
 
-    ld a, $70
+    ld a, [bc]
     ld [hli], a
+    inc bc
 
-    ld a, OAMF_PAL0
+    ld a, [bc]
     ld [hli], a
 
     ; update current address from hl to wCurrentShadowOAMPtr

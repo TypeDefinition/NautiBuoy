@@ -43,10 +43,11 @@ BulletDestroyTile:
     pop af
     ret
 
-; Check for bullet collision with a tile.
+/* Check for bullet collision with a tile.
 ; If collided with BULLET_DESTRUCTIBLE_TILES, the tile is destroyed.
 ; If collided with BULLET_COLLIDABLE_TILES, the bullet is destroyed.
 ; @ hl: Bullet Memory Address
+*/
 BulletTileCollisionCheck:
     push hl
 
@@ -160,14 +161,25 @@ BulletTileCollisionCheck:
     and a
     jr z, .bulletNotDestroyed
 
-    ; TODO:: PUT PROPER HERE
+    pop hl
+    ld a, [hl]
+    ld [hl], FLAG_INACTIVE
+
+    and a, BIT_MASK_TYPE ; get type
+
     ld b, TYPE_PARTICLE_DESTROY_BLOCK
     ld c, TILE_DESTRUCTION_TIME
-    call SpawnParticleEffect
 
-    pop hl
-    ld [hl], FLAG_INACTIVE
+    cp a, TYPE_BULLET_POWER_UP
+    jr nz, .spawnParticle
+
+    ld b, TYPE_PARTICLE_DESTROY_POWER_COLLISION
     
+.spawnParticle
+    push hl
+    call SpawnParticleEffect
+    pop hl
+
     ret
 .bulletNotDestroyed
     pop hl
@@ -293,8 +305,9 @@ UpdateBullets::
     call BulletTileCollisionCheck
 
     ld a, [hl]
-    bit BIT_FLAG_ACTIVE, a ; check if alive after collision
+    bit BIT_FLAG_ACTIVE, a ; check if alive after sprite collision
     jp z, .loopEnd
+
     call BulletSpriteCollisionCheck
 
     ; Translation
