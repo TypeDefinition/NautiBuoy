@@ -646,17 +646,40 @@ HitEnemy::
 .dead ; dead, turn it inactive
     pop hl ; POP HL = enemy address
     ld a, FLAG_INACTIVE
-    ld [hl], a
+    ld [hli], a
 
     ; reduce enemy counter by 1
     ld a, [wCurrLevelEnemiesNo]
     dec a
+    jr z, .win
     ld [wCurrLevelEnemiesNo], a
 
-    call UpdateEnemyCounterUI
+    ; spawn particle effects
+    inc hl
+    ld a, [hli] ; get y pos
+    ld d, a
 
-    ; If win, go to win screen.
-    jr nz, .end
+    inc hl
+    inc hl
+    ld a, [hl] ; get x pos
+    ld e, a
+
+    ld a, b ; a = bullet damage
+    ld b, TYPE_PARTICLE_KILL_ENEMY
+    ld c, PARTICLE_KILL_ENEMY_ALIVE_TIME
+    
+    cp a, BULLET_POWER_UP_DAMAGE ; check bullet type from here based on its damage
+    jr nz, .continueUpdate
+
+    ld b, TYPE_PARTICLE_POWER_KILL_ENEMY
+    ld c, PARTICLE_POWER_KILL_ENEMY_ALIVE_TIME
+
+.continueUpdate
+    call SpawnParticleEffect
+    call UpdateEnemyCounterUI
+    ret
+    
+.win ; If win, go to win screen.
     ld hl, JumpLoadWinScreen
     call SetProgramLoopCallback
 

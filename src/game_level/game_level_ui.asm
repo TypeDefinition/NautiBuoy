@@ -75,7 +75,6 @@ UpdatePlayerHPUI::
     ret
 
 UpdateEnemyCounterUI::
-    push af ; Do not remove this. Will break stuff.
     push hl ; Do not remove this. Will break stuff.
 
     ld a, [wCurrLevelEnemiesNo]
@@ -84,5 +83,4 @@ UpdateEnemyCounterUI::
     call QueueWindowTile
 
     pop hl
-    pop af
     ret
