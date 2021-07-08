@@ -3,8 +3,8 @@ LoadStageSelectScreen:
     call LCDOff
 
     ; Copy tile map into VRAM.
-    set_romx_bank BANK(StageSelectTileMap)
-    mem_copy StageSelectTileMap, _SCRN0, StageSelectTileMap.end-StageSelectTileMap
+    set_romx_bank BANK(UnlockedStageSelectTileMap)
+    mem_copy UnlockedStageSelectTileMap, _SCRN0, UnlockedStageSelectTileMap.end-UnlockedStageSelectTileMap
 
     ld hl, JumpUpdateStageSelectScreen
     call SetProgramLoopCallback

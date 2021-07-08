@@ -1,6 +1,8 @@
 INCLUDE "./src/include/hardware.inc"
 INCLUDE "./src/include/util.inc"
 
+DEF UPDATE_QUEUE_SIZE EQU 16
+
 SECTION "BGWindow WRAM", WRAM0
 /*  Contains an array of tiles to be updated in VRAM.
     Each tile to update is represented using 4 bytes.
@@ -9,7 +11,7 @@ SECTION "BGWindow WRAM", WRAM0
     BG/Window Flag: 1 byte (BG = 0, Window = 1)
 */
 wUpdateQueue:
-    ds 4*16 ; Maximum of 16 tiles.
+    ds 4*UPDATE_QUEUE_SIZE
 wUpdateCounter:
     ds 1
 
