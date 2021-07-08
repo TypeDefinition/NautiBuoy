@@ -133,6 +133,8 @@ UpdateParticleEffect::
     jr .nextLoop
 
 .continueUpdateParticle
+    ; b = flags
+
     ld [hli], a
 
     ld a, b
@@ -140,9 +142,29 @@ UpdateParticleEffect::
     jr z, .updateSprite ; check if need update animation
 
     ; animation
+    ld a, b
+    and a, BIT_MASK_TYPE
+.smallExplosion
+    cp a, TYPE_PARTICLE_KILL_ENEMY
+    jr nz, .bigExplosion
+
+    ld b, PARTICLE_KILL_ENEMY_MAX_FRAMES
+    jr .initAnimation
+    
+.bigExplosion
+    ld b, PARTICLE_POWER_KILL_ENEMY_MAX_FRAMES
+    
+.initAnimation
+    ; b = max frames
     ld a, [hl] 
     inc a
-    ld [hli], a  ; TODO:: make sure to clamp the animation
+    cp a, b
+    jr nz, .updateAnimation
+
+    xor a
+.updateAnimation
+    ; a = curr anim frame
+    ld [hli], a  
 
 .updateSprite
     pop hl ; POP HL = particle effect address
@@ -209,6 +231,13 @@ UpdateParticleEffectsShadowOAM::
     sub a, d ; decrease by screen offset
     add a, 8 ; sprite y offset = 8
     ld d, a
+
+;    cp a, $0A
+;    jr nz, .test
+;
+;    ld d, a
+;
+;.test
 
     ld a, [wShadowSCData + 1]
     ld e, a
