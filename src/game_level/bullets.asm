@@ -160,7 +160,9 @@ BulletTileCollisionCheck:
     and a
     jr z, .bulletNotDestroyed
 
+    ; TODO:: PUT PROPER HERE
     ld b, TYPE_PARTICLE_DESTROY_BLOCK
+    ld c, TILE_DESTRUCTION_TIME
     call SpawnParticleEffect
 
     pop hl

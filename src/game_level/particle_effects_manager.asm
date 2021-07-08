@@ -38,6 +38,7 @@ InitParticleEffects::
     - d: y pos
     - e: x pos
     - b: type of effect
+    - c: time before effect dispawn
     Register change:
     - af
     - bc
@@ -66,49 +67,91 @@ SpawnParticleEffect::
 .initData
     or a, b
     ld [hli], a ; init flags
+
+    xor a 
+    ld [hli], a ; reset UpdateTimer
+    ld a, c 
+    ld [hli], a 
+    
+    xor a
+    ld [hli], a ; reset animation for now
     
     ld a, d
     ld [hli], a ; init y pos
 
     ld a, e
-    ld [hli], a ; init x pos
-
-    xor a ; reset UpdateTimer
-    ld [hli], a
-    ld [hl], a
+    ld [hl], a ; init x pos
 
     ret
 
 
 /* Update particle effects */
 UpdateParticleEffect::
-
+    ld hl, wParticleEffectsData
+    
 .startLoop
+    ld a, [hl]
+    and a, a ; check active
+    ret z ; TODO:: GO TO NEXT LOOP
+    ;jr z, .nextLoop
 
+    push hl ; PUSH HL = particle effect address
 
+    ld b, a ; b = flags
 
-    ; update its update_frame thing, 
-    ; once it reaches a certain time period destroy it
-    ; check its type and update accordingly
+    inc hl
+    ld a, [hl]
+    add a, TILE_UPDATE_FRAME_TIME
+    ld [hli], a
+    jr nc, .updateSprite
 
-    ; render it properly based on the animation
-    ; if it does not have animation check its flags?
+    ld a, [hl]
+    dec a
+    jr nz, .continueUpdateParticle
+
+    ; set it inactive
+    pop hl ; POP HL = particle effect address
+    xor a 
+    ld [hl], a
+    ret
+    ;jr .nextLoop
+
+.continueUpdateParticle
+    ld [hli], a
+
+    ld a, b
+    and a, FLAG_PARTICLE_EFFECT_ANIMATION
+    jr z, .updateSprite ; check if need update animation
+
+    ld a, [hl] ; animation
+    inc a
+    ld [hli], a  ; make sure to clamp the animation
+
+.updateSprite
+    pop hl
+    push hl
+    call UpdateParticleEffectsShadowOAM
+
+    pop hl ; POP HL = particle effect address
+
+.nextLoop
+    ; add to hl to go next
+
+    ;jr .startLoop
+
 .endLoop
     ret
 
 /*  Update particle effects for shadown oam */
 UpdateParticleEffectsShadowOAM::
-    ld hl, wParticleEffectsData
-    ld a, [hli]
-
-    and a, a ; check active
-    ret z
-
     ; check got animation or not
 
     ; check type 
     ; TODO:: IF GOT ANIMATION, later need add by the offset
-
+    inc hl
+    inc hl
+    inc hl
+    inc hl
 
     ; check type
     ld a, [wShadowSCData]
@@ -117,6 +160,13 @@ UpdateParticleEffectsShadowOAM::
     sub a, d ; decrease by screen offset
     add a, 8 ; sprite y offset = 8
     ld d, a
+
+    cp a, $0A
+    jr nz, .test
+
+    ld d, a
+
+.test
 
     ld a, [wShadowSCData + 1]
     ld e, a

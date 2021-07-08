@@ -135,7 +135,7 @@ OnUpdate:
     call UpdateAllEnemies    
     call UpdateBullets
     call UpdatePowerUpShadowOAM
-    call UpdateParticleEffectsShadowOAM
+    call UpdateParticleEffect
 
     ; Dirty tiles get updated during HBlank.
     call UpdateBGWindow
