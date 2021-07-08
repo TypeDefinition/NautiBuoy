@@ -127,6 +127,8 @@ OnUpdate:
 
     ; insert game logic here and update shadow OAM data
     call UpdateLevelTimer ; update timer
+    call UpdateParticleEffect
+    
     call UpdatePlayerMovement
     call UpdatePlayerAttack
     call UpdatePlayerCamera
@@ -135,7 +137,6 @@ OnUpdate:
     call UpdateAllEnemies    
     call UpdateBullets
     call UpdatePowerUpShadowOAM
-    call UpdateParticleEffectsShadowOAM
 
     ; Dirty tiles get updated during HBlank.
     call UpdateBGWindow

@@ -73,9 +73,10 @@ DEF ENTITIES_INC EQU 1
     */
     struct ParticleEffect
         bytes 1, Flags
+        words 1, UpdateTimer ; 1st half is fraction, second half is int
+        bytes 1, AnimationFrame
         bytes 1, PosY
         bytes 1, PosX
-        words 1, UpdateTimer
     end_struct
 
     /*  Flags:
