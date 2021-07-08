@@ -13,7 +13,7 @@ DEF MAX_STAGES EQU 16
     Number of Stars - 1 Byte */
 SECTION "Save Game SRAM", SRAM
 sChecksum::
-    ds 1 ; Validation Checksum
+    ds 2 ; Validation Checksum
 sSaveData::
     ds 4*MAX_STAGES ; Save data for stages.
 .end::
@@ -57,7 +57,7 @@ GenerateChecksum:
     ld d, a
     ld [sChecksum], a
     ld e, a
-    ld [sChecksum], a
+    ld [sChecksum+1], a
     ret
 
 ; Validate the save data checksum.
@@ -78,13 +78,6 @@ ValidateChecksum:
 
     dec b
     jr nz, .loop
-
-    ; Write checksum to SRAM.
-    ld d, a
-    ld [sChecksum], a
-    ld e, a
-    ld [sChecksum], a
-    ret
 
     ; Get SRAM checksum. hl = SRAM checksum.
     ld a, [sChecksum]
