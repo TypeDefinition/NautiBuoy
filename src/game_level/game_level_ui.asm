@@ -6,7 +6,6 @@ INCLUDE "./src/include/definitions.inc"
 DEF UTI_PLAYER_HP EQU 7
 DEF UTI_NUM_ENEMIES EQU 10
 DEF UTI_GAME_TIMER EQU 1
-DEF UTI_STAGE_RESULT EQU 74
 
 SECTION "Game Level UI", ROM0
 LCDOn:
@@ -22,76 +21,6 @@ LoadGameLevelUI::
     ld [rWX], a
     ld a, SCRN_Y-GAMEPLAY_UI_SIZE_Y
     ld [rWY], a
-    ret
-
-LoadStageClearedUI::
-    push af
-    push hl
-
-    call LCDOff
-
-    set_romx_bank BANK(StageEndTileMap)
-    mem_copy StageEndTileMap, _SCRN1, StageEndTileMap.end-StageEndTileMap
-    ld a, 7
-    ld [rWX], a
-    xor a
-    ld [rWY], a
-
-    ld hl, _SCRN1+UTI_STAGE_RESULT
-
-    ld a, "C"
-    ld [hli], a
-    ld a, "L"
-    ld [hli], a
-    ld a, "E"
-    ld [hli], a
-    ld a, "A"
-    ld [hli], a
-    ld a, "R"
-    ld [hli], a
-    ld a, "E"
-    ld [hli], a
-    ld a, "D"
-    ld [hl], a
-
-    call LCDOn
-
-    pop hl
-    pop af
-    ret
-
-LoadStageFailedUI::
-    push af
-    push hl
-
-    call LCDOff
-
-    set_romx_bank BANK(StageEndTileMap)
-    mem_copy StageEndTileMap, _SCRN1, StageEndTileMap.end-StageEndTileMap
-    ld a, 7
-    ld [rWX], a
-    xor a
-    ld [rWY], a
-
-    ld hl, _SCRN1+UTI_STAGE_RESULT
-
-    ld a, "F"
-    ld [hli], a
-    ld a, "A"
-    ld [hli], a
-    ld a, "I"
-    ld [hli], a
-    ld a, "L"
-    ld [hli], a
-    ld a, "E"
-    ld [hli], a
-    ld a, "D"
-    ld [hl], a
-
-    call LCDOn
-
-    pop hl
-    pop af
     ret
 
 UpdateGameTimerUI::

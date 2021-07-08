@@ -11,6 +11,11 @@ DEF CTI_OPT_NO EQU $01E2
 DEF CTI_OPT_YES EQU $01ED
 
 SECTION "Main Menu WRAM", WRAM0
+; Global Variables
+wMainMenuDefaultJump::
+    ds 2
+
+; Local Variables
 wSelectedOption:
     ds 1
 
@@ -18,19 +23,20 @@ SECTION "Main Menu", ROM0
 ; Global Jumps
 JumpLoadMainMenu::
     jp LoadMainMenu
+JumpLoadTitleScreen::
+    jp LoadTitleScreen
+JumpLoadResetScreen::
+    jp LoadResetScreen
+JumpLoadStageSelectScreen::
+    jp LoadStageSelectScreen
+
 ; Local Jumps
 JumpVBlankHandler:
     jp VBlankHandler
-JumpLoadTitleScreen:
-    jp LoadTitleScreen
 JumpUpdateTitleScreen:
     jp UpdateTitleScreen
-JumpLoadResetScreen:
-    jp LoadResetScreen
 JumpUpdateResetScreen:
     jp UpdateResetScreen
-JumpLoadStageSelectScreen:
-    jp LoadStageSelectScreen
 JumpUpdateStageSelectScreen:
     jp UpdateStageSelectScreen
 
@@ -49,7 +55,11 @@ LoadMainMenu::
 
     ld hl, JumpVBlankHandler
     call SetVBlankCallback
-    ld hl, JumpLoadTitleScreen
+
+    ld a, [wMainMenuDefaultJump]
+    ld h, a
+    ld a, [wMainMenuDefaultJump+1]
+    ld l, a
     call SetProgramLoopCallback
 
     ; Copy tile data into VRAM.

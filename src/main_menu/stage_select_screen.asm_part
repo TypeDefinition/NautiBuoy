@@ -37,13 +37,13 @@ UpdateStageSelectScreen:
     ld b, a
 
     ; Enter Selected Option
-.onStart
+.onA
     bit PADB_A, b
-    jr z, .onBack
+    jr z, .onB
     ld hl, JumpLoadGameLevel
     call SetProgramLoopCallback
     jr .end
-.onBack
+.onB
     bit PADB_B, b
     jr z, .end
     ld hl, JumpLoadTitleScreen

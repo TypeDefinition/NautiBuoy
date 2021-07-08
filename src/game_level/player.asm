@@ -366,7 +366,8 @@ PlayerIsHit::
     ret
 
 .dead 
-    call LoadStageFailedUI
+    ld hl, JumpLoadLoseScreen
+    call SetProgramLoopCallback
     ret
 
 /*  Player check collision with enemy sprites */

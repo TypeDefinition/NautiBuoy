@@ -31,15 +31,13 @@ UpdateTitleScreen:
     ; Get Input
     ld a, [wNewlyInputKeys]
     ld b, a
-    ; Level Select
-.onLevelSelect
+.onA ; Stage Select
     bit PADB_A, b
-    jr z, .onReset
+    jr z, .onSelect
     ld hl, JumpLoadStageSelectScreen
     call SetProgramLoopCallback
     jr .end
-    ; Reset
-.onReset
+.onSelect ; Reset Save Files
     bit PADB_SELECT, b
     jr z, .end
     ld hl, JumpLoadResetScreen

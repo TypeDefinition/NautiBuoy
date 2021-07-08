@@ -655,7 +655,10 @@ HitEnemy::
 
     call UpdateEnemyCounterUI
 
-    call z, LoadStageClearedUI
+    ; If win, go to win screen.
+    jr nz, .end
+    ld hl, JumpLoadWinScreen
+    call SetProgramLoopCallback
 
 .end
     ret

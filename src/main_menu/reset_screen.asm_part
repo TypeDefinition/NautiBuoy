@@ -62,10 +62,10 @@ UpdateResetScreen:
     xor a
     ld [wSelectedOption], a
     
-    jr .onEnter
+    jr .onA
 .onRight
     bit PADB_RIGHT, d
-    jr z, .onBack
+    jr z, .onB
     
     ; Set left cursor.
     ld a, EMPTY_TILE_VALUE
@@ -82,14 +82,14 @@ UpdateResetScreen:
     ld [wSelectedOption], a
 
     ; Cancel
-.onBack
+.onB
     bit PADB_B, d
-    jr z, .onEnter
+    jr z, .onA
     ld hl, JumpLoadTitleScreen
     call SetProgramLoopCallback
     jr .end
     ; Enter Selected Option
-.onEnter
+.onA
     bit PADB_A, d
     jr z, .end
 .selectNo

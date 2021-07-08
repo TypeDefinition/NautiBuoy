@@ -85,7 +85,12 @@ RunProgram:
     ld [rOBP1], a ; Set Object Palette 1
 
     ; Set Default Scene
-    call LoadMainMenu
+    ld a, HIGH(JumpLoadTitleScreen)
+    ld [wMainMenuDefaultJump], a
+    ld a, LOW(JumpLoadTitleScreen)
+    ld [wMainMenuDefaultJump+1], a
+    ld hl, JumpLoadMainMenu
+    call SetProgramLoopCallback
 
 .loop
     call hProgramLoopCallback
