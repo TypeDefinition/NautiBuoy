@@ -1,0 +1,15 @@
+LoadStageSelectScreen:
+    di
+
+    ld a, [wSelectedStage]
+    ld [wRWIndex], a
+    call LoadGame
+    ld a, [wRWBuffer]
+    cp a, $00
+    ld hl, JumpLoadLockedStageScreen
+    jr z, :+
+    ld hl, JumpLoadUnlockedStageScreen
+:   call SetProgramLoopCallback
+
+    ei
+    ret
