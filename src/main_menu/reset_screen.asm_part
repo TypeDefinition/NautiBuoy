@@ -18,7 +18,7 @@ LoadResetScreen:
 
     ; Reset SelectedOption
     xor a
-    ld [wSelectedOption], a
+    ld [wResetOption], a
 
     ; Set left cursor.
     ld a, CURSOR_TILE_VALUE
@@ -43,7 +43,7 @@ UpdateResetScreen:
     
 
     ; Select Previous/Next Option
-    ld a, [wSelectedOption]
+    ld a, [wResetOption]
 .onLeft
     bit PADB_LEFT, d
     jr z, .onRight
@@ -60,7 +60,7 @@ UpdateResetScreen:
 
     ; Update Selected Option
     xor a
-    ld [wSelectedOption], a
+    ld [wResetOption], a
     
     jr .onA
 .onRight
@@ -79,7 +79,7 @@ UpdateResetScreen:
 
     ; Update Selected Option
     ld a, $01
-    ld [wSelectedOption], a
+    ld [wResetOption], a
 
     ; Cancel
 .onB

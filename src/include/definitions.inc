@@ -3,6 +3,9 @@ INCLUDE "./src/include/hardware.inc"
     IF !DEF(DEFINITIONS_INC)
 DEF DEFINITIONS_INC EQU 1
 
+; Max Stages
+DEF MAX_STAGES EQU 16
+
 ; viewport info
 DEF GAMEPLAY_UI_SIZE_Y EQU 8*1
 DEF MAP_SIZE_Y EQU 256

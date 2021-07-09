@@ -68,9 +68,9 @@ UpdateWinScreen:
 .onB
     bit PADB_B, b
     jr z, .end
-    ld a, HIGH(JumpLoadStageSelectScreen)
+    ld a, HIGH(JumpLoadUnlockedStageScreen)
     ld [wMainMenuDefaultJump], a
-    ld a, LOW(JumpLoadStageSelectScreen)
+    ld a, LOW(JumpLoadUnlockedStageScreen)
     ld [wMainMenuDefaultJump+1], a
     ld hl, JumpLoadMainMenu
     call SetProgramLoopCallback

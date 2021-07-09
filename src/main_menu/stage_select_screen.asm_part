@@ -1,12 +1,12 @@
-LoadStageSelectScreen:
+LoadUnlockedStageScreen:
     di
     call LCDOff
 
     ; Copy tile map into VRAM.
-    set_romx_bank BANK(UnlockedStageSelectTileMap)
-    mem_copy UnlockedStageSelectTileMap, _SCRN0, UnlockedStageSelectTileMap.end-UnlockedStageSelectTileMap
+    set_romx_bank BANK(UnlockedStageScreenTileMap)
+    mem_copy UnlockedStageScreenTileMap, _SCRN0, UnlockedStageScreenTileMap.end-UnlockedStageScreenTileMap
 
-    ld hl, JumpUpdateStageSelectScreen
+    ld hl, JumpUpdateUnlockedStageScreen
     call SetProgramLoopCallback
 
     call ResetBGWindowUpdateQueue
@@ -16,16 +16,107 @@ LoadStageSelectScreen:
     ld [rSCY], a
     ld [rSCX], a
 
-    ; Reset SelectedOption
-    xor a
-    ld [wSelectedOption], a
+    ; Load Stage Info
+    ld bc, StageInfo
+    ld h, $00
+    ld a, [wSelectedStage]
+    ld l, a
+    add hl, hl
+    add hl, hl
+    add hl, bc
+
+    ; Stage Name
+    ld a, [hli]
+    ld [_SCRN0+UTI_STAGE_NAME], a
+    ld a, [hli]
+    ld [_SCRN0+UTI_STAGE_NAME+1], a
+
+    ; Stage Time (Can be optimised, but it's not like I need to hit 60FPS for this part anyways so I don't care.)
+    ld a, [hl] ; Thousands Place
+    swap a
+    and a, $0F
+    add a, "0"
+    ld [_SCRN0+UTI_STAGE_TIME], a
+    ld a, [hli] ; Hundreds Place
+    and a, $0F
+    add a, "0"
+    ld [_SCRN0+UTI_STAGE_TIME+1], a
+    ld a, [hl] ; Tens Place
+    swap a
+    and a, $0F
+    add a, "0"
+    ld [_SCRN0+UTI_STAGE_TIME+2], a
+    ld a, [hli] ; Ones Place
+    and a, $0F
+    add a, "0"
+    ld [_SCRN0+UTI_STAGE_TIME+3], a
+
+    ; Stars 1 Time
+    ld a, [hl] ; Thousands Place
+    swap a
+    and a, $0F
+    add a, "0"
+    ld [_SCRN0+UTI_STARS1_TIME], a
+    ld a, [hli] ; Hundreds Place
+    and a, $0F
+    add a, "0"
+    ld [_SCRN0+UTI_STARS1_TIME+1], a
+    ld a, [hl] ; Tens Place
+    swap a
+    and a, $0F
+    add a, "0"
+    ld [_SCRN0+UTI_STARS1_TIME+2], a
+    ld a, [hli] ; Ones Place
+    and a, $0F
+    add a, "0"
+    ld [_SCRN0+UTI_STARS1_TIME+3], a
+
+    ; Stars 2 Time
+    ld a, [hl] ; Thousands Place
+    swap a
+    and a, $0F
+    add a, "0"
+    ld [_SCRN0+UTI_STARS2_TIME], a
+    ld a, [hli] ; Hundreds Place
+    and a, $0F
+    add a, "0"
+    ld [_SCRN0+UTI_STARS2_TIME+1], a
+    ld a, [hl] ; Tens Place
+    swap a
+    and a, $0F
+    add a, "0"
+    ld [_SCRN0+UTI_STARS2_TIME+2], a
+    ld a, [hli] ; Ones Place
+    and a, $0F
+    add a, "0"
+    ld [_SCRN0+UTI_STARS2_TIME+3], a
+
+    ; Stars 3 Time
+    ld a, [hl] ; Thousands Place
+    swap a
+    and a, $0F
+    add a, "0"
+    ld [_SCRN0+UTI_STARS3_TIME], a
+    ld a, [hli] ; Hundreds Place
+    and a, $0F
+    add a, "0"
+    ld [_SCRN0+UTI_STARS3_TIME+1], a
+    ld a, [hl] ; Tens Place
+    swap a
+    and a, $0F
+    add a, "0"
+    ld [_SCRN0+UTI_STARS3_TIME+2], a
+    ld a, [hli] ; Ones Place
+    and a, $0F
+    add a, "0"
+    ld [_SCRN0+UTI_STARS3_TIME+3], a
 
     call LCDOn
     ei
 
     ret
 
-UpdateStageSelectScreen:
+UpdateUnlockedStageScreen:
     call UpdateInput
 
     ; Update Sound
@@ -36,7 +127,12 @@ UpdateStageSelectScreen:
     ld a, [wNewlyInputKeys]
     ld b, a
 
-    ; Enter Selected Option
+.onLeft
+    bit PADB_LEFT, b
+    jr z, .onRight
+.onRight
+    bit PADB_RIGHT, b
+    jr z, .onA
 .onA
     bit PADB_A, b
     jr z, .onB

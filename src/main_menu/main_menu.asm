@@ -6,17 +6,28 @@ INCLUDE "./src/include/definitions.inc"
 ; Cursor Tile Value
 DEF CURSOR_TILE_VALUE EQU $10
 
-; Cursor Tile Index
+; Reset Screen Cursor Tile Index
 DEF CTI_OPT_NO EQU $01E2
 DEF CTI_OPT_YES EQU $01ED
+
+; Stage Select Screen UI Tile Index
+DEF UTI_STAGE_NAME EQU 76
+DEF UTI_STAGE_TIME EQU 142
+DEF UTI_STARS1_TIME EQU 334
+DEF UTI_STARS2_TIME EQU 398
+DEF UTI_STARS3_TIME EQU 462
+DEF UTI_YOUR_TIME EQU $00
+DEF UTI_YOUR_STARS EQU $00
 
 SECTION "Main Menu WRAM", WRAM0
 ; Global Variables
 wMainMenuDefaultJump::
     ds 2
+wSelectedStage::
+    ds 1
 
 ; Local Variables
-wSelectedOption:
+wResetOption:
     ds 1
 
 SECTION "Main Menu", ROM0
@@ -27,8 +38,8 @@ JumpLoadTitleScreen::
     jp LoadTitleScreen
 JumpLoadResetScreen::
     jp LoadResetScreen
-JumpLoadStageSelectScreen::
-    jp LoadStageSelectScreen
+JumpLoadUnlockedStageScreen::
+    jp LoadUnlockedStageScreen
 
 ; Local Jumps
 JumpVBlankHandler:
@@ -37,8 +48,8 @@ JumpUpdateTitleScreen:
     jp UpdateTitleScreen
 JumpUpdateResetScreen:
     jp UpdateResetScreen
-JumpUpdateStageSelectScreen:
-    jp UpdateStageSelectScreen
+JumpUpdateUnlockedStageScreen:
+    jp UpdateUnlockedStageScreen
 
 LCDOn:
     ; Set LCDC Flags

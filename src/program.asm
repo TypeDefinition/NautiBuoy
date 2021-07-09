@@ -84,7 +84,10 @@ RunProgram:
     ld a, %01001011
     ld [rOBP1], a ; Set Object Palette 1
 
-    ; Set Default Scene
+    ; Set Selected Stage
+    xor a
+    ld [wSelectedStage], a
+    ; Set Default Menu Scene
     ld a, HIGH(JumpLoadTitleScreen)
     ld [wMainMenuDefaultJump], a
     ld a, LOW(JumpLoadTitleScreen)

@@ -1,7 +1,6 @@
+INCLUDE "./src/include/definitions.inc"
 INCLUDE "./src/include/hardware.inc"
 INCLUDE "./src/include/util.inc"
-
-DEF MAX_STAGES EQU 16
 
 /*  The save data consists of a 4-Byte validation string
     to check for data corruption, followed by 4 bytes for each
@@ -21,7 +20,7 @@ sSaveData::
 SECTION "Save Game WRAM", WRAM0
 wRWIndex::
     ds 1
-wRWData::
+wRWBuffer::
     ds 4
 .end::
 
@@ -94,11 +93,11 @@ ValidateChecksum:
     ret
 
 GenerateDefaultSaveGame:
-    ; Lock all stages.
-    mem_set_small sSaveData, $00, sSaveData.end - (sSaveData+1)
     ; Unlock stage 1
     ld a, $01
     ld [sSaveData], a
+    ; Lock all stages except stage 1.
+    mem_set_small sSaveData, $00, (sSaveData.end - (sSaveData+1))
     ret
 
 SaveGame::
@@ -114,13 +113,13 @@ SaveGame::
     add hl, bc
     
     ; Write to SRAM
-    ld a, [wRWData]
+    ld a, [wRWBuffer]
     ld [hli], a
-    ld a, [wRWData+1]
+    ld a, [wRWBuffer+1]
     ld [hli], a
-    ld a, [wRWData+2]
+    ld a, [wRWBuffer+2]
     ld [hli], a
-    ld a, [wRWData+3]
+    ld a, [wRWBuffer+3]
     ld [hl], a
 
     call GenerateChecksum
@@ -143,9 +142,9 @@ LoadGame::
     add hl, bc
 
     ; Read from SRAM
-FOR N, wRWData.end - wRWData
+FOR N, wRWBuffer.end - wRWBuffer
     ld a, [hli]
-    ld [wRWData+N], a
+    ld [wRWBuffer+N], a
 ENDR
 
     call DisableSRAM

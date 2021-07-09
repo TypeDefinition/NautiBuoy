@@ -34,7 +34,7 @@ UpdateTitleScreen:
 .onA ; Stage Select
     bit PADB_A, b
     jr z, .onSelect
-    ld hl, JumpLoadStageSelectScreen
+    ld hl, JumpLoadUnlockedStageScreen
     call SetProgramLoopCallback
     jr .end
 .onSelect ; Reset Save Files
