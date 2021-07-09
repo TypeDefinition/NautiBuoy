@@ -17,6 +17,10 @@ SECTION "Enemy D", ROM0
 UpdateEnemyD::
     push hl ; PUSH HL = enemy address
 
+    push hl ; PUSH hl = enemy address
+    call UpdateEnemyEffects
+    pop hl
+
 .checkState
     ld de, Character_UpdateFrameCounter + 1
     add hl, de
@@ -221,10 +225,6 @@ ResetEnemyD::
     hl - enemy address 
 */
 InitEnemyGhostSprite:
-    push hl ; PUSH hl = enemy address
-    call UpdateEnemyEffects
-    pop hl
-
     push hl
     ld de, Character_UpdateFrameCounter + 1
     add hl, de ; offset hl = updateFrameCounter
