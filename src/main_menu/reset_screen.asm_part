@@ -99,6 +99,7 @@ UpdateResetScreen:
     call SetProgramLoopCallback
     jr .end
 .selectYes
+    call ResetGame
     ld hl, JumpLoadTitleScreen
     call SetProgramLoopCallback
 

@@ -54,9 +54,9 @@ GenerateChecksum:
     jr nz, .loop
 
     ; Write checksum to SRAM.
-    ld d, a
+    ld a, d
     ld [sChecksum], a
-    ld e, a
+    ld a, e
     ld [sChecksum+1], a
     ret
 
@@ -93,7 +93,7 @@ ValidateChecksum:
     cp d
     ret
 
-GenerateDefaultSaveGame:
+GenerateDefaultSave:
     ; Lock all stages except stage 1.
     ld a, (sSaveData.end - sSaveData)
     ld b, a
@@ -140,7 +140,7 @@ LoadGame::
     call EnableSRAM
 
     call ValidateChecksum
-    call nz, GenerateDefaultSaveGame
+    call nz, GenerateDefaultSave
 
     ; Set hl to the write memory address.
     ld bc, sSaveData
@@ -157,5 +157,11 @@ FOR N, wRWBuffer.end - wRWBuffer
     ld [wRWBuffer+N], a
 ENDR
 
+    call DisableSRAM
+    ret
+
+ResetGame::
+    call EnableSRAM
+    call nz, GenerateDefaultSave
     call DisableSRAM
     ret
