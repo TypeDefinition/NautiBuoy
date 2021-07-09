@@ -601,6 +601,10 @@ CheckEnemyCollisionLoop::
 HitEnemy::
     push hl ; PUSH hl = enemy address
     
+    ld a, b
+    cp a, BULLET_POWER_UP_DAMAGE ; if its powerup damage, can hit regardless
+    jr z, .hitEnemy
+
     ld a, [hl] ; get enemy flags
     and a, BIT_MASK_TYPE
     cp a, TYPE_ENEMYB ; check which enemy it is, and whether u can shoot it or not
