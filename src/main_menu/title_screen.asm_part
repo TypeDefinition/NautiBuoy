@@ -36,7 +36,7 @@ UpdateTitleScreen:
     jr z, .onSelect
     xor a
     ld [wSelectedStage], a
-    ld hl, JumpLoadUnlockedStageScreen
+    ld hl, JumpLoadStageSelectScreen
     call SetProgramLoopCallback
     jr .end
 .onSelect ; Reset Save Files

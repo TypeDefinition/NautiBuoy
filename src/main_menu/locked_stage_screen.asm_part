@@ -25,7 +25,7 @@ LoadLockedStageScreen:
     add hl, hl
     add hl, hl
     add hl, bc
-    
+
     ; Stage Name
     ld a, [hli]
     ld [_SCRN0+UTI_STAGE_NAME], a
@@ -57,14 +57,8 @@ UpdateLockedStageScreen:
     xor a
 :   ld [wSelectedStage], a
 
-    ld [wRWIndex], a
-    call LoadGame
-    ld a, [wRWBuffer]
-    cp a, $00
-    ld hl, JumpLoadLockedStageScreen
-    jr z, :+
-    ld hl, JumpLoadUnlockedStageScreen
-:   call SetProgramLoopCallback
+    ld hl, JumpLoadStageSelectScreen
+    call SetProgramLoopCallback
 
     jr .end
 
@@ -79,14 +73,8 @@ UpdateLockedStageScreen:
     ld a, (MAX_STAGES-1)
 :   ld [wSelectedStage], a
 
-    ld [wRWIndex], a
-    call LoadGame
-    ld a, [wRWBuffer]
-    cp a, $00
-    ld hl, JumpLoadLockedStageScreen
-    jr z, :+
-    ld hl, JumpLoadUnlockedStageScreen
-:   call SetProgramLoopCallback
+    ld hl, JumpLoadStageSelectScreen
+    call SetProgramLoopCallback
 
     jr .end
 

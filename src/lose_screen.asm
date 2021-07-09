@@ -68,9 +68,9 @@ UpdateLoseScreen:
 .onB
     bit PADB_B, b
     jr z, .end
-    ld a, HIGH(JumpLoadUnlockedStageScreen)
+    ld a, HIGH(JumpLoadStageSelectScreen)
     ld [wMainMenuDefaultJump], a
-    ld a, LOW(JumpLoadUnlockedStageScreen)
+    ld a, LOW(JumpLoadStageSelectScreen)
     ld [wMainMenuDefaultJump+1], a
     ld hl, JumpLoadMainMenu
     call SetProgramLoopCallback

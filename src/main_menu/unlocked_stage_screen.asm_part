@@ -164,14 +164,8 @@ UpdateUnlockedStageScreen:
     xor a
 :   ld [wSelectedStage], a
 
-    ld [wRWIndex], a
-    call LoadGame
-    ld a, [wRWBuffer]
-    cp a, $00
-    ld hl, JumpLoadLockedStageScreen
-    jr z, :+
-    ld hl, JumpLoadUnlockedStageScreen
-:   call SetProgramLoopCallback
+    ld hl, JumpLoadStageSelectScreen
+    call SetProgramLoopCallback
 
     jr .end
 
@@ -186,14 +180,8 @@ UpdateUnlockedStageScreen:
     ld a, (MAX_STAGES-1)
 :   ld [wSelectedStage], a
 
-    ld [wRWIndex], a
-    call LoadGame
-    ld a, [wRWBuffer]
-    cp a, $00
-    ld hl, JumpLoadLockedStageScreen
-    jr z, :+
-    ld hl, JumpLoadUnlockedStageScreen
-:   call SetProgramLoopCallback
+    ld hl, JumpLoadStageSelectScreen
+    call SetProgramLoopCallback
 
     jr .end
 

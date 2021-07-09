@@ -35,24 +35,33 @@ SECTION "Main Menu", ROM0
 ; Global Jumps
 JumpLoadMainMenu::
     jp LoadMainMenu
+
 JumpLoadTitleScreen::
     jp LoadTitleScreen
+
 JumpLoadResetScreen::
     jp LoadResetScreen
-JumpLoadUnlockedStageScreen::
-    jp LoadUnlockedStageScreen
-JumpLoadLockedStageScreen::
-    jp LoadLockedStageScreen
+
+JumpLoadStageSelectScreen::
+    jp LoadStageSelectScreen
 
 ; Local Jumps
 JumpVBlankHandler:
     jp VBlankHandler
+
 JumpUpdateTitleScreen:
     jp UpdateTitleScreen
+
 JumpUpdateResetScreen:
     jp UpdateResetScreen
+
+JumpLoadUnlockedStageScreen:
+    jp LoadUnlockedStageScreen
 JumpUpdateUnlockedStageScreen:
     jp UpdateUnlockedStageScreen
+
+JumpLoadLockedStageScreen:
+    jp LoadLockedStageScreen
 JumpUpdateLockedStageScreen:
     jp UpdateLockedStageScreen
 
@@ -124,5 +133,6 @@ VBlankHandler:
 
 INCLUDE "./src/main_menu/title_screen.asm_part"
 INCLUDE "./src/main_menu/reset_screen.asm_part"
+INCLUDE "./src/main_menu/stage_select_screen.asm_part"
 INCLUDE "./src/main_menu/unlocked_stage_screen.asm_part"
 INCLUDE "./src/main_menu/locked_stage_screen.asm_part"
