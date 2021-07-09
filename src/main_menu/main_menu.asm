@@ -3,8 +3,10 @@ INCLUDE "./src/include/util.inc"
 INCLUDE "./src/include/hUGE.inc"
 INCLUDE "./src/include/definitions.inc"
 
-; Cursor Tile Value
+; Tile Values
 DEF CURSOR_TILE_VALUE EQU $10
+DEF EMPTY_STAR_TILE_VALUE EQU $11
+DEF FILLED_STAR_TILE_VALUE EQU $12
 
 ; Reset Screen Cursor Tile Index
 DEF CTI_OPT_NO EQU $01E2
@@ -13,11 +15,10 @@ DEF CTI_OPT_YES EQU $01ED
 ; Stage Select Screen UI Tile Index
 DEF UTI_STAGE_NAME EQU 76
 DEF UTI_STAGE_TIME EQU 142
-DEF UTI_STARS1_TIME EQU 334
 DEF UTI_STARS2_TIME EQU 398
 DEF UTI_STARS3_TIME EQU 462
-DEF UTI_YOUR_TIME EQU $00
-DEF UTI_YOUR_STARS EQU $00
+DEF UTI_YOUR_TIME EQU 206
+DEF UTI_YOUR_STARS EQU 269
 
 SECTION "Main Menu WRAM", WRAM0
 ; Global Variables
@@ -40,6 +41,8 @@ JumpLoadResetScreen::
     jp LoadResetScreen
 JumpLoadUnlockedStageScreen::
     jp LoadUnlockedStageScreen
+JumpLoadLockedStageScreen::
+    jp LoadLockedStageScreen
 
 ; Local Jumps
 JumpVBlankHandler:
@@ -50,6 +53,8 @@ JumpUpdateResetScreen:
     jp UpdateResetScreen
 JumpUpdateUnlockedStageScreen:
     jp UpdateUnlockedStageScreen
+JumpUpdateLockedStageScreen:
+    jp UpdateLockedStageScreen
 
 LCDOn:
     ; Set LCDC Flags
@@ -119,4 +124,5 @@ VBlankHandler:
 
 INCLUDE "./src/main_menu/title_screen.asm_part"
 INCLUDE "./src/main_menu/reset_screen.asm_part"
-INCLUDE "./src/main_menu/stage_select_screen.asm_part"
+INCLUDE "./src/main_menu/unlocked_stage_screen.asm_part"
+INCLUDE "./src/main_menu/locked_stage_screen.asm_part"

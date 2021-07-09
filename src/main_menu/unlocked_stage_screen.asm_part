@@ -2,10 +2,6 @@ LoadUnlockedStageScreen:
     di
     call LCDOff
 
-    ; Copy tile map into VRAM.
-    set_romx_bank BANK(UnlockedStageScreenTileMap)
-    mem_copy UnlockedStageScreenTileMap, _SCRN0, UnlockedStageScreenTileMap.end-UnlockedStageScreenTileMap
-
     ld hl, JumpUpdateUnlockedStageScreen
     call SetProgramLoopCallback
 
@@ -16,11 +12,63 @@ LoadUnlockedStageScreen:
     ld [rSCY], a
     ld [rSCX], a
 
-    ; Load Stage Info
+    ; Copy tile map into VRAM.
+    set_romx_bank BANK(UnlockedStageTileMap)
+    mem_copy UnlockedStageTileMap, _SCRN0, UnlockedStageTileMap.end-UnlockedStageTileMap
+
+    ; Load Save Game
+    ld a, [wSelectedStage]
+    ld [wRWIndex], a
+    call LoadGame
+
+    ; Get the unlock status of the stage.
+    ld a, [wRWBuffer]
+    dec a
+    jr z, .notCleared
+
+.cleared
+    ; Get your time.
+    ld a, [wRWBuffer+1] ; Thousands Place
+    swap a
+    and a, $0F
+    add a, "0"
+    ld [_SCRN0+UTI_YOUR_TIME], a ; Hundreds Place
+    ld a, [wRWBuffer+1]
+    and a, $0F
+    add a, "0"
+    ld [_SCRN0+UTI_YOUR_TIME+1], a
+    ld a, [wRWBuffer+2] ; Tens Place
+    swap a
+    and a, $0F
+    add a, "0"
+    ld [_SCRN0+UTI_YOUR_TIME+2], a ; Ones Place
+    ld a, [wRWBuffer+2]
+    and a, $0F
+    add a, "0"
+    ld [_SCRN0+UTI_YOUR_TIME+3], a
+
+    ; Get your stars.
+    ld a, [wRWBuffer+3]
+    ld b, a
+    ld a, FILLED_STAR_TILE_VALUE
+    dec b
+    jr z, .oneStar
+    dec b
+    jr z, .twoStar
+.threeStar
+    ld [_SCRN0+UTI_YOUR_STARS+2], a
+.twoStar
+    ld [_SCRN0+UTI_YOUR_STARS+1], a
+.oneStar
+    ld [_SCRN0+UTI_YOUR_STARS], a
+
+.notCleared
+    ; Store Stage Info Address into hl.
     ld bc, StageInfo
     ld h, $00
     ld a, [wSelectedStage]
     ld l, a
+    add hl, hl
     add hl, hl
     add hl, hl
     add hl, bc
@@ -50,26 +98,6 @@ LoadUnlockedStageScreen:
     and a, $0F
     add a, "0"
     ld [_SCRN0+UTI_STAGE_TIME+3], a
-
-    ; Stars 1 Time
-    ld a, [hl] ; Thousands Place
-    swap a
-    and a, $0F
-    add a, "0"
-    ld [_SCRN0+UTI_STARS1_TIME], a
-    ld a, [hli] ; Hundreds Place
-    and a, $0F
-    add a, "0"
-    ld [_SCRN0+UTI_STARS1_TIME+1], a
-    ld a, [hl] ; Tens Place
-    swap a
-    and a, $0F
-    add a, "0"
-    ld [_SCRN0+UTI_STARS1_TIME+2], a
-    ld a, [hli] ; Ones Place
-    and a, $0F
-    add a, "0"
-    ld [_SCRN0+UTI_STARS1_TIME+3], a
 
     ; Stars 2 Time
     ld a, [hl] ; Thousands Place
@@ -113,7 +141,6 @@ LoadUnlockedStageScreen:
 
     call LCDOn
     ei
-
     ret
 
 UpdateUnlockedStageScreen:
@@ -130,15 +157,53 @@ UpdateUnlockedStageScreen:
 .onLeft
     bit PADB_LEFT, b
     jr z, .onRight
+
+    ld a, [wSelectedStage]
+    sub a, $01
+    jr nc, :+ ; If a < 0, a = 0.
+    xor a
+:   ld [wSelectedStage], a
+
+    ld [wRWIndex], a
+    call LoadGame
+    ld a, [wRWBuffer]
+    cp a, $00
+    ld hl, JumpLoadLockedStageScreen
+    jr z, :+
+    ld hl, JumpLoadUnlockedStageScreen
+:   call SetProgramLoopCallback
+
+    jr .end
+
 .onRight
     bit PADB_RIGHT, b
     jr z, .onA
+    
+    ld a, [wSelectedStage]
+    inc a
+    cp a, MAX_STAGES
+    jr c, :+ ; If a >= MAX_STAGES, a = MAX_STAGES-1.
+    ld a, (MAX_STAGES-1)
+:   ld [wSelectedStage], a
+
+    ld [wRWIndex], a
+    call LoadGame
+    ld a, [wRWBuffer]
+    cp a, $00
+    ld hl, JumpLoadLockedStageScreen
+    jr z, :+
+    ld hl, JumpLoadUnlockedStageScreen
+:   call SetProgramLoopCallback
+
+    jr .end
+
 .onA
     bit PADB_A, b
     jr z, .onB
     ld hl, JumpLoadGameLevel
     call SetProgramLoopCallback
     jr .end
+
 .onB
     bit PADB_B, b
     jr z, .end
@@ -147,5 +212,4 @@ UpdateUnlockedStageScreen:
 
 .end
     call UpdateBGWindow
-
     ret

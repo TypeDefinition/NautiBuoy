@@ -7,15 +7,15 @@ INCLUDE "./src/include/util.inc"
     game stage.
 
     The game stage save data consists of the follwing:
-    Stage Locked/Unlock - 1 Byte (Locked = 0, Unlocked & Incomplete = 1, Unlocked & Complete = 2)
+    Stage Locked/Unlock - 1 Byte (Locked = 0, Unlocked & Not Cleared = 1, Unlocked & Cleared = 2)
     Best Time Left - 2 Bytes
     Number of Stars - 1 Byte */
 SECTION "Save Game SRAM", SRAM
-sChecksum::
+sChecksum:
     ds 2 ; Validation Checksum
-sSaveData::
+sSaveData:
     ds 4*MAX_STAGES ; Save data for stages.
-.end::
+.end
 
 SECTION "Save Game WRAM", WRAM0
 wRWIndex::
@@ -26,7 +26,8 @@ wRWBuffer::
 
 SECTION "Save Game", ROM0
 EnableSRAM:
-    ld a, CART_SRAM_ENABLE
+    ; RAM Enable
+    ld a, $0A
     ld [rRAMG], a
     ret
 
@@ -93,11 +94,20 @@ ValidateChecksum:
     ret
 
 GenerateDefaultSaveGame:
-    ; Unlock stage 1
+    ; Lock all stages except stage 1.
+    ld a, (sSaveData.end - sSaveData)
+    ld b, a
+    ld hl, sSaveData
+    xor a
+.loop
+    ld [hli], a
+    dec b
+    jr nz, .loop
+    
+    ; mem_set_small sSaveData, $00, (sSaveData.end - sSaveData)
     ld a, $01
     ld [sSaveData], a
-    ; Lock all stages except stage 1.
-    mem_set_small sSaveData, $00, (sSaveData.end - (sSaveData+1))
+    call GenerateChecksum
     ret
 
 SaveGame::

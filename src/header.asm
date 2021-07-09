@@ -79,7 +79,7 @@ SECTION "Header", ROM0[$0104]
         $FD = BANDAI TAMA5
         $FE = HuC3
         $FF = HuC1+RAM+BATTERY */
-    db $19
+    db $1B
 
     ; $0148: ROM Size
     /* Specifies the ROM Size of the cartridge. Typically calculated as "32KB shl N".
@@ -105,7 +105,7 @@ SECTION "Header", ROM0[$0104]
         $03 = 32KB (4 banks of 8KB each)
         $04 = 128KB (16 banks of 8KB each)
         $05 = 64KB (8 banks of 8KB each) */
-    db $00
+    db $02
 
     ; $014A: Destination Code
     /* Specifies if this version of the game is supposed to be sold in Japan, or anywhere else. Only two values are defined.

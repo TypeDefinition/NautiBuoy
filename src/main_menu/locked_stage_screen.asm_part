@@ -1,0 +1,101 @@
+LoadLockedStageScreen:
+    di
+    call LCDOff
+
+    ld hl, JumpUpdateLockedStageScreen
+    call SetProgramLoopCallback
+
+    call ResetBGWindowUpdateQueue
+
+    ; Reset SCY & SCX.
+    xor a
+    ld [rSCY], a
+    ld [rSCX], a
+
+    ; Copy tile map into VRAM.
+    set_romx_bank BANK(LockedStageTileMap)
+    mem_copy LockedStageTileMap, _SCRN0, LockedStageTileMap.end-LockedStageTileMap
+
+    ; Store Stage Info Address into hl.
+    ld bc, StageInfo
+    ld h, $00
+    ld a, [wSelectedStage]
+    ld l, a
+    add hl, hl
+    add hl, hl
+    add hl, hl
+    add hl, bc
+    
+    ; Stage Name
+    ld a, [hli]
+    ld [_SCRN0+UTI_STAGE_NAME], a
+    ld a, [hli]
+    ld [_SCRN0+UTI_STAGE_NAME+1], a
+
+    call LCDOn
+    ei
+    ret
+
+UpdateLockedStageScreen:
+    call UpdateInput
+
+    ; Update Sound
+    set_romx_bank BANK(MainMenuBGM)
+    call _hUGE_dosound
+
+    ; Get Input
+    ld a, [wNewlyInputKeys]
+    ld b, a
+
+.onLeft
+    bit PADB_LEFT, b
+    jr z, .onRight
+
+    ld a, [wSelectedStage]
+    sub a, $01
+    jr nc, :+ ; If a < 0, a = 0.
+    xor a
+:   ld [wSelectedStage], a
+
+    ld [wRWIndex], a
+    call LoadGame
+    ld a, [wRWBuffer]
+    cp a, $00
+    ld hl, JumpLoadLockedStageScreen
+    jr z, :+
+    ld hl, JumpLoadUnlockedStageScreen
+:   call SetProgramLoopCallback
+
+    jr .end
+
+.onRight
+    bit PADB_RIGHT, b
+    jr z, .onB
+    
+    ld a, [wSelectedStage]
+    inc a
+    cp a, MAX_STAGES
+    jr c, :+ ; If a >= MAX_STAGES, a = MAX_STAGES-1.
+    ld a, (MAX_STAGES-1)
+:   ld [wSelectedStage], a
+
+    ld [wRWIndex], a
+    call LoadGame
+    ld a, [wRWBuffer]
+    cp a, $00
+    ld hl, JumpLoadLockedStageScreen
+    jr z, :+
+    ld hl, JumpLoadUnlockedStageScreen
+:   call SetProgramLoopCallback
+
+    jr .end
+
+.onB
+    bit PADB_B, b
+    jr z, .end
+    ld hl, JumpLoadTitleScreen
+    call SetProgramLoopCallback
+
+.end
+    call UpdateBGWindow
+    ret

@@ -4,7 +4,7 @@ INCLUDE "./src/include/hardware.inc"
 DEF DEFINITIONS_INC EQU 1
 
 ; Max Stages
-DEF MAX_STAGES EQU 16
+DEF MAX_STAGES EQU 8
 
 ; viewport info
 DEF GAMEPLAY_UI_SIZE_Y EQU 8*1
