@@ -2,6 +2,10 @@ INCLUDE "./src/definitions/definitions.inc"
 INCLUDE "./src/include/hardware.inc"
 INCLUDE "./src/include/util.inc"
 
+DEF STAGE_LOCKED EQU $00
+DEF STAGE_UNLOCKED_NOT_CLEARED EQU $01
+DEF STAGE_UNLOCKED_CLEARED EQU $02
+
 /*  The save data consists of a 4-Byte validation string
     to check for data corruption, followed by 4 bytes for each
     game stage.
@@ -15,6 +19,11 @@ sChecksum:
     ds 2 ; Validation Checksum
 sSaveData:
     ds 4*MAX_STAGES ; Save data for stages.
+.end
+; When a stage is complete, the save data of the next stage will be written to to unlock it.
+; Rather than check for the last stage, and not write to a non-existent next stage, I'll just add 4 bytes here that can have anything written to it and be ignored.
+sEndBuffer:
+    ds 4
 .end
 
 SECTION "Save Game WRAM", WRAM0
@@ -105,7 +114,7 @@ GenerateDefaultSave:
     jr nz, .loop
     
     ; mem_set_small sSaveData, $00, (sSaveData.end - sSaveData)
-    ld a, $01
+    ld a, STAGE_UNLOCKED_NOT_CLEARED
     ld [sSaveData], a
     call GenerateChecksum
     ret
@@ -164,4 +173,22 @@ ResetGame::
     call EnableSRAM
     call nz, GenerateDefaultSave
     call DisableSRAM
+    ret
+
+UnlockStage::
+    call LoadGame
+
+    ld a, [wRWBuffer]
+    cp a, STAGE_LOCKED
+    jr nz, .end ; If the level is already unlocked, do nothing.
+
+    ld a, STAGE_UNLOCKED_NOT_CLEARED
+    ld [wRWBuffer], a
+    xor a
+    ld [wRWBuffer+1], a
+    ld [wRWBuffer+2], a
+    ld [wRWBuffer+3], a
+
+    call SaveGame
+.end
     ret

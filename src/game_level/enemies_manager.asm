@@ -697,6 +697,12 @@ HitEnemy::
     ld [wRWBuffer+3], a
     call SaveGame
 
+    ; Unlock next stage.
+    ld a, [wSelectedStage]
+    inc a
+    ld [wRWIndex], a
+    call UnlockStage
+
     ld hl, JumpLoadWinScreen
     call SetProgramLoopCallback
 
