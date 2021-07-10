@@ -69,14 +69,14 @@ UpdateEnemyC::
 
 .endUpdateEnemyC
     pop hl ; POP HL = enemy starting address
-    call InitEnemyTurretSprite
+    call InitEnemyCSprite
     ret
 
 
 /*  Init enemy C sprite
     hl - enemy address 
 */
-InitEnemyTurretSprite:
+InitEnemyCSprite:
     push hl
     call UpdateEnemyEffects
     pop hl
@@ -121,11 +121,11 @@ InitEnemyTurretSprite:
     jr .endDir
 
 .downDir
-    ld bc, EnemyCAnimation.upAnimation
+    ld bc, EnemyCAnimation.downAnimation
     jr .endDir
 
 .leftDir
-    ld bc, EnemyCAnimation.rightAnimation
+    ld bc, EnemyCAnimation.leftAnimation
 
 .endDir
     ld a, l
