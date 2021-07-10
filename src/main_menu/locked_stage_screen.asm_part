@@ -17,15 +17,7 @@ LoadLockedStageScreen:
     mem_copy LockedStageTileMap, _SCRN0, LockedStageTileMap.end-LockedStageTileMap
 
     ; Store Stage Info Address into hl.
-    ld bc, StageInfo
-    ld h, $00
-    ld a, [wSelectedStage]
-    ld l, a
-    add hl, hl
-    add hl, hl
-    add hl, hl
-    add hl, bc
-
+    call GetSelectedStageParamAddr
     ; Stage Name
     ld a, [hli]
     ld [_SCRN0+UTI_STAGE_NAME], a

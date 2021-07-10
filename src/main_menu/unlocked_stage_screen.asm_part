@@ -64,15 +64,7 @@ LoadUnlockedStageScreen:
 
 .notCleared
     ; Store Stage Info Address into hl.
-    ld bc, StageInfo
-    ld h, $00
-    ld a, [wSelectedStage]
-    ld l, a
-    add hl, hl
-    add hl, hl
-    add hl, hl
-    add hl, bc
-
+    call GetSelectedStageParamAddr
     ; Stage Name
     ld a, [hli]
     ld [_SCRN0+UTI_STAGE_NAME], a
@@ -99,45 +91,45 @@ LoadUnlockedStageScreen:
     add a, "0"
     ld [_SCRN0+UTI_STAGE_TIME+3], a
 
-    ; Stars 2 Time
+    ; 2 Stars Time
     ld a, [hl] ; Thousands Place
     swap a
     and a, $0F
     add a, "0"
-    ld [_SCRN0+UTI_STARS2_TIME], a
+    ld [_SCRN0+UTI_2STARS_TIME], a
     ld a, [hli] ; Hundreds Place
     and a, $0F
     add a, "0"
-    ld [_SCRN0+UTI_STARS2_TIME+1], a
+    ld [_SCRN0+UTI_2STARS_TIME+1], a
     ld a, [hl] ; Tens Place
     swap a
     and a, $0F
     add a, "0"
-    ld [_SCRN0+UTI_STARS2_TIME+2], a
+    ld [_SCRN0+UTI_2STARS_TIME+2], a
     ld a, [hli] ; Ones Place
     and a, $0F
     add a, "0"
-    ld [_SCRN0+UTI_STARS2_TIME+3], a
+    ld [_SCRN0+UTI_2STARS_TIME+3], a
 
-    ; Stars 3 Time
+    ; 3 Stars Time
     ld a, [hl] ; Thousands Place
     swap a
     and a, $0F
     add a, "0"
-    ld [_SCRN0+UTI_STARS3_TIME], a
+    ld [_SCRN0+UTI_3STARS_TIME], a
     ld a, [hli] ; Hundreds Place
     and a, $0F
     add a, "0"
-    ld [_SCRN0+UTI_STARS3_TIME+1], a
+    ld [_SCRN0+UTI_3STARS_TIME+1], a
     ld a, [hl] ; Tens Place
     swap a
     and a, $0F
     add a, "0"
-    ld [_SCRN0+UTI_STARS3_TIME+2], a
+    ld [_SCRN0+UTI_3STARS_TIME+2], a
     ld a, [hli] ; Ones Place
     and a, $0F
     add a, "0"
-    ld [_SCRN0+UTI_STARS3_TIME+3], a
+    ld [_SCRN0+UTI_3STARS_TIME+3], a
 
     call LCDOn
     ei

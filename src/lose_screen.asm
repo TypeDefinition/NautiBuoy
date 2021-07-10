@@ -3,6 +3,13 @@ INCLUDE "./src/include/util.inc"
 INCLUDE "./src/include/hUGE.inc"
 INCLUDE "./src/include/definitions.inc"
 
+; UI Tile Index
+DEF UTI_LOSE_REASON EQU $89
+
+SECTION "Lose Screen WRAM", WRAM0
+wLoseReason::
+    ds 1
+
 SECTION "Lose Screen", ROM0
 ; Global Jumps
 JumpLoadLoseScreen::
@@ -21,6 +28,40 @@ LCDOn:
     ld [rLCDC], a
     ret
 
+WriteLoseReason:
+    ld a, [wLoseReason]
+    dec a
+    jr z, .hp
+.time
+    ASSERT LOSE_REASON_TIME == 0
+    ld a, "t"
+    ld [_SCRN0 + UTI_LOSE_REASON], a
+    ld a, "i"
+    ld [_SCRN0 + UTI_LOSE_REASON + 1], a
+    ld a, "m"
+    ld [_SCRN0 + UTI_LOSE_REASON + 2], a
+    ld a, "e"
+    ld [_SCRN0 + UTI_LOSE_REASON + 3], a
+    ld a, "!"
+    ld [_SCRN0 + UTI_LOSE_REASON + 4], a
+    jr .end
+.hp
+    ASSERT LOSE_REASON_HP == 1
+    ld a, "l"
+    ld [_SCRN0 + UTI_LOSE_REASON], a
+    ld a, "i"
+    ld [_SCRN0 + UTI_LOSE_REASON + 1], a
+    ld a, "v"
+    ld [_SCRN0 + UTI_LOSE_REASON + 2], a
+    ld a, "e"
+    ld [_SCRN0 + UTI_LOSE_REASON + 3], a
+    ld a, "s"
+    ld [_SCRN0 + UTI_LOSE_REASON + 4], a
+    ld a, "!"
+    ld [_SCRN0 + UTI_LOSE_REASON + 5], a
+.end
+    ret
+
 LoadLoseScreen:
     di
     call LCDOff
@@ -35,6 +76,8 @@ LoadLoseScreen:
     ; Copy tile map into VRAM.
     set_romx_bank BANK(LoseScreenTileMap)
     mem_copy LoseScreenTileMap, _SCRN0, LoseScreenTileMap.end-LoseScreenTileMap
+
+    call WriteLoseReason
 
     ; Reset SCY & SCX.
     xor a

@@ -4,7 +4,7 @@ INCLUDE "./src/include/hUGE.inc"
 INCLUDE "./src/include/definitions.inc"
 
 SECTION "Game Level WRAM", WRAM0
-GameLevelTileMap::
+wGameLevelTileMap::
     ds 1024 ; Every game level is made of 1024 tiles.
 .end::
 
@@ -12,7 +12,10 @@ wGameTimer::
     ds 2 ; Store the timer as Binary-Coded-Decimals (BCD) in Big-Endian
 wGameTimerFrac::
     ds 1
-.end
+w2StarsTime::
+    ds 2
+w3StarsTime::
+    ds 2
 
 wShadowSCData::
     ds 2 ; y pos, then x pos
@@ -31,6 +34,35 @@ LCDOn:
     ld a, LCDCF_ON | LCDCF_WIN9C00 | LCDCF_WINON | LCDCF_BG9800 | LCDCF_OBJ16 | LCDCF_OBJON | LCDCF_BGON
     ld [hLCDC], a ; Store a copy of the flags in HRAM.
     ld [rLCDC], a
+    ret
+
+InitStageParam:
+    ; Set Game Timer Frac
+    xor a
+    ld [wGameTimerFrac], a
+
+    call GetSelectedStageParamAddr
+    inc hl
+    inc hl
+
+    ; Set Game Timer
+    ld a, [hli]
+    ld [wGameTimer], a
+    ld a, [hli]
+    ld [wGameTimer+1], a
+
+    ; Set 2-Stars time.
+    ld a, [hli]
+    ld [w2StarsTime], a
+    ld a, [hli]
+    ld [w2StarsTime+1], a
+
+    ; Set 3-Stars time.
+    ld a, [hli]
+    ld [w3StarsTime], a
+    ld a, [hli]
+    ld [w3StarsTime+1], a
+
     ret
 
 InitStage:
@@ -54,7 +86,7 @@ InitStage:
     ; Default
     jp InitStage0
 
-LoadGameLevel::
+LoadGameLevel:
     di ; Disable Interrupts
 
     call LCDOff
@@ -82,26 +114,22 @@ LoadGameLevel::
 
     call ResetPlayerCamera
     call ResetAllBullets
-    call ResetBGWindowUpdateQueue
 
-    call LoadGameLevelUI
-
-    ; Reset Game Timer
-    xor a
-    ld [wGameTimerFrac], a
-    ld a, $01
-    ld [wGameTimer], a
-    ld a, $20
-    ld [wGameTimer + 1], a
-    call UpdateGameTimerUI
-
-    ; Reset SCY & SCX
+    ; Reset rSCY & rSCX
     xor a
     ld [rSCY], a
     ld [rSCX], a
 
     ; Initalise Stage Specific Stuff
+    call InitStageParam
     call InitStage
+
+    ; Initialise UI (Needs to be called after InitStageParam.)
+    call ResetBGWindowUpdateQueue
+    call LoadGameLevelUI
+    call UpdateGameTimerUI
+    call UpdatePlayerHPUI
+    call UpdateEnemyCounterUI
 
     call LCDOn
 
@@ -193,7 +221,7 @@ VBlankHandler:
 GetGameLevelTileValue::
     push hl
 
-    ld hl, GameLevelTileMap
+    ld hl, wGameLevelTileMap
     add hl, bc
     ld a, [hl]
 
@@ -206,7 +234,7 @@ GetGameLevelTileValue::
 SetGameLevelTile::
     push af
     push hl
-    ld hl, GameLevelTileMap
+    ld hl, wGameLevelTileMap
     add hl, bc
     ld [hl], a
     pop hl
@@ -249,7 +277,10 @@ UpdateGameLevelTimer:
     xor h ; As long as h or l != 0, then (a xor h xor l) != 0.
     xor l ; As long as h or l != 0, then (a xor h xor l) != 0.
     jr nz, .end
-    ; Lose
+    ld a, LOSE_REASON_TIME
+    ld [wLoseReason], a
+    ld hl, JumpLoadLoseScreen
+    call SetProgramLoopCallback
 
 .end
     ret

@@ -6,6 +6,10 @@ DEF DEFINITIONS_INC EQU 1
 ; Max Stages
 DEF MAX_STAGES EQU 8
 
+; LOSE REASON
+DEF LOSE_REASON_TIME EQU 0
+DEF LOSE_REASON_HP EQU 1
+
 ; viewport info
 DEF GAMEPLAY_UI_SIZE_Y EQU 8*1
 DEF MAP_SIZE_Y EQU 256
@@ -209,7 +213,5 @@ DEF TIMER_POWER_UP_INC_AMT EQU 10 ; in seconds
 
 ; Definitions for timer
 DEF TIMER_UPDATE_SPEED EQU 4 ; the amount to deduct the fraction portion every frame
-DEF TIMER_AMT_PER_SEC EQU 60 * TIMER_UPDATE_SPEED ; the number to decrease the time, the amount considered 'a second'
-DEF LEVEL_TIME EQU 120 ; in seconds
 
 ENDC ; DEFINITIONS_INC

@@ -13,19 +13,17 @@ DEF CTI_OPT_NO EQU $01E2
 DEF CTI_OPT_YES EQU $01ED
 
 ; Stage Select Screen UI Tile Index
-DEF UTI_STAGE_NAME EQU 76
-DEF UTI_STAGE_TIME EQU 142
-DEF UTI_STARS2_TIME EQU 398
-DEF UTI_STARS3_TIME EQU 462
-DEF UTI_YOUR_TIME EQU 206
-DEF UTI_YOUR_STARS EQU 269
+DEF UTI_STAGE_NAME EQU $004C
+DEF UTI_STAGE_TIME EQU $008E
+DEF UTI_2STARS_TIME EQU $018E
+DEF UTI_3STARS_TIME EQU $01CE
+DEF UTI_YOUR_TIME EQU $00CE
+DEF UTI_YOUR_STARS EQU $010D
 
 SECTION "Main Menu WRAM", WRAM0
 ; Global Variables
 wMainMenuDefaultJump::
     ds 2
-wSelectedStage::
-    ds 1
 
 ; Local Variables
 wResetOption:
@@ -72,7 +70,7 @@ LCDOn:
     ld [rLCDC], a
     ret
 
-LoadMainMenu::
+LoadMainMenu:
     di ; Disable Interrupts
 
     call LCDOff

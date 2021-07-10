@@ -1,7 +1,7 @@
 INCLUDE "./src/include/hardware.inc"
 INCLUDE "./src/include/util.inc"
 
-DEF UPDATE_QUEUE_SIZE EQU 16
+DEF UPDATE_QUEUE_SIZE EQU 32 ; Unlikely to ever need to update more than 32 tiles in 1 frame.
 
 SECTION "BGWindow WRAM", WRAM0
 /*  Contains an array of tiles to be updated in VRAM.

@@ -370,7 +370,9 @@ PlayerIsHit::
     call PlayerGetsHitEnemyBehavior ; update enemy behavior for getting hit
     ret
 
-.dead 
+.dead
+    ld a, LOSE_REASON_HP
+    ld [wLoseReason], a
     ld hl, JumpLoadLoseScreen
     call SetProgramLoopCallback
     ret
