@@ -291,31 +291,79 @@ EnemyBAnimation::
 
 /* Animation, sprite IDs for the enemy C*/
 EnemyCAnimation::
-.upAnimation:: ; up and down has the same frames
+.upAnimation:: 
     ; Frame 1
-    db $42
-    db OAMF_PAL0
-    db $44
-    db OAMF_PAL0
+    db $4C
+    db OAMF_PAL0 | OAMF_YFLIP
+    db $4E
+    db OAMF_PAL0 | OAMF_YFLIP
 
     ; Frame 2
-    db $46
+    db $50
+    db OAMF_PAL0 | OAMF_YFLIP
+    db $52
+    db OAMF_PAL0 | OAMF_YFLIP
+.downAnimation:: 
+    ; Frame 1
+    db $4C
+    db OAMF_PAL0 
+    db $4E
+    db OAMF_PAL0 
+
+    ; Frame 2
+    db $50
     db OAMF_PAL0
-    db $48
+    db $52
     db OAMF_PAL0
 .rightAnimation::
     ; Frame 1
-    db $3C
+    db $60
     db OAMF_PAL0
-    db $3C
+    db $62
+    db OAMF_PAL0
+
+    ; Frame 2
+    db $64
+    db OAMF_PAL0
+    db $66
+    db OAMF_PAL0
+.leftAnimation::
+    ; Frame 1
+    db $62
+    db OAMF_PAL0 | OAMF_XFLIP
+    db $60
     db OAMF_PAL0 | OAMF_XFLIP
 
     ; Frame 2
-    db $3E
-    db OAMF_PAL0
-    db $3E
+    db $66
+    db OAMF_PAL0 | OAMF_XFLIP
+    db $64
     db OAMF_PAL0 | OAMF_XFLIP
 .attackUpAnimation::
+    ; Frame 1
+    db $54
+    db OAMF_PAL0 | OAMF_YFLIP
+    db $56
+    db OAMF_PAL0 | OAMF_YFLIP
+
+    ; Frame 2
+    db $58
+    db OAMF_PAL0 | OAMF_YFLIP
+    db $5A
+    db OAMF_PAL0 | OAMF_YFLIP
+
+    ; Frame 3
+    db $5C
+    db OAMF_PAL0 | OAMF_YFLIP
+    db $5E
+    db OAMF_PAL0 | OAMF_YFLIP
+.attackDownAnimation::
+    ; Frame 1
+    db $40
+    db OAMF_PAL0
+    db $40
+    db OAMF_PAL0 | OAMF_XFLIP
+.attackRightAnimation::
     ; Frame 1
     db $40
     db OAMF_PAL0
