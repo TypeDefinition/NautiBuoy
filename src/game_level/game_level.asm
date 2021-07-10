@@ -275,9 +275,8 @@ UpdateGameLevelTimer:
     call UpdateGameTimerUI
 
     ; If h == l == 0, HP == 0. If HP == 0, lose.
-    xor a ; Set a = 0.
-    xor h ; As long as h or l != 0, then (a xor h xor l) != 0.
-    xor l ; As long as h or l != 0, then (a xor h xor l) != 0.
+    ld a, h
+    or a, l
     jr nz, .end
     ld a, LOSE_REASON_TIME
     ld [wLoseReason], a

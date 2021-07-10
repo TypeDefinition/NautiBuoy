@@ -141,6 +141,8 @@ PowerUpCollisionBehaviour:
     or a, FLICKER_EFFECT_FLAG ; add flicker effect
     ld [wPlayer_Flags], a 
 
+    call EnableInvincibilityPowerUpUI
+
     jr .end
 .timePowerup
     cp a, TYPE_TIME_POWERUP
@@ -164,6 +166,8 @@ PowerUpCollisionBehaviour:
     ld [wPlayer_Velocity], a
     ld a, c
     ld [wPlayer_Velocity + 1], a
+
+    call EnableSpeedPowerUpUI
     
     jr .end
 .damagePowerup
@@ -171,6 +175,8 @@ PowerUpCollisionBehaviour:
     ld a, [wPlayerEffects_BulletPowerUpCounter]
     add a, BULLET_POWER_UP_NUMBER
     ld [wPlayerEffects_BulletPowerUpCounter], a
+
+    call EnableTorpedoPowerUpUI
 
     jr .end
 .end
