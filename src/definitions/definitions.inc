@@ -3,14 +3,14 @@ INCLUDE "./src/include/hardware.inc"
     IF !DEF(DEFINITIONS_INC)
 DEF DEFINITIONS_INC EQU 1
 
-; Max Stages
+/*************************************************Max Stages*************************************************/
 DEF MAX_STAGES EQU 8
 
-; LOSE REASON
+/*************************************************Lose Reason*************************************************/
 DEF LOSE_REASON_TIME EQU 0
 DEF LOSE_REASON_HP EQU 1
 
-; viewport info
+/*************************************************Viewport*************************************************/
 DEF GAMEPLAY_UI_SIZE_Y EQU 8*1
 DEF MAP_SIZE_Y EQU 256
 DEF MAP_SIZE_X EQU 256
@@ -21,30 +21,107 @@ DEF VIEWPORT_MAX_X EQU MAP_SIZE_X - VIEWPORT_SIZE_X
 DEF SCREEN_UPPER_OFFSET_Y EQU 8
 DEF SCREEN_LEFT_OFFSET_X EQU 8
 
-; Types
-DEF TYPE_PLAYER EQU 0
+/*************************************************Player*************************************************/
+; PLAYER Stats
+DEF PLAYER_BULLET_NUMBER EQU 3
+DEF BULLET_DAMAGE EQU 1 ; TEMP VARIABLE
+DEF BULLET_POWER_UP_DAMAGE EQU 2
+DEF PLAYER_HEALTH EQU 3
+DEF FIRE_RATE_UPDATE_SPEED EQU 40 ; amt to add to the fraction part
+DEF FIRE_RATE EQU 2 ; amt to hit before can fire again
+DEF PLAYER_ANIMATION_UPDATE_SPEED EQU $10
 
-; Enemy type
+; For Animation Frames
+DEF PLAYER_WALK_FRAMES EQU 2
+
+/*************************************************Enemies*************************************************/
 DEF TYPE_ENEMYA EQU 0  ; bit 2, 3 & 4, %000 000 00
 DEF TYPE_ENEMYB EQU 4  ; bit 2, 3 & 4, %000 001 00
 DEF TYPE_ENEMYC EQU 8  ; bit 2, 3 & 4, %000 010 00
 DEF TYPE_ENEMYD EQU 12 ; bit 2, 3 & 4, %000 011 00
 
+; Enemy A Stats
+DEF ENEMY_TYPEA_BULLET_NUM EQU 10
+DEF ENEMY_TYPEA_HEALTH EQU 3
+DEF ENEMY_TYPEA_WALK_FRAMES EQU 2
+DEF ENEMY_TYPEA_ATTACK_ANIM_MAX_FRAMES EQU 2
+DEF ENEMY_TYPEA_ANIMATION_UPDATE_SPEED EQU $08 ; 16, takes 16 frames for next animation frame, abt 4fps
+DEF ENEMY_TYPEA_ATTACK_STATE_FRAME EQU 5 ; frame to start playing attack anim
+DEF ENEMY_TYPEA_ATTACK_FRAME EQU ENEMY_TYPEA_ATTACK_STATE_FRAME + 1 ; frame to shoot
+
+; Enemy B Stats
+DEF ENEMY_TYPEB_HEALTH EQU 5
+DEF ENEMY_TYPEB_ANIMATION_UPDATE_SPEED EQU $10
+; attack duration = ENEMY_TYPEB_ATTACK_STATE_STOP_FRAME - ENEMY_TYPEB_ATTACK_STATE_FRAME
+; as long frame >= ENEMY_TYPEB_ATTACK_STATE_FRAME, its attack state
+DEF ENEMY_TYPEB_ATTACK_STATE_FRAME EQU 3 ; frame to go attack state after enemy senses player on same line
+DEF ENEMY_TYPEB_ATTACK_STATE_STOP_FRAME EQU 17; frame to stop attack state. 
+DEF ENEMY_TYPEB_REST_STATE_FRAME EQU 3 ; number of frames to rest after attack state
+DEF ENEMY_TYPEB_WALK_MAX_FRAMES EQU 2
+DEF ENEMY_TYPEB_ATTACK_ANIM_MAX_FRAMES EQU 2
+
+; Enemy C Stats
+DEF ENEMY_TYPEC_HEALTH EQU 2
+DEF ENEMY_TYPEC_ANIMATION_UPDATE_SPEED EQU $10
+DEF ENEMY_TYPEC_NORMAL_STATE_MAX_FRAME EQU 2
+DEF ENEMY_TYPEC_INFLATE_STATE_MAX_FRAME EQU 3
+DEF ENEMY_TYPEC_INFLATE_STATE_FRAME EQU 7 
+DEF ENEMY_TYPEC_DEFLATE_STATE_FRAME EQU ENEMY_TYPEC_INFLATE_STATE_FRAME + ENEMY_TYPEC_INFLATE_STATE_MAX_FRAME 
+DEF ENEMY_TYPEC_GO_BACK_IDLE_FRAME EQU ENEMY_TYPEC_DEFLATE_STATE_FRAME + ENEMY_TYPEC_INFLATE_STATE_MAX_FRAME
+DEF ENEMY_TYPEC_SHOOT_FRAME EQU ENEMY_TYPEC_INFLATE_STATE_FRAME + 5 ; frame to shoot
+
+; Enemy D Stats
+; wake up duration = ENEMY_TYPED_CHASE_STATE_FRAME - ENEMY_TYPED_WAKEUP_STATE_FRAME
+; sleep state is < ENEMY_TYPED_WAKEUP_STATE_FRAME
+DEF ENEMY_TYPED_HEALTH EQU 5
+DEF ENEMY_TYPED_ANIMATION_UPDATE_SPEED EQU $10
+DEF ENEMY_TYPED_CHASE_STATE_FRAME EQU 7 ; frame to indicate chase state
+DEF ENEMY_TYPED_WAKEUP_STATE_FRAME EQU 4 ; frame to indicate wake up state WARNING, BEST TO HAVE IT MORE THAN 2 TO FIX SOME ISSUES
+DEF ENEMY_TYPED_ANIMATION_MAX_FRAME EQU 2 ; max animation frame for type D
+DEF ENEMY_TYPED_ANIMATION_FRAMES EQU 2
+
+/*************************************************Bullet*************************************************/
 DEF TYPE_BULLET_DEFAULT EQU 0 ; bit 2, 3 & 4, %000 000 00
 DEF TYPE_BULLET_POWER_UP EQU 4 ; bit 2, 3 & 4, %000 001 00
 DEF TYPE_BULLET_FIRE_BALL EQU 8 ; bit 2, 3 & 4, %000 010 00
 DEF TYPE_BULLET3 EQU 12 ; bit 2, 3 & 4, %000 011 00
 
-; PowerUp types
-; equ 0 means no powerup at all
+/*************************************************Particle Effects*************************************************/
+DEF FLAG_PARTICLE_EFFECT_ANIMATION EQU $02 ; bit 1, %0000 00 1 0
+DEF TYPE_PARTICLE_DESTROY_BLOCK EQU 0 ; bit 2, 3 & 4, %000 000 00
+DEF TYPE_PARTICLE_DESTROY_POWER_COLLISION EQU 4 ; bit 2, 3 & 4, %000 001 00
+; particle effects with animation below here
+DEF TYPE_PARTICLE_KILL_ENEMY EQU 8 ; bit 2, 3 & 4, %000 010 00
+DEF TYPE_PARTICLE_POWER_KILL_ENEMY EQU 12 ; bit 2, 3 & 4, %000 011 00
+
+DEF PARTICLE_UPDATE_FRAME_TIME EQU $10
+DEF TILE_DESTRUCTION_TIME EQU 2
+DEF PARTICLE_KILL_ENEMY_ALIVE_TIME EQU 3
+DEF PARTICLE_POWER_KILL_ENEMY_ALIVE_TIME EQU 6
+
+DEF PARTICLE_KILL_ENEMY_MAX_FRAMES EQU 2
+DEF PARTICLE_POWER_KILL_ENEMY_MAX_FRAMES EQU 3
+
+/*************************************************Flicker Effects*************************************************/
+; Effect Type
+DEF FLICKER_EFFECT_FLAG EQU 4 ; bit 2, 3 & 4, %000 001 00
+
+DEF FLICKER_BITMASK EQU %00000001 ; the multiple we want to compare
+DEF FLICKER_VALUE EQU 1 ; value to not render
+DEF PLAYER_FLICKER_UPDATE_SPEED EQU 35 ; 256/FLICKER_UPDATE_SPEED number of frames to stop flicker effect
+DEF PLAYER_FLICKER_SLOW_UPDATE_SPEED EQU 15
+DEF ENEMY_FLICKER_UPDATE_SPEED EQU 40
+
+; Damage flicker effect
+DEF DAMAGE_FLICKER_EFFECT EQU 5 ; number of times to do the flicker effect based on the flicker timer
+
+/*************************************************Power-Ups*************************************************/
+DEF TYPE_NO_POWERUP EQU 0 ; equ 0 means no powerup at all
 DEF TYPE_INVINCIBILITY_POWERUP EQU 4 ; bit 2, 3 & 4, %000 001 00
 DEF TYPE_TIME_POWERUP EQU 8 ; bit 2, 3 & 4, %000 010 00
 DEF TYPE_DAMAGE_POWERUP EQU 12 ; bit 2, 3 & 4, %000 011 00
 DEF TYPE_SPEED_POWERUP EQU 16 ; bit 2, 3 & 4, %000 100 00
 DEF TYPE_HEALTH_POWERUP EQU 20 ; bit 2, 3 & 4, %000 101 00
-
-; Effects type
-DEF FLICKER_EFFECT_FLAG EQU 4 ; bit 2, 3 & 4, %000 001 00
 
 ; power up sprite ID
 DEF HEART_POWERUP_SPRITE_ID EQU $68
@@ -53,7 +130,27 @@ DEF TIME_POWERUP_SPRITE_ID EQU $66
 DEF SPEED_POWERUP_SPRITE_ID EQU $6A
 DEF DAMAGE_POWERUP_SPRITE_ID EQU $6C
 
-; Collider Size
+; Power-Up Effects
+; formula: number of times updated in 1s = 60frames / (256 / POWER_UP_FLICKER_UPDATE_SPEED)
+; POWER_UP_FLICKER_EFFECT time in seconds = number of times updated in 1s * time wanted
+DEF INVINCIBILITY_POWER_UP_TIME EQU 5 ; in seconds
+DEF INVINCIBILITY_SLOW_DOWN_FLICKER_TIME EQU 2 ; in seconds, indicate when to slow down the flicker effect
+DEF INVINCIBILITY_UPDATE_SPEED EQU 30 ; number per frame
+DEF INVINCIBILITY_POWER_UP_EFFECT EQU 60/(256/INVINCIBILITY_UPDATE_SPEED) * INVINCIBILITY_POWER_UP_TIME
+DEF INVINCIBILITY_POWER_UP_FLICKER_SLOW_EFFECT EQU 60/(256/INVINCIBILITY_UPDATE_SPEED) * INVINCIBILITY_SLOW_DOWN_FLICKER_TIME
+
+DEF SPEED_POWER_UP_TIME EQU 5 ; in seconds
+DEF SPEED_POWER_UP_UPDATE_SPEED EQU 30
+DEF SPEED_POWER_UP_EFFECT EQU 60/(256/PLAYER_FLICKER_UPDATE_SPEED) * SPEED_POWER_UP_TIME
+
+DEF DAMAGE_INVINCIBILITY_TIME EQU 1 ; in seconds
+DEF DAMAGE_INVINCIBILITY_UPDATE_SPEED EQU 30
+DEF DAMAGE_INVINCIBILITY_EFFECT EQU 60/(256/DAMAGE_INVINCIBILITY_UPDATE_SPEED) * DAMAGE_INVINCIBILITY_TIME
+
+DEF BULLET_POWER_UP_NUMBER EQU 3 ; give x number of power up bullets to player
+DEF TIMER_POWER_UP_INC_AMT EQU 10 ; in seconds
+
+/*************************************************Collision*************************************************/
 DEF PLAYER_COLLIDER_SIZE EQU $08
 DEF ENEMY_COLLIDER_SIZE EQU $00
 DEF ENEMY_BULLET_COLLIDER_SIZE EQU $08 ; hit box for enemy vs bullet
@@ -75,23 +172,7 @@ DEF BIT_FLAG_PLAYER EQU $1 ; 1 bit
 DEF BIT_MASK_TYPE EQU %11111100 ; to do bit masking for power up type/enemy type
 DEF BIT_MASK_TYPE_REMOVE EQU %00000011
 
-; Particle Effects
-DEF FLAG_PARTICLE_EFFECT_ANIMATION EQU $02 ; bit 1, %0000 00 1 0
-DEF TYPE_PARTICLE_DESTROY_BLOCK EQU 0 ; bit 2, 3 & 4, %000 000 00
-DEF TYPE_PARTICLE_DESTROY_POWER_COLLISION EQU 4 ; bit 2, 3 & 4, %000 001 00
-; particle effects with animation below here
-DEF TYPE_PARTICLE_KILL_ENEMY EQU 8 ; bit 2, 3 & 4, %000 010 00
-DEF TYPE_PARTICLE_POWER_KILL_ENEMY EQU 12 ; bit 2, 3 & 4, %000 011 00
-
-DEF PARTICLE_UPDATE_FRAME_TIME EQU $10
-DEF TILE_DESTRUCTION_TIME EQU 2
-DEF PARTICLE_KILL_ENEMY_ALIVE_TIME EQU 3
-DEF PARTICLE_POWER_KILL_ENEMY_ALIVE_TIME EQU 6
-
-DEF PARTICLE_KILL_ENEMY_MAX_FRAMES EQU 2
-DEF PARTICLE_POWER_KILL_ENEMY_MAX_FRAMES EQU 3
-
-; Directions
+/*************************************************Direction*************************************************/
 ; can use cp to compare, takes reg A, but takes only 1 cycle and 1 byte
 DEF DIR_UP EQU 0
 DEF DIR_DOWN EQU 1
@@ -99,6 +180,7 @@ DEF DIR_LEFT EQU 2
 DEF DIR_RIGHT EQU 3
 DEF DIR_BIT_MASK EQU %00000011
 
+/*************************************************Shoot Direction*************************************************/
 ; Shoot directions, use bit to compare
 ; for when the direction of shooting is different with direction entity is facing
 DEF SHOOT_DIR_UP EQU %00010000 ; bit 4 true
@@ -112,15 +194,7 @@ DEF BIT_SHOOT_DOWN_CMP EQU 5
 DEF BIT_SHOOT_LEFT_CMP EQU 6
 DEF BIT_SHOOT_RIGHT_CMP EQU 7
 
-; Tiles
-DEF TILE_SIZE EQU $08
-DEF CHARACTER_COLLIDABLE_TILES EQU $0F ; Collidable Tiles: A tile is assumed to be collidable by characters if it's value is less than 16.
-DEF BULLET_COLLIDABLE_TILES EQU $09 ; Collidable Tiles: A tile is assumed to be collidable by bullets if it's value is less than 9.
-DEF BULLET_DESTRUCTIBLE_TILES EQU $01 ; Collidable Tiles: A tile is assumed to be collidable by bullets if it's value is less than 1.
-DEF POWER_BULLET_DESTRUCTIBLE_TILES EQU $02 ; Collidable Tiles: A tile is assumed to be collidable by bullets if it's value is less than 2.
-DEF EMPTY_TILE_VALUE EQU $20
-
-; Velocity
+/*************************************************Velocity*************************************************/
 DEF VELOCITY_VSLOW EQU $0040
 DEF VELOCITY_SLOW EQU $0080
 DEF VELOCITY_SLIGHTLY_SLOW EQU $00C0
@@ -132,6 +206,7 @@ DEF PLAYER_DEFAULT_VELOCITY EQU VELOCITY_SLIGHTLY_SLOW
 DEF PLAYER_INCREASED_VELOCITY EQU VELOCITY_NORMAL
 DEF BULLET_VELOCITY EQU $02 ; VELOCITY_FAST
 
+<<<<<<< HEAD:src/include/definitions.inc
 ; For Animation Frames
 DEF PLAYER_WALK_FRAMES EQU 2
 
@@ -217,5 +292,8 @@ DEF TIMER_POWER_UP_INC_AMT EQU 10 ; in seconds
 
 ; Definitions for timer
 DEF TIMER_UPDATE_SPEED EQU 4 ; the amount to deduct the fraction portion every frame
+=======
+INCLUDE "./src/definitions/tile_definitions.inc"
+>>>>>>> c7bdca53bd13862c822209a8f723f757b7704e04:src/definitions/definitions.inc
 
 ENDC ; DEFINITIONS_INC

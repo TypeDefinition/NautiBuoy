@@ -1,4 +1,4 @@
-INCLUDE "src/include/definitions.inc"
+INCLUDE "./src/definitions/definitions.inc"
 
     IF !DEF(TILE_COLLISION_INC)
 DEF TILE_COLLISION_INC EQU 1

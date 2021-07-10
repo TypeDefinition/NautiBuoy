@@ -1,5 +1,5 @@
 INCLUDE "./src/include/entities.inc"
-INCLUDE "./src/include/definitions.inc"
+INCLUDE "./src/definitions/definitions.inc"
 INCLUDE "./src/include/hardware.inc"
 
 SECTION "Enemy D", ROM0

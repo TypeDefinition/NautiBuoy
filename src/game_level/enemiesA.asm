@@ -1,6 +1,6 @@
 SECTION "Enemy A", ROM0
 
-INCLUDE "./src/include/definitions.inc"
+INCLUDE "./src/definitions/definitions.inc"
 INCLUDE "./src/include/entities.inc"
 
 /*  Update for enemy type A 
