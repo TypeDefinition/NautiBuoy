@@ -6,8 +6,8 @@ INCLUDE "./src/definitions/definitions.inc"
 DEF UTI_PLAYER_HP EQU $07
 DEF UTI_NUM_ENEMIES EQU $0A
 DEF UTI_GAME_TIMER EQU $01
-DEF UTI_TORPEDO_POWERUP EQU $0F
-DEF UTI_SPEED_POWERUP EQU $10
+DEF UTI_SPEED_POWERUP EQU $0F
+DEF UTI_TORPEDO_POWERUP EQU $10
 DEF UTI_INVINCIBILITY_POWERUP EQU $11
 
 SECTION "Game Level UI", ROM0
@@ -90,30 +90,6 @@ UpdateEnemyCounterUI::
     pop af
     ret
 
-EnableTorpedoPowerUpUI::
-    push af ; Do not remove this. Will break stuff.
-    push bc ; Do not remove this. Will break stuff.
-
-    ld a, TORPEDO_POWERUP_TILE_VALUE
-    ld bc, UTI_TORPEDO_POWERUP
-    call QueueWindowTile
-
-    pop bc
-    pop af
-    ret
-
-DisableTorpedoPowerUpUI::
-    push af ; Do not remove this. Will break stuff.
-    push bc ; Do not remove this. Will break stuff.
-
-    ld a, EMPTY_TILE_VALUE
-    ld bc, UTI_TORPEDO_POWERUP
-    call QueueWindowTile
-
-    pop bc
-    pop af
-    ret
-
 EnableSpeedPowerUpUI::
     push af ; Do not remove this. Will break stuff.
     push bc ; Do not remove this. Will break stuff.
@@ -132,6 +108,30 @@ DisableSpeedPowerUpUI::
 
     ld a, EMPTY_TILE_VALUE
     ld bc, UTI_SPEED_POWERUP
+    call QueueWindowTile
+
+    pop bc
+    pop af
+    ret
+
+EnableTorpedoPowerUpUI::
+    push af ; Do not remove this. Will break stuff.
+    push bc ; Do not remove this. Will break stuff.
+
+    ld a, TORPEDO_POWERUP_TILE_VALUE
+    ld bc, UTI_TORPEDO_POWERUP
+    call QueueWindowTile
+
+    pop bc
+    pop af
+    ret
+
+DisableTorpedoPowerUpUI::
+    push af ; Do not remove this. Will break stuff.
+    push bc ; Do not remove this. Will break stuff.
+
+    ld a, EMPTY_TILE_VALUE
+    ld bc, UTI_TORPEDO_POWERUP
     call QueueWindowTile
 
     pop bc
