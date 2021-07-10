@@ -155,7 +155,7 @@ UpdateAllEnemies::
     ret
 
 /*  For enemies shooting in directions it is not facing
-    hl - enemy address   
+    de - enemy address   
     
     registers changed:
     - AF
@@ -164,36 +164,55 @@ UpdateAllEnemies::
     - HL
 */
 EnemyShootDir::
-    ld d, h ; de = enemy address
-    ld e, l
+    push de ; PUSH DE = enemy address
 
-    ld bc, Character_Direction
-    add hl, bc
-    ld a, [hl] ; get direction
+    ld a, e
+    add a, Character_Direction
+    ld e, a
+    ld a, d
+    adc a, 0
+    ld d, a
+
+    ld a, [de] ; get direction
     and a, SHOOT_DIR_BIT_MASK 
 
 .shootUp
     bit BIT_SHOOT_UP_CMP, a
     jr z, .shootDown
     ld c, DIR_UP
+    pop de ; POP DE = enemy address
+    push de ; PUSH DE = enemy address
+    push af ; PUSH AF = dir
     call EnemyShoot
+    pop af ; POP AF = dir
 .shootDown
     bit BIT_SHOOT_DOWN_CMP, a
     jr z, .shootRight
     ld c, DIR_DOWN
+    pop de ; POP DE = enemy address
+    push de ; PUSH DE = enemy address
+    push af ; PUSH AF = dir
     call EnemyShoot
+    pop af ; POP AF = dir
 .shootRight
     bit BIT_SHOOT_RIGHT_CMP, a
     jr z, .shootLeft
     ld c, DIR_RIGHT
+    pop de ; POP DE = enemy address
+    push de ; PUSH DE = enemy address
+    push af ; PUSH AF = dir
     call EnemyShoot
+    pop af ; POP AF = dir
 .shootLeft
     bit BIT_SHOOT_LEFT_CMP, a
     jr z, .end
     ld c, DIR_LEFT
-    call EnemyShoot 
+    pop de ; POP DE = enemy address
+    call EnemyShoot
 
-.end    
+    ret
+.end
+    pop de ; POP DE = enemy address
     ret
 
 /*  Attack 

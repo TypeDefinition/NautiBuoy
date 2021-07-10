@@ -9,7 +9,7 @@ SECTION "Enemy C", ROM0
 */
 UpdateEnemyC::
     push hl ; PUSH HL = enemy starting address 
-    call EnemyBounceOnWallMovement
+    ;call EnemyBounceOnWallMovement
 
     ; update the frames
     pop hl  ; POP HL = enemy starting address 
@@ -22,50 +22,52 @@ UpdateEnemyC::
     ld [hli], a ; store the new value
     jr nc, .endUpdateEnemyC
 
-    ; update frames
+.updateFrames ; update frames normally
     ld a, [hl] ; a = int part of updateFrameCounter
-    adc a, 0 ; add the carry
-    ld [hli], a
-    ld d, a ; d = int part of updateFrameCounter
+    inc a
+    
+.checkGoBackIdleState ; if in last state, reset things properly
+    cp a, ENEMY_TYPEC_GO_BACK_IDLE_FRAME
+    jr nz, .checkAttackState
 
-    cp a, ENEMY_TYPEC_INFLATE_STATE_FRAME ; check if inflate state
-    ld a, [hl] ; a = currFrame
-    ld e, a ; e = currFrame
+    xor a
+    ld [hli], a ; update frame counter int
+    ld [hli], a ; curr animation frame
+
+    ld a, ENEMY_TYPEC_NORMAL_STATE_MAX_FRAME
+    ld [hli], a ; max frame
+    jr .endUpdateEnemyC
+
+.checkAttackState
+    ; a = int part of update frame counter
+    ld [hli], a ; update it from .updateFrame
+
+    cp a, ENEMY_TYPEC_ATTACK_STATE_FRAME ; check if ATTACK state
     jr nz, .checkShoot
     
     xor a
     ld [hli], a ; currFrame = 0
-    ld a, ENEMY_TYPEC_INFLATE_STATE_MAX_FRAME
-    ld [hli], a ; set max frame for inflate state
+    ld a, ENEMY_TYPEC_ATTACK_STATE_MAX_FRAME
+    ld [hli], a ; set max frame for ATTACK state
     jr .endUpdateEnemyC
 
 .checkShoot
     cp a, ENEMY_TYPEC_SHOOT_FRAME
-    jr nz, .continue
+    jr nz, .updateAnimation
 
-    ; check shoot direction and just shoot
-    pop hl ; POP hl = enemy starting address
-    push hl ; PUSH hl = enemy starting address
+    pop de ; POP de = enemy starting address
+    push de ; PUSH de = enemy starting address
+    push hl ; PUSH HL = currframe address
     call EnemyShootDir
-
-.endShooting
-    xor a
-    ld d, a ; reset updateFrameCounter
-    ld e, a
-
-.continue
-    ; d = updateFrameCounter, e = currFrame
-    pop hl 
-    push hl
-
-    ld bc, Character_UpdateFrameCounter + 1
-    add hl, bc
-    ld a, d
-    ld [hli], a ; update new value to updateFrameCounter
+    pop hl ; pop HL = currframe address
+ 
+.updateAnimation
+    ; hl = currFrame address
+    ld a, [hli] ; a = currFrame
 
     ; update animation frames and check if more
-    inc e
-    inc hl
+    inc a
+    ld e, a ; e = currFrame
 
     ld a, [hl] ; take max frames
     cp a, e ; check if reach max frame
@@ -125,7 +127,7 @@ InitEnemyCSprite:
 
 .rightDir
     ld a, d
-    cp a, ENEMY_TYPEC_INFLATE_STATE_FRAME
+    cp a, ENEMY_TYPEC_ATTACK_STATE_FRAME
     jr c, .normalRight
     ld bc, EnemyCAnimation.attackRightAnimation
     jr .endDir
@@ -135,7 +137,7 @@ InitEnemyCSprite:
 
 .upDir
     ld a, d
-    cp a, ENEMY_TYPEC_INFLATE_STATE_FRAME
+    cp a, ENEMY_TYPEC_ATTACK_STATE_FRAME
     jr c, .normalUp
     ld bc, EnemyCAnimation.attackUpAnimation
     jr .endDir
@@ -145,9 +147,9 @@ InitEnemyCSprite:
 
 .downDir
     ld a, d
-    cp a, ENEMY_TYPEC_INFLATE_STATE_FRAME ; check if use inflate animation
+    cp a, ENEMY_TYPEC_ATTACK_STATE_FRAME ; check if use inflate animation
     jr c, .normalDown
-    ld bc, EnemyCAnimation.attackUpAnimation
+    ld bc, EnemyCAnimation.attackDownAnimation
     jr .endDir
 .normalDown
     ld bc, EnemyCAnimation.downAnimation
