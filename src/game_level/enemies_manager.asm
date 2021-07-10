@@ -1,7 +1,7 @@
 INCLUDE "./src/include/hardware.inc"
 INCLUDE "./src/include/structs.inc"
 INCLUDE "./src/include/entities.inc"
-INCLUDE "./src/include/definitions.inc"
+INCLUDE "./src/definitions/definitions.inc"
 INCLUDE "./src/include/util.inc"
 INCLUDE "./src/include/movement.inc"
 INCLUDE "./src/include/tile_collision.inc"

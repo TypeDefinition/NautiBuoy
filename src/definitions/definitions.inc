@@ -206,12 +206,6 @@ DEF PLAYER_DEFAULT_VELOCITY EQU VELOCITY_SLIGHTLY_SLOW
 DEF PLAYER_INCREASED_VELOCITY EQU VELOCITY_NORMAL
 DEF BULLET_VELOCITY EQU $02 ; VELOCITY_FAST
 
-; Tiles
-DEF TILE_SIZE EQU $08
-DEF CHARACTER_COLLIDABLE_TILES EQU $0F ; Collidable Tiles: A tile is assumed to be collidable by characters if it's value is less than 16.
-DEF BULLET_COLLIDABLE_TILES EQU $09 ; Collidable Tiles: A tile is assumed to be collidable by bullets if it's value is less than 9.
-DEF BULLET_DESTRUCTIBLE_TILES EQU $01 ; Collidable Tiles: A tile is assumed to be collidable by bullets if it's value is less than 1.
-DEF POWER_BULLET_DESTRUCTIBLE_TILES EQU $02 ; Collidable Tiles: A tile is assumed to be collidable by bullets if it's value is less than 2.
-DEF EMPTY_TILE_VALUE EQU $20
+INCLUDE "./src/definitions/tile_definitions.inc"
 
 ENDC ; DEFINITIONS_INC

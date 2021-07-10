@@ -1,6 +1,6 @@
 INCLUDE "./src/include/hardware.inc"
 INCLUDE "./src/include/util.inc"
-INCLUDE "./src/include/definitions.inc"
+INCLUDE "./src/definitions/definitions.inc"
 
 ; UI Tile Index
 DEF UTI_PLAYER_HP EQU 7

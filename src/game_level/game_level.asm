@@ -1,7 +1,7 @@
 INCLUDE "./src/include/hardware.inc"
 INCLUDE "./src/include/util.inc"
 INCLUDE "./src/include/hUGE.inc"
-INCLUDE "./src/include/definitions.inc"
+INCLUDE "./src/definitions/definitions.inc"
 
 DEF GAME_TIMER_INCREMENT EQU $04
 

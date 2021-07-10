@@ -1,6 +1,6 @@
 INCLUDE "./src/include/entities.inc"
 include "./src/include/util.inc"
-INCLUDE "./src/include/definitions.inc"
+INCLUDE "./src/definitions/definitions.inc"
 
 SECTION "Powerup Data", WRAM0
 wPowerupData::

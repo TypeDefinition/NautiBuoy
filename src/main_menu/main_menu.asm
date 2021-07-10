@@ -1,12 +1,7 @@
 INCLUDE "./src/include/hardware.inc"
 INCLUDE "./src/include/util.inc"
 INCLUDE "./src/include/hUGE.inc"
-INCLUDE "./src/include/definitions.inc"
-
-; Tile Values
-DEF CURSOR_TILE_VALUE EQU $10
-DEF EMPTY_STAR_TILE_VALUE EQU $11
-DEF FILLED_STAR_TILE_VALUE EQU $12
+INCLUDE "./src/definitions/definitions.inc"
 
 ; Reset Screen Cursor Tile Index
 DEF CTI_OPT_NO EQU $01E2

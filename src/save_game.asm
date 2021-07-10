@@ -1,4 +1,4 @@
-INCLUDE "./src/include/definitions.inc"
+INCLUDE "./src/definitions/definitions.inc"
 INCLUDE "./src/include/hardware.inc"
 INCLUDE "./src/include/util.inc"
 

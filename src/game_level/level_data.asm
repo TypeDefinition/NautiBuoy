@@ -1,5 +1,5 @@
 
-INCLUDE "./src/include/definitions.inc"
+INCLUDE "./src/definitions/definitions.inc"
 
 
 /*  Stores the data on where and what type of enemy should be place on the level 

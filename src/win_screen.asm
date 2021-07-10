@@ -1,7 +1,7 @@
 INCLUDE "./src/include/hardware.inc"
 INCLUDE "./src/include/util.inc"
 INCLUDE "./src/include/hUGE.inc"
-INCLUDE "./src/include/definitions.inc"
+INCLUDE "./src/definitions/definitions.inc"
 
 SECTION "Win Screen", ROM0
 ; Global Jumps

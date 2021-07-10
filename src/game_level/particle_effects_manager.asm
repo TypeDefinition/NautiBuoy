@@ -1,5 +1,5 @@
 INCLUDE "./src/include/entities.inc"
-INCLUDE "./src/include/definitions.inc"
+INCLUDE "./src/definitions/definitions.inc"
 
 DEF PARTICLE_EFFECT_NO EQU 6
 
