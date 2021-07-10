@@ -157,6 +157,11 @@ InitEnemyCSprite:
 
 .leftDir
     ld a, d
+    cp a, ENEMY_TYPEC_ATTACK_STATE_FRAME ; check if use inflate animation
+    jr c, .normalLeft
+    ld bc, EnemyCAnimation.attackLeftAnimation
+    jr .endDir
+.normalLeft
     ld bc, EnemyCAnimation.leftAnimation
 
 .endDir
