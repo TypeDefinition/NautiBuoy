@@ -7,9 +7,9 @@ BGWindowTileData::
 
 SECTION "Sprites", ROMX
 Sprites::
-    INCBIN "./tile_data/tempPlayer.2bpp"
+    INCBIN "./tile_data/player.2bpp"
+    INCBIN "./tile_data/squidEnemy.2bpp"
     INCBIN "./tile_data/turtleEnemy.2bpp"
-    INCBIN "./tile_data/enemyShootOneDir.2bpp"
     INCBIN "./tile_data/ghostEnemy.2bpp"
     INCBIN "./tile_data/Powerups.2bpp"
     INCBIN "./tile_data/ParticleEffects.2bpp"
@@ -63,198 +63,152 @@ PlayerAnimation::
 .upAnimation::
     ; Frame 1
     db 0
-    db OAMF_PAL0 | OAMF_PRI
-    db 0
-    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
+    db OAMF_PAL0 | OAMF_PRI | OAMF_YFLIP
+    db 2
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
 
     ; Frame 2
-    db 2
-    db OAMF_PAL0 | OAMF_PRI
-    db 2
-    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
-
-    ; Frame 3
     db 4
-    db OAMF_PAL0 | OAMF_PRI
-    db 4
-    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
+    db OAMF_PAL0 | OAMF_PRI | OAMF_YFLIP
+    db 6
+    db OAMF_PAL0 | OAMF_PRI | OAMF_YFLIP
 
 .downAnimation::
     ; Frame 1
     db 0
-    db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
-    db 0
-    db OAMF_PAL0 | OAMF_XFLIP | OAMF_YFLIP | OAMF_PRI
+    db OAMF_PAL0 | OAMF_PRI 
+    db 2
+    db OAMF_PAL0 | OAMF_PRI
 
     ; Frame 2
-    db 2
-    db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
-    db 2
-    db OAMF_PAL0 | OAMF_XFLIP | OAMF_YFLIP | OAMF_PRI
-
-    ; Frame 3
     db 4
-    db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
-    db 4
-    db OAMF_PAL0 | OAMF_XFLIP | OAMF_YFLIP | OAMF_PRI
-
-.rightAnimation::
+    db OAMF_PAL0 | OAMF_PRI 
     db 6
     db OAMF_PAL0 | OAMF_PRI
+
+.rightAnimation::
     db 8
+    db OAMF_PAL0 | OAMF_PRI
+    db 10
     db OAMF_PAL0 | OAMF_PRI
 
     ; Frame 2
-    db 10
-    db OAMF_PAL0 | OAMF_PRI
     db 12
     db OAMF_PAL0 | OAMF_PRI
-
-    ; Frame 3
     db 14
-    db OAMF_PAL0 | OAMF_PRI
-    db 16
     db OAMF_PAL0 | OAMF_PRI
 
 .leftAnimation::
+    db 10
+    db OAMF_PAL0 | OAMF_PRI | OAMF_XFLIP
     db 8
-    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
-    db 6
-    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
+    db OAMF_PAL0 | OAMF_PRI | OAMF_XFLIP
 
     ; Frame 2
-    db 12
-    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
-    db 10
-    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
-
-    ; Frame 3
-    db 16
-    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
     db 14
-    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
+    db OAMF_PAL0 | OAMF_PRI | OAMF_XFLIP
+    db 12
+    db OAMF_PAL0 | OAMF_PRI | OAMF_XFLIP
 
 /* Animation, sprite IDs for the enemy*/
 EnemyAAnimation::
 .upAnimation:: ; up and down has the same frames
     ; Frame 1
-    db $16
-    db OAMF_PAL0
-    db $16
-    db OAMF_PAL0 | OAMF_XFLIP
+    db $10
+    db OAMF_PAL0 | OAMF_YFLIP
+    db $12
+    db OAMF_PAL0 | OAMF_YFLIP
 
     ; Frame 2
-    db $18
-    db OAMF_PAL0
-    db $18
-    db OAMF_PAL0 | OAMF_XFLIP
+    db $14
+    db OAMF_PAL0 | OAMF_YFLIP
+    db $16
+    db OAMF_PAL0 | OAMF_YFLIP
 .downAnimation:: ; up and down has the same frames
     ; Frame 1
-    db $16
-    db OAMF_PAL0 | OAMF_YFLIP
-    db $16
-    db OAMF_PAL0 | OAMF_XFLIP | OAMF_YFLIP
+    db $10
+    db OAMF_PAL0
+    db $12
+    db OAMF_PAL0 
 
     ; Frame 2
-    db $18
-    db OAMF_PAL0 | OAMF_YFLIP
-    db $18
-    db OAMF_PAL0 | OAMF_XFLIP | OAMF_YFLIP
+    db $14
+    db OAMF_PAL0
+    db $16
+    db OAMF_PAL0
 .rightAnimation::
     ; Frame 1
-    db $1E
+    db $1C
     db OAMF_PAL0
-    db $20
+    db $1E
     db OAMF_PAL0
 
     ; Frame 2
-    db $22
+    db $20
     db OAMF_PAL0
-    db $24
+    db $22
     db OAMF_PAL0
 .leftAnimation::
     ; Frame 1
-    db $20
-    db OAMF_PAL0 | OAMF_XFLIP
     db $1E
+    db OAMF_PAL0 | OAMF_XFLIP
+    db $1C
     db OAMF_PAL0 | OAMF_XFLIP
 
     ; Frame 2
-    db $24
-    db OAMF_PAL0 | OAMF_XFLIP
     db $22
+    db OAMF_PAL0 | OAMF_XFLIP
+    db $20
     db OAMF_PAL0 | OAMF_XFLIP
 .attackUpAnimation::
     ; Frame 1
+    db $18
+    db OAMF_PAL0 | OAMF_YFLIP
     db $1A
-    db OAMF_PAL0
-    db $1A
-    db OAMF_PAL0 | OAMF_XFLIP
+    db OAMF_PAL0 | OAMF_YFLIP
 
     ; Frame 2
-    db $1C
-    db OAMF_PAL0
-    db $1C
-    db OAMF_PAL0 | OAMF_XFLIP
-
-    ; Frame 3
-    db $1A
-    db OAMF_PAL0
-    db $1A
-    db OAMF_PAL0 | OAMF_XFLIP
+    db $14
+    db OAMF_PAL0 | OAMF_YFLIP
+    db $16
+    db OAMF_PAL0 | OAMF_YFLIP
 .attackDownAnimation::
     ; Frame 1
+    db $18
+    db OAMF_PAL0 
     db $1A
-    db OAMF_PAL0 | OAMF_YFLIP
-    db $1A
-    db OAMF_PAL0 | OAMF_XFLIP | OAMF_YFLIP
-
+    db OAMF_PAL0
+    
     ; Frame 2
-    db $1C
-    db OAMF_PAL0 | OAMF_YFLIP
-    db $1C
-    db OAMF_PAL0 | OAMF_XFLIP | OAMF_YFLIP
+    db $14
+    db OAMF_PAL0
+    db $16
+    db OAMF_PAL0
 
-    ; Frame 3
-    db $1A
-    db OAMF_PAL0 | OAMF_YFLIP
-    db $1A
-    db OAMF_PAL0 | OAMF_XFLIP | OAMF_YFLIP
 .attackRightAnimation::
     ; Frame 1
-    db $26
+    db $24
     db OAMF_PAL0
-    db $28
+    db $26
     db OAMF_PAL0
 
     ; Frame 2
-    db $2A
+    db $20
     db OAMF_PAL0
-    db $2C
+    db $22
     db OAMF_PAL0
 
-    ; Frame 3
-    db $26
-    db OAMF_PAL0
-    db $28
-    db OAMF_PAL0
 .attackLeftAnimation::
     ; Frame 1
-    db $28
-    db OAMF_PAL0 | OAMF_XFLIP
     db $26
+    db OAMF_PAL0 | OAMF_XFLIP
+    db $24
     db OAMF_PAL0 | OAMF_XFLIP
 
     ; Frame 2
-    db $2C
+    db $22
     db OAMF_PAL0 | OAMF_XFLIP
-    db $2A
-    db OAMF_PAL0 | OAMF_XFLIP
-
-    ; Frame 1
-    db $28
-    db OAMF_PAL0 | OAMF_XFLIP
-    db $26
+    db $20
     db OAMF_PAL0 | OAMF_XFLIP
 
 

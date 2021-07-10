@@ -207,7 +207,7 @@ UpdatePlayerMovement::
 
 .getUserInput
     call GetUserInput
-    jr .end
+    jr .advancePlayerAnimation
 .interpolatePosition
     call InterpolatePlayerPosition
 
@@ -219,6 +219,11 @@ UpdatePlayerMovement::
     call CheckPowerUpCollision
 
 .advancePlayerAnimation
+    ld a, [wPlayer_UpdateFrameCounter]
+    add a, PLAYER_ANIMATION_UPDATE_SPEED
+    ld [wPlayer_UpdateFrameCounter], a
+    jr nc, .end
+
     ld a, [wPlayer_CurrStateMaxAnimFrame]
     ld b, a ; store max frames into b
     
