@@ -12,7 +12,6 @@ UpdateEnemyC::
     call EnemyBounceOnWallMovement
 
     ; update the frames
-    ; start shooting based on the direction available
     pop hl  ; POP HL = enemy starting address 
     push hl ; PUSH HL = enemy starting address 
     ld de, Character_UpdateFrameCounter
@@ -24,13 +23,24 @@ UpdateEnemyC::
     jr nc, .endUpdateEnemyC
 
     ; update frames
-    ld a, [hli] ; a = int part of updateFrameCounter
+    ld a, [hl] ; a = int part of updateFrameCounter
     adc a, 0 ; add the carry
+    ld [hli], a
     ld d, a ; d = int part of updateFrameCounter
 
-    cp a, ENEMY_TYPEC_SHOOT_FRAME
+    cp a, ENEMY_TYPEC_INFLATE_STATE_FRAME ; check if inflate state
     ld a, [hl] ; a = currFrame
     ld e, a ; e = currFrame
+    jr nz, .checkShoot
+    
+    xor a
+    ld [hli], a ; currFrame = 0
+    ld a, ENEMY_TYPEC_INFLATE_STATE_MAX_FRAME
+    ld [hli], a ; set max frame for inflate state
+    jr .endUpdateEnemyC
+
+.checkShoot
+    cp a, ENEMY_TYPEC_SHOOT_FRAME
     jr nz, .continue
 
     ; check shoot direction and just shoot
@@ -39,10 +49,11 @@ UpdateEnemyC::
     call EnemyShootDir
 
 .endShooting
-    ld d, 0 ; reset updateFrameCounter
-    ld e, 0
+    xor a
+    ld d, a ; reset updateFrameCounter
+    ld e, a
 
-.continue 
+.continue
     ; d = updateFrameCounter, e = currFrame
     pop hl 
     push hl
@@ -113,18 +124,37 @@ InitEnemyCSprite:
     ASSERT DIR_RIGHT > 2
 
 .rightDir
+    ld a, d
+    cp a, ENEMY_TYPEC_INFLATE_STATE_FRAME
+    jr c, .normalRight
+    ld bc, EnemyCAnimation.attackRightAnimation
+    jr .endDir
+.normalRight
     ld bc, EnemyCAnimation.rightAnimation
     jr .endDir
 
 .upDir
+    ld a, d
+    cp a, ENEMY_TYPEC_INFLATE_STATE_FRAME
+    jr c, .normalUp
+    ld bc, EnemyCAnimation.attackUpAnimation
+    jr .endDir
+.normalUp
     ld bc, EnemyCAnimation.upAnimation
     jr .endDir
 
 .downDir
+    ld a, d
+    cp a, ENEMY_TYPEC_INFLATE_STATE_FRAME ; check if use inflate animation
+    jr c, .normalDown
+    ld bc, EnemyCAnimation.attackUpAnimation
+    jr .endDir
+.normalDown
     ld bc, EnemyCAnimation.downAnimation
     jr .endDir
 
 .leftDir
+    ld a, d
     ld bc, EnemyCAnimation.leftAnimation
 
 .endDir
