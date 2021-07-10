@@ -3,6 +3,8 @@ INCLUDE "./src/include/util.inc"
 INCLUDE "./src/include/hUGE.inc"
 INCLUDE "./src/include/definitions.inc"
 
+DEF GAME_TIMER_INCREMENT EQU $04
+
 SECTION "Game Level WRAM", WRAM0
 wGameLevelTileMap::
     ds 1024 ; Every game level is made of 1024 tiles.
@@ -245,7 +247,7 @@ SetGameLevelTile::
 UpdateGameLevelTimer:
     ; Update timer
     ld a, [wGameTimerFrac]
-    add a, TIMER_UPDATE_SPEED
+    add a, GAME_TIMER_INCREMENT
     ld [wGameTimerFrac], a
     ret nc
 
