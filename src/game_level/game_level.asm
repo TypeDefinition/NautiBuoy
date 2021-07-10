@@ -3,17 +3,19 @@ INCLUDE "./src/include/util.inc"
 INCLUDE "./src/include/hUGE.inc"
 INCLUDE "./src/include/definitions.inc"
 
-SECTION "Game Level Tiles", WRAM0
-GameLevelTiles::
+SECTION "Game Level WRAM", WRAM0
+GameLevelTileMap::
     ds 1024 ; Every game level is made of 1024 tiles.
 .end::
 
-SECTION "Game Level Data", WRAM0
 wGameTimer::
-    ds 2 ; Store the timer as Binary-Coded-Decimals (BCD)
+    ds 2 ; Store the timer as Binary-Coded-Decimals (BCD) in Big-Endian
 wGameTimerFrac::
     ds 1
 .end
+
+wShadowSCData::
+    ds 2 ; y pos, then x pos
 
 SECTION "Game Level", ROM0
 ; Global Jumps
@@ -22,8 +24,8 @@ JumpLoadGameLevel::
 ; Local Jumps
 JumpVBlankHandler:
     jp VBlankHandler
-JumpOnUpdate:
-    jp OnUpdate
+JumpUpdateGameLevel:
+    jp UpdateGameLevel
 
 LCDOn:
     ld a, LCDCF_ON | LCDCF_WIN9C00 | LCDCF_WINON | LCDCF_BG9800 | LCDCF_OBJ16 | LCDCF_OBJON | LCDCF_BGON
@@ -31,68 +33,60 @@ LCDOn:
     ld [rLCDC], a
     ret
 
+InitStage:
+    ld a, [wSelectedStage]
+
+    dec a
+    jp z, InitStage1
+    dec a
+    jp z, InitStage2
+    dec a
+    jp z, InitStage3
+    dec a
+    jp z, InitStage4
+    dec a
+    jp z, InitStage5
+    dec a
+    jp z, InitStage6
+    dec a
+    jp z, InitStage7
+
+    ; Default
+    jp InitStage0
+
 LoadGameLevel::
     di ; Disable Interrupts
 
     call LCDOff
     call SoundOff
+
     ld hl, JumpVBlankHandler
     call SetVBlankCallback
-    ld hl, JumpOnUpdate
+    ld hl, JumpUpdateGameLevel
     call SetProgramLoopCallback
 
-    ; Set STAT interrupt flags.
-    ld a, VIEWPORT_SIZE_Y
-    ldh [rLYC], a
-    ld a, STATF_LYC
-    ldh [rSTAT], a
+    ; Copy background tile data into VRAM.
+    set_romx_bank BANK(BGWindowTileData)
+    mem_copy BGWindowTileData, _VRAM9000, BGWindowTileData.end-BGWindowTileData
 
-    ; Reset hWaitVBlankFlag.
-    xor a
-    ld [hWaitVBlankFlag], a
-
-    ; Reset OAM & Shadow OAM
+    ; Load Sprites into VRAM.
+    set_romx_bank BANK(Sprites)
+    mem_copy Sprites, _VRAM8000, Sprites.end-Sprites
+    ; Reset OAM & Shadow OAM.
     call ResetOAM
     mem_set_small wShadowOAM, 0, wShadowOAM.end - wShadowOAM
     xor a
     ld [wCurrentShadowOAMPtr], a
-
-    ; Copy textures into VRAM.
-    set_romx_bank BANK(BGWindowTileData)
-    mem_copy BGWindowTileData, _VRAM9000, BGWindowTileData.end-BGWindowTileData
-    set_romx_bank BANK(Sprites)
-    mem_copy Sprites, _VRAM8000, Sprites.end-Sprites
-
-    ; Copy tile map into VRAM.
-    set_romx_bank BANK(Level0TileMap)
-    mem_copy Level0TileMap, GameLevelTiles, Level0TileMap.end-Level0TileMap
-    mem_copy GameLevelTiles, _SCRN0, GameLevelTiles.end-GameLevelTiles
-
-    call LoadGameLevelUI
+    ; Transfer sprite data to OAM.
+    call hOAMDMA
 
     call ResetPlayerCamera
     call ResetAllBullets
     call ResetBGWindowUpdateQueue
 
-    ; TEMP: Temporary code.
-    set_romx_bank BANK(Sprites)
-    ld hl, wShadowOAM
-    call InitialisePlayer
-    call UpdatePlayerShadowOAM
-    
-    set_romx_bank BANK(LevelOneEnemyData)
-    call InitEnemiesAndPlaceOnMap
-    call InitPowerupsAndPlaceOnMap
-    call InitParticleEffects
+    call LoadGameLevelUI
 
-    call hOAMDMA ; transfer sprite data to OAM
-
-    ; Reset SCY & SCX
-    xor a
-    ld [rSCY], a
-    ld [rSCX], a
-
-    ; reset timer values
+    ; Reset Game Timer
     xor a
     ld [wGameTimerFrac], a
     ld a, $01
@@ -100,6 +94,14 @@ LoadGameLevel::
     ld a, $20
     ld [wGameTimer + 1], a
     call UpdateGameTimerUI
+
+    ; Reset SCY & SCX
+    xor a
+    ld [rSCY], a
+    ld [rSCX], a
+
+    ; Initalise Stage Specific Stuff
+    call InitStage
 
     call LCDOn
 
@@ -109,6 +111,11 @@ LoadGameLevel::
     ld hl, GameLevelBGM
     call hUGE_init
 
+    ; Set STAT interrupt flags.
+    ld a, VIEWPORT_SIZE_Y
+    ldh [rLYC], a
+    ld a, STATF_LYC
+    ldh [rSTAT], a
     ; Set Interrupt Flags
     ld a, IEF_VBLANK | IEF_STAT
     ldh [rIE], a
@@ -119,14 +126,14 @@ LoadGameLevel::
 
     ret
 
-OnUpdate:
+UpdateGameLevel:
     call UpdateInput
 
     set_romx_bank BANK(Sprites)
     call ResetShadowOAM
 
     ; insert game logic here and update shadow OAM data
-    call UpdateLevelTimer ; update timer
+    call UpdateGameLevelTimer ; update timer
     call UpdateParticleEffect
     
     call UpdatePlayerMovement
@@ -166,7 +173,7 @@ VBlankHandler:
     
     call hOAMDMA ; Update OAM
 
-    ; Update camera position.
+    ; Update Camera Position
     ld a, [wShadowSCData]
     ld [rSCY], a
     ld a, [wShadowSCData + 1]
@@ -183,10 +190,10 @@ VBlankHandler:
 ; Get the value of the tile, given a tile index.
 ; @param bc TileIndex
 ; @return a Tile Value
-GetTileValue::
+GetGameLevelTileValue::
     push hl
 
-    ld hl, GameLevelTiles
+    ld hl, GameLevelTileMap
     add hl, bc
     ld a, [hl]
 
@@ -199,7 +206,7 @@ GetTileValue::
 SetGameLevelTile::
     push af
     push hl
-    ld hl, GameLevelTiles
+    ld hl, GameLevelTileMap
     add hl, bc
     ld [hl], a
     pop hl
@@ -207,7 +214,7 @@ SetGameLevelTile::
     call QueueBGTile
     ret
 
-UpdateLevelTimer:
+UpdateGameLevelTimer:
     ; Update timer
     ld a, [wGameTimerFrac]
     add a, TIMER_UPDATE_SPEED
@@ -238,14 +245,11 @@ UpdateLevelTimer:
     call UpdateGameTimerUI
 
     ; If h == l == 0, HP == 0. If HP == 0, lose.
-    xor a
-    xor h
-    xor l
+    xor a ; Set a = 0.
+    xor h ; As long as h or l != 0, then (a xor h xor l) != 0.
+    xor l ; As long as h or l != 0, then (a xor h xor l) != 0.
     jr nz, .end
+    ; Lose
 
 .end
     ret
-
-SECTION "VBlank Data", WRAM0
-wShadowSCData::
-    ds 2 ; y pos, then x pos

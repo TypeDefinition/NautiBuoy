@@ -18,7 +18,7 @@ MACRO tile_collision_check_up_immd
     sub a, \3
     ld e, a
     call GetTileIndex
-    call GetTileValue
+    call GetGameLevelTileValue
     cp a, \4
     jp c, \5
 
@@ -30,7 +30,7 @@ MACRO tile_collision_check_up_immd
     add a, \3 - 1
     ld e, a
     call GetTileIndex
-    call GetTileValue
+    call GetGameLevelTileValue
     cp a, \4
     jp c, \5
 ENDM
@@ -50,7 +50,7 @@ MACRO tile_collision_check_down_immd
     sub a, \3
     ld e, a
     call GetTileIndex
-    call GetTileValue
+    call GetGameLevelTileValue
     cp a, \4
     jp c, \5
 
@@ -62,7 +62,7 @@ MACRO tile_collision_check_down_immd
     add a, \3 - 1
     ld e, a
     call GetTileIndex
-    call GetTileValue
+    call GetGameLevelTileValue
     cp a, \4
     jp c, \5
 
@@ -83,7 +83,7 @@ MACRO tile_collision_check_left_immd
     sub a, (TILE_SIZE + \3)
     ld e, a
     call GetTileIndex
-    call GetTileValue
+    call GetGameLevelTileValue
     cp a, \4
     jp c, \5
 
@@ -95,7 +95,7 @@ MACRO tile_collision_check_left_immd
     sub a, (TILE_SIZE + \3)
     ld e, a
     call GetTileIndex
-    call GetTileValue
+    call GetGameLevelTileValue
     cp a, \4
     jp c, \5
 
@@ -116,7 +116,7 @@ MACRO tile_collision_check_right_immd
     add a, (TILE_SIZE + \3 - 1)
     ld e, a
     call GetTileIndex
-    call GetTileValue
+    call GetGameLevelTileValue
     cp a, \4
     jp c, \5
 
@@ -128,7 +128,7 @@ MACRO tile_collision_check_right_immd
     add a, (TILE_SIZE + \3 - 1)
     ld e, a
     call GetTileIndex
-    call GetTileValue
+    call GetGameLevelTileValue
     cp a, \4
     jp c, \5
 
@@ -156,7 +156,7 @@ MACRO tile_collision_check_up_reg
     sub a, (TILE_SIZE + \1)
     ld d, a
     call GetTileIndex
-    call GetTileValue
+    call GetGameLevelTileValue
     pop de
     cp a, \2
     jp c, \3
@@ -170,7 +170,7 @@ MACRO tile_collision_check_up_reg
     sub a, (TILE_SIZE + \1)
     ld d, a
     call GetTileIndex
-    call GetTileValue
+    call GetGameLevelTileValue
     pop de
     cp a, \2
     jp c, \3
@@ -192,7 +192,7 @@ MACRO tile_collision_check_down_reg
     add a, (TILE_SIZE + \1 - 1)
     ld d, a
     call GetTileIndex
-    call GetTileValue
+    call GetGameLevelTileValue
     pop de
     cp a, \2
     jp c, \3
@@ -206,7 +206,7 @@ MACRO tile_collision_check_down_reg
     add a, (TILE_SIZE + \1 - 1)
     ld d, a
     call GetTileIndex
-    call GetTileValue
+    call GetGameLevelTileValue
     pop de
     cp a, \2
     jp c, \3
@@ -228,7 +228,7 @@ MACRO tile_collision_check_left_reg
     sub a, \1
     ld d, a
     call GetTileIndex
-    call GetTileValue
+    call GetGameLevelTileValue
     pop de
     cp a, \2
     jp c, \3
@@ -242,7 +242,7 @@ MACRO tile_collision_check_left_reg
     add a, \1 - 1
     ld d, a
     call GetTileIndex
-    call GetTileValue
+    call GetGameLevelTileValue
     pop de
     cp a, \2
     jp c, \3
@@ -264,7 +264,7 @@ MACRO tile_collision_check_right_reg
     sub a, \1
     ld d, a
     call GetTileIndex
-    call GetTileValue
+    call GetGameLevelTileValue
     pop de
     cp a, \2
     jp c, \3
@@ -278,7 +278,7 @@ MACRO tile_collision_check_right_reg
     add a, \1 - 1
     ld d, a
     call GetTileIndex
-    call GetTileValue
+    call GetGameLevelTileValue
     pop de
     cp a, \2
     jp c, \3

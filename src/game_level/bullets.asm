@@ -87,7 +87,7 @@ BulletTileCollisionCheck:
     ld e, a
 
     call GetTileIndex
-    call GetTileValue
+    call GetGameLevelTileValue
     call BulletDestroyTile
 
     pop de
@@ -107,7 +107,7 @@ BulletTileCollisionCheck:
     ld e, a
 
     call GetTileIndex
-    call GetTileValue
+    call GetGameLevelTileValue
     call BulletDestroyTile
 
     pop de
@@ -127,7 +127,7 @@ BulletTileCollisionCheck:
     ld e, a
     
     call GetTileIndex
-    call GetTileValue
+    call GetGameLevelTileValue
     call BulletDestroyTile
 
     pop de
@@ -147,7 +147,7 @@ BulletTileCollisionCheck:
     ld e, a
     
     call GetTileIndex
-    call GetTileValue
+    call GetGameLevelTileValue
     call BulletDestroyTile
 
     pop de
