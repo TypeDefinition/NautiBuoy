@@ -134,7 +134,6 @@ UpdateParticleEffect::
 
 .continueUpdateParticle
     ; b = flags
-
     ld [hli], a
 
     ld a, b
@@ -231,13 +230,6 @@ UpdateParticleEffectsShadowOAM::
     sub a, d ; decrease by screen offset
     add a, 8 ; sprite y offset = 8
     ld d, a
-
-;    cp a, $0A
-;    jr nz, .test
-;
-;    ld d, a
-;
-;.test
 
     ld a, [wShadowSCData + 1]
     ld e, a
