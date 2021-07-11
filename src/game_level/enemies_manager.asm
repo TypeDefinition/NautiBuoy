@@ -726,6 +726,7 @@ HitEnemy::
 
 */
 PlayerGetsHitEnemyBehavior::
+    push hl ; Please don't remove this. This breaks everything. Took me hours to find this. I really want to cry now.
     ; loop through enemy, check type, then call the correct function
     ld hl, wEnemy0
     ld a, [wTotalLevelEnemiesNo]
@@ -757,6 +758,7 @@ PlayerGetsHitEnemyBehavior::
     jr .startOfEnemyLoop
 
 .end
+    pop hl
     ret
 
 /*  Checks if enemy is on screen 

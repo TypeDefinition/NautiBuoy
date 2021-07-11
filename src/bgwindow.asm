@@ -153,7 +153,7 @@ UpdateBGWindow::
 
 .loop
     xor a
-    xor e
+    cp e
     jr z, .end
 
     ; bc = Dirty Tile Index
