@@ -528,61 +528,61 @@ EnemyCAnimation::
 EnemyDAnimation::
 .sleepAnimation::
     ; Frame 1
-    db $36
+    db $42
     db OAMF_PAL0
-    db $38
+    db $44
     db OAMF_PAL0
 
     ; Frame 2
-    db $3A
+    db $46
     db OAMF_PAL0
-    db $3C
+    db $48
     db OAMF_PAL0
 .upAnimation:: ; up and down has the same frames
     ; Frame 1
-    db $3A
+    db $46
     db OAMF_PAL0
-    db $3E
+    db $4A
     db OAMF_PAL0
 
     ; Frame 2
-    db $40
+    db $4C
     db OAMF_PAL0
-    db $42
+    db $4E
     db OAMF_PAL0 
 .downAnimation:: ; up and down has the same frames
     ; Frame 1
-    db $3A
+    db $46
     db OAMF_PAL0 | OAMF_YFLIP
-    db $3E
+    db $4A
     db OAMF_PAL0 | OAMF_YFLIP
 
     ; Frame 2
-    db $40
+    db $4C
     db OAMF_PAL0 | OAMF_YFLIP
-    db $42
+    db $4E
     db OAMF_PAL0 | OAMF_YFLIP
 .rightAnimation::
     ; Frame 1
-    db $44
+    db $50
     db OAMF_PAL0
-    db $46
+    db $52
     db OAMF_PAL0
 
     ; Frame 2
-    db $48
+    db $54
     db OAMF_PAL0
-    db $4A
+    db $56
     db OAMF_PAL0
 .leftAnimation::
     ; Frame 1
-    db $46
+    db $52
     db OAMF_PAL0 | OAMF_XFLIP
-    db $44
+    db $50
     db OAMF_PAL0 | OAMF_XFLIP
 
     ; Frame 2
-    db $4A
+    db $56
     db OAMF_PAL0 | OAMF_XFLIP
-    db $48
+    db $54
     db OAMF_PAL0 | OAMF_XFLIP
