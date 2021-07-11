@@ -83,7 +83,7 @@ InitStage0::
     call InitialisePlayer
     call UpdatePlayerShadowOAM
     
-    set_romx_bank BANK(LevelOneEnemyData)
+    set_romx_bank BANK(Stage0EnemyData)
     call InitEnemiesAndPlaceOnMap
     call InitPowerupsAndPlaceOnMap
     call InitParticleEffects
@@ -91,6 +91,23 @@ InitStage0::
     ret
 
 InitStage1::
+    ; Copy tile map into VRAM.
+    set_romx_bank BANK(Stage1TileMap)
+    mem_copy Stage1TileMap, wGameLevelTileMap, Stage1TileMap.end-Stage1TileMap
+    mem_copy wGameLevelTileMap, _SCRN0, wGameLevelTileMap.end-wGameLevelTileMap
+
+    ; Initialise Player
+    ; TEMP: Temporary code.
+    set_romx_bank BANK(Sprites)
+    ld hl, wShadowOAM
+    call InitialisePlayer
+    call UpdatePlayerShadowOAM
+
+    set_romx_bank BANK(Stage0EnemyData)
+    call InitEnemiesAndPlaceOnMap
+    call InitPowerupsAndPlaceOnMap
+    call InitParticleEffects
+
     ret
 
 InitStage2::

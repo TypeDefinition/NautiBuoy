@@ -99,7 +99,7 @@ ValidateChecksum:
     ret
 
 GenerateDefaultSave:
-    ; Lock all stages except stage 1.
+    ; Lock all stages except stage 0.
     ld a, (sSaveData.end - sSaveData)
     ld b, a
     ld hl, sSaveData
@@ -109,9 +109,13 @@ GenerateDefaultSave:
     dec b
     jr nz, .loop
     
-    ; mem_set_small sSaveData, $00, (sSaveData.end - sSaveData)
     ld a, STAGE_UNLOCKED_NOT_CLEARED
     ld [sSaveData], a
+
+    ; TEMP Unlock Stage 1 for Angie to test.
+    ld a, STAGE_UNLOCKED_NOT_CLEARED
+    ld [sSaveData+4], a
+
     call GenerateChecksum
     ret
 

@@ -30,7 +30,7 @@ InitEnemiesAndPlaceOnMap::
     mem_set_small wEnemiesData, 0, wEnemiesDataEnd - wEnemiesData ; reset all enemy data
 
     ld hl, wEnemiesData
-    ld bc, LevelOneEnemyData ; TODO:: make sure address if proper level's enemy data
+    ld bc, Stage0EnemyData ; TODO:: make sure address if proper level's enemy data
     ld a, [bc] ; get number of enemies in level
     ld d, a ; transfer the numbner of enemies to d
     
