@@ -290,6 +290,7 @@ UpdatePlayerAttack::
     dec a
     ld [wPlayerEffects_BulletPowerUpCounter], a ; reduce the bullet
     ld a, TYPE_BULLET_POWER_UP ; set type
+    call z, DisableTorpedoPowerUpUI
 
 .initBullet ; set the variables
     or a, FLAG_ACTIVE | FLAG_PLAYER
@@ -558,6 +559,8 @@ UpdatePlayerEffects:
     ld a, [wPlayer_Flags] ; reset the effect flags
     xor a, FLICKER_EFFECT_FLAG
     ld [wPlayer_Flags], a
+
+    call DisableInvincibilityPowerUpUI
     
 .speedPowerUp
     ld a, [wPlayerEffects_SpeedPowerUpTimer]
@@ -582,6 +585,8 @@ UpdatePlayerEffects:
     ld [wPlayer_Velocity], a
     ld a, l
     ld [wPlayer_Velocity + 1], a
+
+    call DisableSpeedPowerUpUI
 
 .endUpdatePlayerEffects
     ret

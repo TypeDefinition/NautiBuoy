@@ -37,12 +37,12 @@ UpdateEnemyB::
     ld e, a ; e = curr frame
     ld a, d
 
-.normalState ; check if player is same axis
+.normalState ; check if player is same axis if enemy in idle state
     ; e = curr frame, d = int value of UpdateFrameCounter
     pop hl ; POP HL = enemy starting address
     push hl ; PUSH HL = enemy starting address
 
-    cp a, 1
+    cp a, ENEMY_TYPEB_IDLE_STATE_FRAME ; check if still in idle
     jr nz, .checkEnterAttackState
     push de ; PUSH de = int value of UpdateFrameCounter & curr frame
     
@@ -74,7 +74,7 @@ UpdateEnemyB::
 
     ; player not on same axis
     pop de ; POP de = int value of UpdateFrameCounter & curr frame
-    ld d, 0 ; currFrame = 0 for normal state
+    ld d, 0 ; currFrame = 0 for normal state, reset it 
     jr .updateAnimationFrames
 
 .playerOnSameYAxis ; if they are on the same y axis, check x dir, left or right. change direction
@@ -99,7 +99,6 @@ UpdateEnemyB::
 
 .enemyFacePlayer ; if on same line, properly reset the position to fix to tile, x8 shift left 3 times
     ; bc = enemy tile pos, d = direction, hl = address of pos X
-
     ld a, c
     ld [hli], a ; init x pos
     inc hl
@@ -133,7 +132,7 @@ UpdateEnemyB::
     ld e, ENEMY_TYPEB_WALK_MAX_FRAMES
     ld bc, VELOCITY_VSLOW 
 
-.changeVelocityAndFrames
+.changeVelocityAndFrames ; to be called when attack stop or just started
     ; bc = velocity, d = int value of UpdateFrameCounter, e = max frames
 
     pop hl ; POP HL = enemy starting address
