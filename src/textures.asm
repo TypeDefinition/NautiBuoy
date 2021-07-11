@@ -13,51 +13,78 @@ Sprites::
     INCBIN "./tile_data/ghostEnemy.2bpp"
     INCBIN "./tile_data/puffleFishEnemy.2bpp"
     INCBIN "./tile_data/Powerups.2bpp"
+    INCBIN "./tile_data/projectiles.2bpp"
     INCBIN "./tile_data/ParticleEffects.2bpp"
 .end::
 
 ParticleEffectSprites::
 .smallExplosion::
-    db $8A ; sprite ID
+    db $98 ; sprite ID
     db OAMF_PAL0 
-    db $8C ; sprite ID
+    db $9A ; sprite ID
     db OAMF_PAL0 
 .mediumExplosion::
-    db $8E ; sprite ID
+    db $9C ; sprite ID
     db OAMF_PAL0 
-    db $90 ; sprite ID
+    db $9E ; sprite ID
     db OAMF_PAL0 
 .bigExplosion
-    db $92 ; sprite ID
+    db $A0 ; sprite ID
     db OAMF_PAL0 
-    db $94 ; sprite ID
+    db $A2 ; sprite ID
     db OAMF_PAL0
 
 BulletSprites::
 .upDefaultSprite::
-    db 18 ; sprite ID
-    db OAMF_PAL0 
-.downDefaultSprite::
-    db 18 ; sprite ID
+    db $96 ; sprite ID
     db OAMF_PAL0 | OAMF_YFLIP
+.downDefaultSprite::
+    db $96 ; sprite ID
+    db OAMF_PAL0 
 .rightDefaultSprite::
-    db 20 ; sprite ID
+    db $94 ; sprite ID
     db OAMF_PAL0
 .leftDefaultSprite::
-    db 20 ; sprite ID
+    db $94 ; sprite ID
     db OAMF_PAL0 | OAMF_XFLIP
 
 .upPowerUpBulletSprite
-    db $6C ; sprite ID
-    db OAMF_PAL0 
-.downPowerUpBulletDefaultSprite
-    db $6C ; sprite ID
+    db $92 ; sprite ID
     db OAMF_PAL0 | OAMF_YFLIP
+.downPowerUpBulletDefaultSprite
+    db $92 ; sprite ID
+    db OAMF_PAL0 
 .rightPowerUpBulletDefaultSprite
-    db $6C ; sprite ID
+    db $88 ; sprite ID
     db OAMF_PAL0
 .leftPowerUpBulletDefaultSprite
-    db $6C ; sprite ID
+    db $88 ; sprite ID
+    db OAMF_PAL0 | OAMF_XFLIP
+
+.upSpikeProjectileSprite
+    db $8C ; sprite ID
+    db OAMF_PAL0 
+.downSpikeProjectileSprite
+    db $8C ; sprite ID
+    db OAMF_PAL0 
+.rightSpikeProjectileSprite
+    db $8A ; sprite ID
+    db OAMF_PAL0
+.leftSpikeProjectileSprite
+    db $8A ; sprite ID
+    db OAMF_PAL0 
+
+.upInkProjectileSprite
+    db $90 ; sprite ID
+    db OAMF_PAL0 | OAMF_YFLIP
+.downInkProjectileSprite
+    db $90 ; sprite ID
+    db OAMF_PAL0 
+.rightInkProjectileSprite
+    db $8E ; sprite ID
+    db OAMF_PAL0
+.leftInkProjectileSprite
+    db $8E ; sprite ID
     db OAMF_PAL0 | OAMF_XFLIP
 
 PlayerAnimation::

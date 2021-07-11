@@ -227,9 +227,6 @@ EnemyShootDir::
 
 */
 EnemyShoot::
-    inc de ; skip flags
-    inc de ; skip posYinterpolateTarget
-
     ; hl - address of bullet, de - address of enemy
     ld hl, w_BulletObjectPlayerEnd
     ld b, ENEMY_TYPEA_BULLET_NUM
@@ -239,8 +236,17 @@ EnemyShoot::
     bit BIT_FLAG_ACTIVE, a
     jr nz, .finishAttack ; if active, finish attack
 
-    ; set the variables
-    ld a, FLAG_ACTIVE | FLAG_ENEMY
+    ; check what projectile type it should be
+    ld a, [de] ; get flags
+    and a, BIT_MASK_TYPE
+    cp a, TYPE_ENEMYA ; check if the squid
+    ld a, TYPE_BULLET_INK
+    jr z, .initProjectile
+
+    ld a, TYPE_BULLET_SPIKE
+
+.initProjectile ; set the variables
+    or a, FLAG_ACTIVE | FLAG_ENEMY
     ld [hli], a ; its alive
 
     ld a, c ; a = c = dir
@@ -251,6 +257,8 @@ EnemyShoot::
     xor a
     ld [hli], a ; second part of velocity
 
+    inc de
+    inc de ; skip posYinterpolateTarget
     ld a, [de]  ; pos Y
     ld [hli], a ; set first byte of pos Y for bullet
     inc de 
