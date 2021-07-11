@@ -703,19 +703,8 @@ HitEnemy::
     ret
     
 .win ; If win, go to win screen.
-    ; Save Game. For now, default to 2 stars.
-    ld a, [wSelectedStage]
-    ld [wRWIndex], a
-    ld a, $02
-    ld [wRWBuffer], a
-    ld a, [wGameTimer]
-    ld [wRWBuffer+1], a
-    ld a, [wGameTimer+1]
-    ld [wRWBuffer+2], a
-    ld a, 2
-    ld [wRWBuffer+3], a
-    call SaveGame
-
+    call SaveCurrentScore
+    
     ; Unlock next stage.
     ld a, [wSelectedStage]
     inc a

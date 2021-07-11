@@ -2,10 +2,6 @@ INCLUDE "./src/definitions/definitions.inc"
 INCLUDE "./src/include/hardware.inc"
 INCLUDE "./src/include/util.inc"
 
-DEF STAGE_LOCKED EQU $00
-DEF STAGE_UNLOCKED_NOT_CLEARED EQU $01
-DEF STAGE_UNLOCKED_CLEARED EQU $02
-
 /*  The save data consists of a 4-Byte validation string
     to check for data corruption, followed by 4 bytes for each
     game stage.

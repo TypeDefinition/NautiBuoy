@@ -3,8 +3,12 @@ INCLUDE "./src/include/hardware.inc"
     IF !DEF(DEFINITIONS_INC)
 DEF DEFINITIONS_INC EQU 1
 
-/*************************************************Max Stages*************************************************/
+/*************************************************Stage*************************************************/
 DEF MAX_STAGES EQU 8
+
+DEF STAGE_LOCKED EQU $00
+DEF STAGE_UNLOCKED_NOT_CLEARED EQU $01
+DEF STAGE_UNLOCKED_CLEARED EQU $02
 
 /*************************************************Lose Reason*************************************************/
 DEF LOSE_REASON_TIME EQU 0

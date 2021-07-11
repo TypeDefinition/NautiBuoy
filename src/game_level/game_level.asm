@@ -285,3 +285,77 @@ UpdateGameLevelTimer:
 
 .end
     ret
+
+SaveCurrentScore::
+    ; Load Previous Save Data
+    ld a, [wSelectedStage]
+    ld [wRWIndex], a
+    call LoadGame
+
+    ; bc = -current time.
+    ld a, [wGameTimer]
+    cpl
+    ld b, a
+    ld a, [wGameTimer+1]
+    cpl
+    ld c, a
+    inc bc
+
+    ; Has this stage been cleared before? If no, overwrite new data. Otherwise, compare to see if old score is better.
+    ld a, [wRWBuffer]
+    cp a, STAGE_UNLOCKED_CLEARED ; Only possible states should be STAGE_UNLOCKED_NOT_CLEARED or STAGE_UNLOCKED_CLEARED. Should never be STAGE_LOCKED.
+    jr nz, .overwrite
+
+    ; If previous time < current time (hl < bc), overwrite it. Else, do not overwrite data.
+    ; hl = previous time.
+    ld a, [wRWBuffer+1]
+    ld h, a
+    ld a, [wRWBuffer+2]
+    ld l, a
+    add hl, bc
+    jr c, .end
+
+.overwrite
+    ; Set stage as cleared.
+    ld a, STAGE_UNLOCKED_CLEARED
+    ld [wRWBuffer], a
+
+    ; Overwrite Time
+    ld a, [wGameTimer]
+    ld [wRWBuffer+1], a
+    ld a, [wGameTimer+1]
+    ld [wRWBuffer+2], a
+
+    ; If 3 stars time <= current time, 3 stars.
+    ld a, [w3StarsTime]
+    ld h, a
+    ld a, [w3StarsTime+1]
+    ld l, a
+    dec hl ; add hl, bc does not set the Z flag, so we can't check for hl <= bc. Instead, we check for (hl-1)<bc
+    add hl, bc
+    jr nc, .threeStars
+
+    ; If 2 stars time <= current time, 2 stars.
+    ld a, [w2StarsTime]
+    ld h, a
+    ld a, [w2StarsTime+1]
+    ld l, a
+    dec hl ; add hl, bc does not set the Z flag, so we can't check for hl <= bc. Instead, we check for (hl-1)<bc
+    add hl, bc
+    jr nc, .twoStars
+
+    ; Else, 1 star
+    ld a, 1
+    jr .save
+
+.threeStars
+    ld a, 3
+    jr .save
+.twoStars
+    ld a, 2
+.save
+    ld [wRWBuffer+3], a
+    call SaveGame
+
+.end
+    ret
