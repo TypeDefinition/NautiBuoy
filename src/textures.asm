@@ -14,6 +14,7 @@ Sprites::
     INCBIN "./tile_data/puffleFishEnemy.2bpp"
     INCBIN "./tile_data/Powerups.2bpp"
     INCBIN "./tile_data/ParticleEffects.2bpp"
+    INCBIN "./tile_data/turtleEnemyTest.2bpp"
 .end::
 
 ParticleEffectSprites::
@@ -287,6 +288,30 @@ EnemyBAnimation::
     db $2C
     db OAMF_PAL0
     db $2C
+    db OAMF_PAL0 | OAMF_XFLIP
+.hideInShellUpAnimation::
+    ; Frame 1
+    db $8A
+    db OAMF_PAL0 | OAMF_YFLIP
+    db $8A
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_XFLIP
+
+    ; Frame 2
+    db $8C
+    db OAMF_PAL0 | OAMF_YFLIP
+    db $8C
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_XFLIP
+.hideInShellDownAnimation::
+    ; Frame 1
+    db $8A
+    db OAMF_PAL0
+    db $8A
+    db OAMF_PAL0 | OAMF_XFLIP
+
+    ; Frame 2
+    db $8C
+    db OAMF_PAL0
+    db $8C
     db OAMF_PAL0 | OAMF_XFLIP
 
 /* Animation, sprite IDs for the enemy C*/
