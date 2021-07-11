@@ -18,19 +18,19 @@ Sprites::
 
 ParticleEffectSprites::
 .smallExplosion::
-    db $6E ; sprite ID
+    db $8A ; sprite ID
     db OAMF_PAL0 
-    db $70 ; sprite ID
+    db $8C ; sprite ID
     db OAMF_PAL0 
 .mediumExplosion::
-    db $72 ; sprite ID
+    db $8E ; sprite ID
     db OAMF_PAL0 
-    db $74 ; sprite ID
+    db $90 ; sprite ID
     db OAMF_PAL0 
 .bigExplosion
-    db $76 ; sprite ID
+    db $92 ; sprite ID
     db OAMF_PAL0 
-    db $78 ; sprite ID
+    db $94 ; sprite ID
     db OAMF_PAL0
 
 BulletSprites::
