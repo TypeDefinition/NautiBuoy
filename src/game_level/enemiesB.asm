@@ -42,7 +42,7 @@ UpdateEnemyB::
     pop hl ; POP HL = enemy starting address
     push hl ; PUSH HL = enemy starting address
 
-    cp a, ENEMY_TYPEB_IDLE_STATE_FRAME ; check if still in idle
+    cp a, 1 ; check if still in idle
     jr nz, .checkEnterAttackState
     push de ; PUSH de = int value of UpdateFrameCounter & curr frame
     
@@ -115,6 +115,13 @@ UpdateEnemyB::
 
     pop de ; POP de = int value of UpdateFrameCounter & curr frame
     jr .updateAnimationFrames 
+
+.checkChargeUpState
+    cp a, ENEMY_TYPEB_CHARGE_ANIM_STATE_FRAME
+    jr nz, .checkEnterAttackState
+
+    ld e, -1 ; reset curr anim
+    jr .updateAnimationFrames
 
 .checkEnterAttackState ; check if should go attack mode
     cp a, ENEMY_TYPEB_ATTACK_STATE_FRAME
@@ -226,6 +233,13 @@ InitEnemyBSprite:
     add a, ENEMY_TYPEB_REST_STATE_FRAME ; offset it
     cp a, ENEMY_TYPEB_ATTACK_STATE_FRAME + ENEMY_TYPEB_REST_STATE_FRAME ; check state and init proper animation
     jr nc, .leftRightDirAttack
+
+    cp a, ENEMY_TYPEB_CHARGE_ANIM_STATE_FRAME + ENEMY_TYPEB_REST_STATE_FRAME
+    jr c, .defaultRight
+    ld bc, EnemyBAnimation.hideInShellRightAnimation
+    jr .endDir
+
+.defaultRight
     ld bc, EnemyBAnimation.rightAnimation
     jr .endDir
 
@@ -234,6 +248,12 @@ InitEnemyBSprite:
     add a, ENEMY_TYPEB_REST_STATE_FRAME ; offset it
     cp a, ENEMY_TYPEB_ATTACK_STATE_FRAME + ENEMY_TYPEB_REST_STATE_FRAME; check state and init proper animation
     jr nc, .upDownDirAttack
+
+    cp a, ENEMY_TYPEB_CHARGE_ANIM_STATE_FRAME + ENEMY_TYPEB_REST_STATE_FRAME
+    jr c, .defaultUp
+    ld bc, EnemyBAnimation.hideInShellUpAnimation
+    jr .endDir
+.defaultUp
     ld bc, EnemyBAnimation.upAnimation
     jr .endDir
 
@@ -241,7 +261,13 @@ InitEnemyBSprite:
     ld a, d ; a = updateFrameCounter
     add a, ENEMY_TYPEB_REST_STATE_FRAME ; offset it
     cp a, ENEMY_TYPEB_ATTACK_STATE_FRAME + ENEMY_TYPEB_REST_STATE_FRAME ; check state and init proper animation
-    jr nc, .upDownDirAttack 
+    jr nc, .upDownDirAttack
+
+    cp a, ENEMY_TYPEB_CHARGE_ANIM_STATE_FRAME + ENEMY_TYPEB_REST_STATE_FRAME
+    jr c, .defaultDown
+    ld bc, EnemyBAnimation.hideInShellDownAnimation
+    jr .endDir
+.defaultDown
     ld bc, EnemyBAnimation.downAnimation
     jr .endDir
 
@@ -254,6 +280,12 @@ InitEnemyBSprite:
     add a, ENEMY_TYPEB_REST_STATE_FRAME ; offset it
     cp a, ENEMY_TYPEB_ATTACK_STATE_FRAME + ENEMY_TYPEB_REST_STATE_FRAME; check state and init proper animation
     jr nc, .leftRightDirAttack
+
+    cp a, ENEMY_TYPEB_CHARGE_ANIM_STATE_FRAME + ENEMY_TYPEB_REST_STATE_FRAME
+    jr c, .defaultLeft
+    ld bc, EnemyBAnimation.hideInShellLeftAnimation
+    jr .endDir
+.defaultLeft
     ld bc, EnemyBAnimation.leftAnimation
     jr .endDir
 
