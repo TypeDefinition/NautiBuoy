@@ -25,6 +25,9 @@ DEF VIEWPORT_MAX_X EQU MAP_SIZE_X - VIEWPORT_SIZE_X
 DEF SCREEN_UPPER_OFFSET_Y EQU 8
 DEF SCREEN_LEFT_OFFSET_X EQU 8
 
+DEF PAUSE_UI_SIZE_Y EQU 8*2
+DEF PAUSE_VIEWPORT_SIZE_Y EQU SCRN_Y - PAUSE_UI_SIZE_Y
+
 /*************************************************Player*************************************************/
 ; PLAYER Stats
 DEF PLAYER_BULLET_NUMBER EQU 3

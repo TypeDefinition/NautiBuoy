@@ -31,6 +31,8 @@ JumpVBlankHandler:
     jp VBlankHandler
 JumpUpdateGameLevel:
     jp UpdateGameLevel
+JumpUpdatePausedGameLevel:
+    jp UpdatePausedGameLevel
 
 LCDOn:
     ld a, LCDCF_ON | LCDCF_WIN9C00 | LCDCF_WINON | LCDCF_BG9800 | LCDCF_OBJ16 | LCDCF_OBJON | LCDCF_BGON
@@ -182,6 +184,21 @@ UpdateGameLevel:
     set_romx_bank BANK(GameLevelBGM)
     call _hUGE_dosound
 
+    ; Check for pause.
+    ld a, [wNewlyInputKeys]
+    ld b, a
+    bit PADB_START, b
+    call nz, PauseGame
+
+    ret
+
+UpdatePausedGameLevel:
+    ; Check for resume
+    call UpdateInput
+    ld a, [wNewlyInputKeys]
+    ld b, a
+    bit PADB_START, b
+    call nz, ResumeGame
     ret
 
 VBlankHandler:
@@ -284,6 +301,28 @@ UpdateGameLevelTimer:
     call SetProgramLoopCallback
 
 .end
+    ret
+
+PauseGame::
+    ; Set STAT interrupt flags.
+    ld a, PAUSE_VIEWPORT_SIZE_Y
+    ldh [rLYC], a
+    ld a, STATF_LYC
+    ldh [rSTAT], a
+    call PauseUI
+    ld hl, JumpUpdatePausedGameLevel
+    call SetProgramLoopCallback
+    ret
+
+ResumeGame::
+    ; Set STAT interrupt flags.
+    ld a, VIEWPORT_SIZE_Y
+    ldh [rLYC], a
+    ld a, STATF_LYC
+    ldh [rSTAT], a
+    call ResumeUI
+    ld hl, JumpUpdateGameLevel
+    call SetProgramLoopCallback
     ret
 
 SaveCurrentScore::

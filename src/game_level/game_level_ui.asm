@@ -22,7 +22,21 @@ LoadGameLevelUI::
     mem_copy GameLevelUITileMap, _SCRN1, GameLevelUITileMap.end-GameLevelUITileMap
     ld a, 7
     ld [rWX], a
-    ld a, SCRN_Y-GAMEPLAY_UI_SIZE_Y
+    ld a, VIEWPORT_SIZE_Y
+    ld [rWY], a
+    ret
+
+PauseUI::
+    ld a, 7
+    ld [rWX], a
+    ld a, PAUSE_VIEWPORT_SIZE_Y
+    ld [rWY], a
+    ret
+
+ResumeUI::
+    ld a, 7
+    ld [rWX], a
+    ld a, VIEWPORT_SIZE_Y
     ld [rWY], a
     ret
 
