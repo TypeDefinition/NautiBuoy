@@ -25,12 +25,15 @@ SECTION "Enemies Manager", ROM0
 
 /*  Read data on where enemy should be and its type
     Initialise the enemy
+    Parameters:
+        - bc: EnemyStageData address
 */
 InitEnemiesAndPlaceOnMap::
+    push bc
     mem_set_small wEnemiesData, 0, wEnemiesDataEnd - wEnemiesData ; reset all enemy data
-
+    pop bc
+    
     ld hl, wEnemiesData
-    ld bc, Stage0EnemyData ; TODO:: make sure address if proper level's enemy data
     ld a, [bc] ; get number of enemies in level
     ld d, a ; transfer the numbner of enemies to d
     

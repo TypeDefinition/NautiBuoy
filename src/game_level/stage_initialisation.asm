@@ -84,7 +84,9 @@ InitStage0::
     call UpdatePlayerShadowOAM
     
     set_romx_bank BANK(Stage0EnemyData)
+    ld bc, Stage0EnemyData
     call InitEnemiesAndPlaceOnMap
+    ld bc, Level0PowerUpData
     call InitPowerupsAndPlaceOnMap
     call InitParticleEffects
 
@@ -104,8 +106,8 @@ InitStage1::
     call UpdatePlayerShadowOAM
 
     set_romx_bank BANK(Stage0EnemyData)
-    call InitEnemiesAndPlaceOnMap
-    call InitPowerupsAndPlaceOnMap
+    ;call InitEnemiesAndPlaceOnMap
+    ;call InitPowerupsAndPlaceOnMap
     call InitParticleEffects
 
     ret
