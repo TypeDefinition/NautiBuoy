@@ -11,6 +11,14 @@ UpdateEnemyBoss::
     push hl ; PUSH HL = enemy address
 
     ; check health and determine which behavior from there?
+    ; followPlayer and shoot, only change direction if theres a difference of x amt?
+
+.defaultBehavior /* Just follow player and shoot */
+    push hl
+    call FindPlayerDirectionFromBossAndMove
+    pop hl
+
+
 
 
 
@@ -18,38 +26,73 @@ UpdateEnemyBoss::
     call UpdateEnemyBossShadowOAM
     ret
 
-InitEnemyBossSprite:
-    ret 
+
+/*  Finds which direction the player is in from the boss and init new direction
+    Parameter:
+        - hl, starting enemy address
+    Register changes:
+        - hl
+        - af
+        - bc
+        - de
+    Return:
+        - a, direction player is in from boss
+*/
+FindPlayerDirectionFromBossAndMove:
+    ; bc = player pos y and x, de = enemy pos y and z
+    ld a, [wPlayer_PosYInterpolateTarget]
+    ld b, a
+    ld a, [wPlayer_PosXInterpolateTarget]
+    ld c, a
+
+    inc hl
+    inc hl ; offset address to get posY
+
+    ld a, [hli]
+    and a, %11111000
+    ld d, a
+    inc hl
+    inc hl ; get x pos
+    ld a, [hli]
+    and a, %11111000
+    ld e, a
+
+    ; TODO:: make sure to add some offset since its big
+.checkVertical 
+    ld a, d ; a = enemy pos y
+    cp a, b
+    jr z, .checkHorizontal
+    ld a, DIR_DOWN
+    jr c, .finishFindingPlayer ; player is below enemy
+    ld a, DIR_UP
+    jr .finishFindingPlayer
+
+.checkHorizontal 
+    ; c = player pos x, e = enemy pos x
+    ld a, e
+    cp a, c
+    ld a, DIR_RIGHT
+    jr c, .finishFindingPlayer ; player on right of enemy
+    ld a, DIR_LEFT
+
+.finishFindingPlayer
+    inc hl
+    ld [hl], a ; init new direction
+
+    ret
+
+
 
 /*  Draws the enemyboss
     It is a 32 x 32 sprite,. requires 8 sprites in OAM
+    Parameters:
+        - hl, enemy address
 */
 UpdateEnemyBossShadowOAM:
     push hl ; PUSH HL = enemy address
 
-
-.getAnimation
-    ;dec hl
-    ;dec hl
-    ld de, Character_CurrAnimationFrame
-    add hl, de
-    ld a, [hl] ; get curr frame
-
-    ;sla a 
-    ;sla a ; curr animation frame x 4
-    ;add a, c
-    ;ld c, a
-    ;ld a, b
-    ;adc a, 0 ; add offset to animation address: bc + a
-    ;ld b, a 
-    
-    ld bc, BossEnemyAnimation.upAnimation
-
-
-    pop hl ; POP HL = enemy address
-
-    inc hl ; skip flags
-    inc hl ; skip PosYInterpolateTarget go to y pos
+    inc hl
+    inc hl
 
     ; Convert position from world space to screen space.
     ld a, [wShadowSCData]
@@ -63,12 +106,56 @@ UpdateEnemyBossShadowOAM:
 
     ld a, [wShadowSCData + 1]
     ld e, a
-    ld a, [hl] ; get x pos
+    ld a, [hli] ; get x pos
     sub a, e
     ld e, a ; store x screen pos at c
 
+    inc hl
+
+    ld a, [hl] ; check direction of enemy and init sprite data
+    and a, DIR_BIT_MASK
+
+    ASSERT DIR_UP == 0
+    and a, a ; cp a, 0
+    jr z, .upDir
+    ASSERT DIR_DOWN == 1
+    dec a
+    jr z, .downDir
+    ASSERT DIR_LEFT == 2
+    dec a
+    jr z, .leftDir
+    ASSERT DIR_RIGHT > 2
+
+.rightDir
+    ld bc, BossEnemyAnimation.rightAnimation
+    jr .getAnimation
+.upDir
+    ld bc, BossEnemyAnimation.upAnimation
+    jr .getAnimation
+.downDir
+    ld bc, BossEnemyAnimation.downAnimation
+    jr .getAnimation
+.leftDir
+    ld bc, BossEnemyAnimation.leftAnimation
+
+.getAnimation
+
+    pop hl ; POP HL = enemy address
+    ;ld de, Character_CurrAnimationFrame
+    ;add hl, de
+    ;ld a, [hl] ; get curr frame
+
+    ;sla a 
+    ;sla a ; curr animation frame x 4
+    ;add a, c
+    ;ld c, a
+    ;ld a, b
+    ;adc a, 0 ; add offset to animation address: bc + a
+    ;ld b, a 
+
+
 .startUpdateOAM
-    ; hl = shadow OAM 
+    ; hl = shadow OAM, d = pos y, e = pos x
     ld a, [wCurrentShadowOAMPtr]
     ld l, a
     ld h, HIGH(wShadowOAM)

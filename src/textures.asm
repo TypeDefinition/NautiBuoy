@@ -618,8 +618,27 @@ EnemyDAnimation::
 BossEnemyAnimation::
 .upAnimation::
     ; first frame
+    db $AA ; bottom left
+    db OAMF_PAL0 | OAMF_YFLIP
     db $A8 ; top left
-    db OAMF_PAL0
+    db OAMF_PAL0 | OAMF_YFLIP
+    db $AE ; bottom middle left
+    db OAMF_PAL0 | OAMF_YFLIP
+    db $AC ; top middle left
+    db OAMF_PAL0 | OAMF_YFLIP
+    db $B2 ; bottom middle right
+    db OAMF_PAL0 | OAMF_YFLIP
+    db $B0 ; top middle right
+    db OAMF_PAL0 | OAMF_YFLIP
+    db $B6 ; bottom right
+    db OAMF_PAL0 | OAMF_YFLIP
+    db $B4 ; top right
+    db OAMF_PAL0 | OAMF_YFLIP
+
+.downAnimation::
+    ; first frame
+    db $A8 ; top left
+    db OAMF_PAL0 
     db $AA ; bottom left
     db OAMF_PAL0
     db $AC ; top middle left
@@ -635,7 +654,44 @@ BossEnemyAnimation::
     db $B6 ; bottom right
     db OAMF_PAL0
 
-
-.downAnimation::
 .rightAnimation::
+    db $B8 ; top left
+    db OAMF_PAL0
+    db $BA ; bottom left
+    db OAMF_PAL0
+
+    db $BC ; middle top left
+    db OAMF_PAL0
+    db $BE ; middle bottom left
+    db OAMF_PAL0
+
+    db $C0 ; middle top right
+    db OAMF_PAL0
+    db $C2 ; middle bottom right
+    db OAMF_PAL0
+
+    db $C4 ; top right
+    db OAMF_PAL0
+    db $C6 ; bottom right
+    db OAMF_PAL0
+
 .leftAnimation::
+    db $C4 ; top right
+    db OAMF_PAL0 | OAMF_XFLIP
+    db $C6 ; bottom right
+    db OAMF_PAL0 | OAMF_XFLIP
+
+    db $C0 ; middle top right
+    db OAMF_PAL0 | OAMF_XFLIP
+    db $C2 ; middle bottom right
+    db OAMF_PAL0 | OAMF_XFLIP
+
+    db $BC ; middle top left
+    db OAMF_PAL0 | OAMF_XFLIP
+    db $BE ; middle bottom left
+    db OAMF_PAL0 | OAMF_XFLIP
+
+    db $B8 ; top left
+    db OAMF_PAL0 | OAMF_XFLIP
+    db $BA ; bottom left
+    db OAMF_PAL0 | OAMF_XFLIP
