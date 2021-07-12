@@ -32,7 +32,7 @@ InitEnemiesAndPlaceOnMap::
     push bc
     mem_set_small wEnemiesData, 0, wEnemiesDataEnd - wEnemiesData ; reset all enemy data
     pop bc
-    
+
     ld hl, wEnemiesData
     ld a, [bc] ; get number of enemies in level
     ld d, a ; transfer the numbner of enemies to d
@@ -142,7 +142,11 @@ UpdateAllEnemies::
     cp a, TYPE_ENEMYD
     jr nz, .nextLoop
     call UpdateEnemyD
-
+    jr .nextLoop
+.enemyBoss
+    cp a, TYPE_ENEMY_BOSS
+    jr nz, .nextLoop
+    call UpdateEnemyBoss
 .nextLoop
     pop de ; POP de = loop counter
     pop hl ; POP HL = enemy address
