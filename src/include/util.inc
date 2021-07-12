@@ -38,4 +38,12 @@ MACRO mem_set_small
     rst $0008 ; Here uses rst instead
 ENDM
 
+; Big Endian version of dw. Thanks martendo!
+MACRO dw_BE
+    REPT _NARG
+        DB HIGH(\1), LOW(\1)
+        SHIFT
+    ENDR
+ENDM
+
     ENDC ; UTIL_INC

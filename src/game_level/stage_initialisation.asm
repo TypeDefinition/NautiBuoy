@@ -9,51 +9,51 @@ SECTION "Stage Initialisation", ROM0
 StageParam::
     ; Stage 0
     db "00"     ; 2-Byte stage name.
-    db $01, $20 ; Stage Time in BCD format. (Yes this is in Big Endian.)
-    db $00, $50 ; Time (in BCD) to get 2 Stars. (Player gets 1 star as long as they complete the stage.)
-    db $00, $90 ; Time (in BCD) to get 3 Stars.
+    dw_BE $0120 ; Stage Time in BCD format. (Yes this is in Big Endian.)
+    dw_BE $0050 ; Time (in BCD) to get 2 Stars. (Player gets 1 star as long as they complete the stage.)
+    dw_BE $0090 ; Time (in BCD) to get 3 Stars.
 
     ; Stage 1
     db "01"
-    db $01, $20
-    db $00, $50
-    db $00, $90
+    dw_BE $0120
+    dw_BE $0050
+    dw_BE $0090
     
     ; Stage 2
     db "02"
-    db $01, $20
-    db $00, $50
-    db $00, $90
+    dw_BE $0120
+    dw_BE $0050
+    dw_BE $0090
     
     ; Stage 3
     db "03"
-    db $01, $20
-    db $00, $50
-    db $00, $90
+    dw_BE $0120
+    dw_BE $0050
+    dw_BE $0090
     
     ; Stage 4
     db "04"
-    db $01, $20
-    db $00, $50
-    db $00, $90
+    dw_BE $0120
+    dw_BE $0050
+    dw_BE $0090
     
     ; Stage 5
     db "05"
-    db $01, $20
-    db $00, $50
-    db $00, $90
+    dw_BE $0120
+    dw_BE $0050
+    dw_BE $0090
     
     ; Stage 6
     db "06"
-    db $01, $20
-    db $00, $50
-    db $00, $90
+    dw_BE $0120
+    dw_BE $0050
+    dw_BE $0090
     
     ; Stage 7
     db "XX"
-    db $01, $20
-    db $00, $50
-    db $00, $90
+    dw_BE $0120
+    dw_BE $0050
+    dw_BE $0090
 
 ; Get the starting address of the selected stage's parameters.
 ; @param [wSelectedStage]
