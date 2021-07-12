@@ -14,9 +14,13 @@ UpdateEnemyBoss::
     ; followPlayer and shoot, only change direction if theres a difference of x amt?
 
 .defaultBehavior /* Just follow player and shoot */
+    pop hl
     push hl
     call FindPlayerDirectionFromBossAndMove
+
     pop hl
+    push hl
+    call EnemyMoveBasedOnDir
 
 
 
@@ -39,7 +43,7 @@ UpdateEnemyBoss::
         - a, direction player is in from boss
 */
 FindPlayerDirectionFromBossAndMove:
-    ; bc = player pos y and x, de = enemy pos y and z
+    ; bc = player pos y and x, de = enemy pos y and x
     ld a, [wPlayer_PosYInterpolateTarget]
     ld b, a
     ld a, [wPlayer_PosXInterpolateTarget]
@@ -56,6 +60,40 @@ FindPlayerDirectionFromBossAndMove:
     ld a, [hli]
     and a, %11111000
     ld e, a
+
+    ; prevent prioritizing of vertical, d - b, e - c, then compare which one is larger
+    sub a, c ; get x offset
+    jr nc, .compareY
+
+    cpl ; invert the value as it underflowed
+    inc a
+    
+.compareY
+    push hl
+    ld h, a ; h = x offset
+
+    ld a, d ; a = enemy pos y
+    sub a, b ; get y offset
+    jr nc, .compareOffset
+
+    cpl ; invert the value as it underflowed
+    inc a
+
+.compareOffset
+    ld l, a ; l = y offset
+
+    sub a, h ; y offset - x offset 
+    jr nc, .checkOffset
+
+    cpl ; invert the value as it underflowed
+    inc a
+
+.checkOffset
+    ld a, l
+    cp a, h ; y offset - x offset:
+    pop hl
+    jr c, .checkHorizontal ; move in the direction with the biggest offset dist 
+
 
     ; TODO:: make sure to add some offset since its big
 .checkVertical 
