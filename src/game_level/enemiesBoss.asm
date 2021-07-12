@@ -12,18 +12,33 @@ UpdateEnemyBoss::
 
     ; check health and determine which behavior from there?
     ; followPlayer and shoot, only change direction if theres a difference of x amt?
+    ; once health is lower than a certain value, it will keep doing the berserk behavior
+    ; berserk behavior will switch between ramming the player and shooting out the sparks
+
+    ld de, Character_UpdateFrameCounter
+    add hl, de
+    ld a, [hl]
+    add a, ENEMY_BOSS_ANIMATION_UPDATE_SPEED
+    ld [hli], a
+
+    ; need update animation and updateframecounter int portion
+    ld a, [hli] ; get int portion of updateFrameCounter
+
+    ; check health, if less than x amount, berserk behavior
 
 
-.defaultBehavior ; Just follow player and shoot 
+
+.defaultBehavior ; Just follow player and shoot
+
     pop hl
     push hl
     call FindPlayerDirectionFromBossAndMove
 
     pop hl
     push hl
-    call EnemyMoveBasedOnDir
+    ;call EnemyMoveBasedOnDi
 
-
+.berserkBehavior
 
 
 
