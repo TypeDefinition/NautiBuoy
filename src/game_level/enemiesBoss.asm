@@ -13,7 +13,8 @@ UpdateEnemyBoss::
     ; check health and determine which behavior from there?
     ; followPlayer and shoot, only change direction if theres a difference of x amt?
 
-.defaultBehavior /* Just follow player and shoot */
+
+.defaultBehavior ; Just follow player and shoot 
     pop hl
     push hl
     call FindPlayerDirectionFromBossAndMove
@@ -94,8 +95,6 @@ FindPlayerDirectionFromBossAndMove:
     pop hl
     jr c, .checkHorizontal ; move in the direction with the biggest offset dist 
 
-
-    ; TODO:: make sure to add some offset since its big
 .checkVertical 
     ld a, d ; a = enemy pos y
     cp a, b
@@ -112,11 +111,13 @@ FindPlayerDirectionFromBossAndMove:
     ld a, DIR_RIGHT
     jr c, .finishFindingPlayer ; player on right of enemy
     ld a, DIR_LEFT
+    jr z, .end
 
 .finishFindingPlayer
     inc hl
     ld [hl], a ; init new direction
 
+.end
     ret
 
 

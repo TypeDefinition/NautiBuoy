@@ -88,8 +88,8 @@ StageXXEnemyData::
     db 1 ; number of enemies in level
 .enemyOne
     db TYPE_ENEMY_BOSS | FLAG_ENEMY | FLAG_ACTIVE   
-    db 23 * 8 ; y 
-    db 23 * 8 ; x
+    db 15 * 8 ; y 
+    db 15 * 8 ; x
     db DIR_LEFT
     db ENEMY_TYPEA_HEALTH
     dw VELOCITY_VSLOW ; cpu allocate and auto store in little endian
