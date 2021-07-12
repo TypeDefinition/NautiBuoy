@@ -140,7 +140,7 @@ UpdateAllEnemies::
     jr .nextLoop
 .enemyTypeD ; ghost
     cp a, TYPE_ENEMYD
-    jr nz, .nextLoop
+    jr nz, .enemyBoss
     call UpdateEnemyD
     jr .nextLoop
 .enemyBoss

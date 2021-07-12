@@ -106,7 +106,8 @@ InitStage1::
     set_romx_bank BANK(Stage0EnemyData)
     ld bc, StageXXEnemyData
     call InitEnemiesAndPlaceOnMap
-    ;call InitPowerupsAndPlaceOnMap
+    ld bc, Level0PowerUpData
+    call InitPowerupsAndPlaceOnMap
     call InitParticleEffects
 
     ret

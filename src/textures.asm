@@ -616,7 +616,26 @@ EnemyDAnimation::
     db OAMF_PAL0 | OAMF_XFLIP
 
 BossEnemyAnimation::
-.upAnimation
-.downAnimation
-.rightAnimation
-.leftAnimation
+.upAnimation::
+    ; first frame
+    db $A8 ; top left
+    db OAMF_PAL0
+    db $AA ; bottom left
+    db OAMF_PAL0
+    db $AC ; top middle left
+    db OAMF_PAL0
+    db $AE ; bottom middle left
+    db OAMF_PAL0
+    db $B0 ; top middle right
+    db OAMF_PAL0
+    db $B2 ; bottom middle right
+    db OAMF_PAL0
+    db $B4 ; top right
+    db OAMF_PAL0
+    db $B6 ; bottom right
+    db OAMF_PAL0
+
+
+.downAnimation::
+.rightAnimation::
+.leftAnimation::
