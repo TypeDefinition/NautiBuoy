@@ -4,6 +4,8 @@ INCLUDE "./src/include/hardware.inc"
 DEF DEFINITIONS_INC EQU 1
 
 /*************************************************Stage*************************************************/
+DEF MAX_MAP_SIZE EQU $0100
+
 DEF MAX_STAGES EQU 8
 
 DEF STAGE_LOCKED EQU $00
@@ -16,12 +18,8 @@ DEF LOSE_REASON_HP EQU 1
 
 /*************************************************Viewport*************************************************/
 DEF GAMEPLAY_UI_SIZE_Y EQU 8*1
-DEF MAP_SIZE_Y EQU 256
-DEF MAP_SIZE_X EQU 256
 DEF VIEWPORT_SIZE_Y EQU SCRN_Y - GAMEPLAY_UI_SIZE_Y
 DEF VIEWPORT_SIZE_X EQU SCRN_X
-DEF VIEWPORT_MAX_Y EQU MAP_SIZE_Y - VIEWPORT_SIZE_Y
-DEF VIEWPORT_MAX_X EQU MAP_SIZE_X - VIEWPORT_SIZE_X
 DEF SCREEN_UPPER_OFFSET_Y EQU 8
 DEF SCREEN_LEFT_OFFSET_X EQU 8
 

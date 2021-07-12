@@ -76,6 +76,17 @@ InitStage0::
     mem_copy Stage0TileMap, wGameLevelTileMap, Stage0TileMap.end-Stage0TileMap
     mem_copy wGameLevelTileMap, _SCRN0, wGameLevelTileMap.end-wGameLevelTileMap
     
+    ; Set Map Size
+    ld a, HIGH($0100)
+    ld [wMapSizeY], a
+    ld a, LOW($0100)
+    ld [wMapSizeY+1], a
+
+    ld a, HIGH($0100)
+    ld [wMapSizeX], a
+    ld a, LOW($0100)
+    ld [wMapSizeX+1], a
+
     ; Initialise Player
     ; TEMP: Temporary code.
     set_romx_bank BANK(Sprites)
@@ -91,6 +102,17 @@ InitStage0::
     ret
 
 InitStage1::
+    ; Set Map Size
+    ld a, HIGH($00A8)
+    ld [wMapSizeY], a
+    ld a, LOW($00A8)
+    ld [wMapSizeY+1], a
+
+    ld a, HIGH($00C8)
+    ld [wMapSizeX], a
+    ld a, LOW($00C8)
+    ld [wMapSizeX+1], a
+
     ; Copy tile map into VRAM.
     set_romx_bank BANK(Stage1TileMap)
     mem_copy Stage1TileMap, wGameLevelTileMap, Stage1TileMap.end-Stage1TileMap

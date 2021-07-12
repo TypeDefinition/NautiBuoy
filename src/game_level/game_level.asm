@@ -19,6 +19,11 @@ w2StarsTime::
 w3StarsTime::
     ds 2
 
+wMapSizeY::
+    ds 2
+wMapSizeX::
+    ds 2
+
 wShadowSCData::
     ds 2 ; y pos, then x pos
 

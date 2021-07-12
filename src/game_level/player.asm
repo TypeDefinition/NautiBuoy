@@ -450,12 +450,24 @@ UpdatePlayerCamera::
     ; Offset the camera so that the player is in the centre of the screen.
 .minY
     sub a, VIEWPORT_SIZE_Y/2
+    ld d, a
     jr nc, .maxY
     xor a
+    ld d, a
 .maxY
-    cp a, VIEWPORT_MAX_Y
+    ; Get the pixel size of the map. We have to use 16bit because the max size is 256. 1 fucking pixel more than 8 bit can store.
+    ld a, [wMapSizeY]
+    ld h, a
+    ld a, [wMapSizeY+1]
+    ld l, a
+    ; Get the max position of the viewport. This will be a 8bit number, so h will be 0.
+    ld bc, -VIEWPORT_SIZE_Y
+    add hl, bc
+
+    ld a, d
+    cp a, l
     jr c, .verticalEnd
-    ld a, VIEWPORT_MAX_Y
+    ld a, l
 .verticalEnd
     ld [wShadowSCData], a
 
@@ -503,12 +515,24 @@ UpdatePlayerCamera::
 
 .minX
     sub a, VIEWPORT_SIZE_X/2
+    ld d, a
     jr nc, .maxX
     xor a
+    ld d, a
 .maxX
-    cp a, VIEWPORT_MAX_X
+    ; Get the pixel size of the map. We have to use 16bit because the max size is 256. 1 fucking pixel more than 8 bit can store.
+    ld a, [wMapSizeX]
+    ld h, a
+    ld a, [wMapSizeX+1]
+    ld l, a
+    ; Get the max position of the viewport. This will be a 8bit number, so h will be 0.
+    ld bc, -VIEWPORT_SIZE_X
+    add hl, bc
+
+    ld a, d
+    cp a, l
     jr c, .horizontalEnd
-    ld a, VIEWPORT_MAX_X
+    ld a, l
 .horizontalEnd
     ld [wShadowSCData + 1], a
 
