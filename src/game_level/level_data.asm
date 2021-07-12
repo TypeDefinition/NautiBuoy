@@ -36,7 +36,7 @@ Stage0EnemyData::
     db TYPE_ENEMYC | FLAG_ENEMY | FLAG_ACTIVE   
     db 12 * 8 ; y 
     db 6 * 8 ; x
-    db DIR_UP | SHOOT_DIR_DOWN ;| SHOOT_DIR_RIGHT
+    db DIR_RIGHT | SHOOT_DIR_DOWN ;| SHOOT_DIR_RIGHT
     db ENEMY_TYPEC_HEALTH
     dw VELOCITY_VSLOW ; cpu allocate and auto store in little endian
     db ENEMY_TYPEC_NORMAL_STATE_MAX_FRAME
@@ -59,7 +59,7 @@ Stage0EnemyData::
 .endStage0EnemyData:
 
 /* Powerup information and data for level 1 */
-LevelOnePowerUpData::
+Level0PowerUpData::
     db 5 ; number of powerups in level
 .powerUpOne
     db TYPE_HEALTH_POWERUP | FLAG_ACTIVE
@@ -81,4 +81,17 @@ LevelOnePowerUpData::
     db 16 * 8 ; y 
     db 18 * 8 ; x
     db DAMAGE_POWERUP_SPRITE_ID
-.endPowerUpOne
+.endPowerUp0
+
+/* Final level data */
+StageXXEnemyData::
+    db 1 ; number of enemies in level
+.enemyOne
+    db TYPE_ENEMY_BOSS | FLAG_ENEMY | FLAG_ACTIVE   
+    db 23 * 8 ; y 
+    db 23 * 8 ; x
+    db DIR_LEFT
+    db ENEMY_TYPEA_HEALTH
+    dw VELOCITY_VSLOW ; cpu allocate and auto store in little endian
+    db ENEMY_TYPEA_WALK_FRAMES
+.endStageXXEnemyData:

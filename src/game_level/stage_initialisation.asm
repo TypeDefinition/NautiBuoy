@@ -90,12 +90,13 @@ InitStage0::
     ; Initialise Player
     ; TEMP: Temporary code.
     set_romx_bank BANK(Sprites)
-    ld hl, wShadowOAM
     call InitialisePlayer
     call UpdatePlayerShadowOAM
     
     set_romx_bank BANK(Stage0EnemyData)
+    ld bc, Stage0EnemyData
     call InitEnemiesAndPlaceOnMap
+    ld bc, Level0PowerUpData
     call InitPowerupsAndPlaceOnMap
     call InitParticleEffects
 
@@ -121,12 +122,13 @@ InitStage1::
     ; Initialise Player
     ; TEMP: Temporary code.
     set_romx_bank BANK(Sprites)
-    ld hl, wShadowOAM
     call InitialisePlayer
     call UpdatePlayerShadowOAM
 
     set_romx_bank BANK(Stage0EnemyData)
+    ld bc, StageXXEnemyData
     call InitEnemiesAndPlaceOnMap
+    ld bc, Level0PowerUpData
     call InitPowerupsAndPlaceOnMap
     call InitParticleEffects
 

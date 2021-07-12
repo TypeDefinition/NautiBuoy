@@ -54,7 +54,8 @@ BulletTileCollisionCheck:
     ld a, [hli] ; get flags
     and a, BIT_MASK_TYPE
     ld b, BULLET_DESTRUCTIBLE_TILES
-    jr z, .initInfo
+    cp a, TYPE_BULLET_POWER_UP
+    jr nz, .initInfo
 
     ld b, POWER_BULLET_DESTRUCTIBLE_TILES ; it is a power bullet
 

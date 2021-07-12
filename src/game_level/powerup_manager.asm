@@ -19,12 +19,15 @@ SECTION "Powerup Manager", ROM0
 
 /*  Read data on where powerups should be and its type
     Initialise the powerups
+    Parameters:
+        - bc: Powerup level stage data address
 */
 InitPowerupsAndPlaceOnMap::
+    push bc
     mem_set_small wPowerupData, 0, wPowerupDataEnd - wPowerupData ; reset all enemy data
+    pop bc
 
     ld hl, wPowerupData
-    ld bc, LevelOnePowerUpData ; TODO:: make sure address if proper level's enemy data
     ld a, [bc]
     ld d, a
     inc bc

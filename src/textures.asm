@@ -13,51 +13,79 @@ Sprites::
     INCBIN "./tile_data/ghostEnemy.2bpp"
     INCBIN "./tile_data/puffleFishEnemy.2bpp"
     INCBIN "./tile_data/Powerups.2bpp"
+    INCBIN "./tile_data/projectiles.2bpp"
     INCBIN "./tile_data/ParticleEffects.2bpp"
+    INCBIN "./tile_data/BossEnemy.2bpp"
 .end::
 
 ParticleEffectSprites::
 .smallExplosion::
-    db $8A ; sprite ID
+    db $98 ; sprite ID
     db OAMF_PAL0 
-    db $8C ; sprite ID
+    db $9A ; sprite ID
     db OAMF_PAL0 
 .mediumExplosion::
-    db $8E ; sprite ID
+    db $9C ; sprite ID
     db OAMF_PAL0 
-    db $90 ; sprite ID
+    db $9E ; sprite ID
     db OAMF_PAL0 
 .bigExplosion
-    db $92 ; sprite ID
+    db $A0 ; sprite ID
     db OAMF_PAL0 
-    db $94 ; sprite ID
+    db $A2 ; sprite ID
     db OAMF_PAL0
 
 BulletSprites::
 .upDefaultSprite::
-    db 18 ; sprite ID
-    db OAMF_PAL0 
-.downDefaultSprite::
-    db 18 ; sprite ID
+    db $96 ; sprite ID
     db OAMF_PAL0 | OAMF_YFLIP
+.downDefaultSprite::
+    db $96 ; sprite ID
+    db OAMF_PAL0 
 .rightDefaultSprite::
-    db 20 ; sprite ID
+    db $94 ; sprite ID
     db OAMF_PAL0
 .leftDefaultSprite::
-    db 20 ; sprite ID
+    db $94 ; sprite ID
     db OAMF_PAL0 | OAMF_XFLIP
 
 .upPowerUpBulletSprite
-    db $6C ; sprite ID
-    db OAMF_PAL0 
-.downPowerUpBulletDefaultSprite
-    db $6C ; sprite ID
+    db $92 ; sprite ID
     db OAMF_PAL0 | OAMF_YFLIP
+.downPowerUpBulletDefaultSprite
+    db $92 ; sprite ID
+    db OAMF_PAL0 
 .rightPowerUpBulletDefaultSprite
-    db $6C ; sprite ID
+    db $88 ; sprite ID
     db OAMF_PAL0
 .leftPowerUpBulletDefaultSprite
-    db $6C ; sprite ID
+    db $88 ; sprite ID
+    db OAMF_PAL0 | OAMF_XFLIP
+
+.upSpikeProjectileSprite
+    db $8C ; sprite ID
+    db OAMF_PAL0 
+.downSpikeProjectileSprite
+    db $8C ; sprite ID
+    db OAMF_PAL0 
+.rightSpikeProjectileSprite
+    db $8A ; sprite ID
+    db OAMF_PAL0
+.leftSpikeProjectileSprite
+    db $8A ; sprite ID
+    db OAMF_PAL0 
+
+.upInkProjectileSprite
+    db $90 ; sprite ID
+    db OAMF_PAL0 | OAMF_YFLIP
+.downInkProjectileSprite
+    db $90 ; sprite ID
+    db OAMF_PAL0 
+.rightInkProjectileSprite
+    db $8E ; sprite ID
+    db OAMF_PAL0
+.leftInkProjectileSprite
+    db $8E ; sprite ID
     db OAMF_PAL0 | OAMF_XFLIP
 
 PlayerAnimation::
@@ -585,4 +613,85 @@ EnemyDAnimation::
     db $56
     db OAMF_PAL0 | OAMF_XFLIP
     db $54
+    db OAMF_PAL0 | OAMF_XFLIP
+
+BossEnemyAnimation::
+.upAnimation::
+    ; first frame
+    db $AA ; bottom left
+    db OAMF_PAL0 | OAMF_YFLIP
+    db $A8 ; top left
+    db OAMF_PAL0 | OAMF_YFLIP
+    db $AE ; bottom middle left
+    db OAMF_PAL0 | OAMF_YFLIP
+    db $AC ; top middle left
+    db OAMF_PAL0 | OAMF_YFLIP
+    db $B2 ; bottom middle right
+    db OAMF_PAL0 | OAMF_YFLIP
+    db $B0 ; top middle right
+    db OAMF_PAL0 | OAMF_YFLIP
+    db $B6 ; bottom right
+    db OAMF_PAL0 | OAMF_YFLIP
+    db $B4 ; top right
+    db OAMF_PAL0 | OAMF_YFLIP
+
+.downAnimation::
+    ; first frame
+    db $A8 ; top left
+    db OAMF_PAL0 
+    db $AA ; bottom left
+    db OAMF_PAL0
+    db $AC ; top middle left
+    db OAMF_PAL0
+    db $AE ; bottom middle left
+    db OAMF_PAL0
+    db $B0 ; top middle right
+    db OAMF_PAL0
+    db $B2 ; bottom middle right
+    db OAMF_PAL0
+    db $B4 ; top right
+    db OAMF_PAL0
+    db $B6 ; bottom right
+    db OAMF_PAL0
+
+.rightAnimation::
+    db $B8 ; top left
+    db OAMF_PAL0
+    db $BA ; bottom left
+    db OAMF_PAL0
+
+    db $BC ; middle top left
+    db OAMF_PAL0
+    db $BE ; middle bottom left
+    db OAMF_PAL0
+
+    db $C0 ; middle top right
+    db OAMF_PAL0
+    db $C2 ; middle bottom right
+    db OAMF_PAL0
+
+    db $C4 ; top right
+    db OAMF_PAL0
+    db $C6 ; bottom right
+    db OAMF_PAL0
+
+.leftAnimation::
+    db $C4 ; top right
+    db OAMF_PAL0 | OAMF_XFLIP
+    db $C6 ; bottom right
+    db OAMF_PAL0 | OAMF_XFLIP
+
+    db $C0 ; middle top right
+    db OAMF_PAL0 | OAMF_XFLIP
+    db $C2 ; middle bottom right
+    db OAMF_PAL0 | OAMF_XFLIP
+
+    db $BC ; middle top left
+    db OAMF_PAL0 | OAMF_XFLIP
+    db $BE ; middle bottom left
+    db OAMF_PAL0 | OAMF_XFLIP
+
+    db $B8 ; top left
+    db OAMF_PAL0 | OAMF_XFLIP
+    db $BA ; bottom left
     db OAMF_PAL0 | OAMF_XFLIP
