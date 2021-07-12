@@ -15,6 +15,7 @@ Sprites::
     INCBIN "./tile_data/Powerups.2bpp"
     INCBIN "./tile_data/projectiles.2bpp"
     INCBIN "./tile_data/ParticleEffects.2bpp"
+    INCBIN "./tile_data/BossEnemy.2bpp"
 .end::
 
 ParticleEffectSprites::
@@ -613,3 +614,9 @@ EnemyDAnimation::
     db OAMF_PAL0 | OAMF_XFLIP
     db $54
     db OAMF_PAL0 | OAMF_XFLIP
+
+BossEnemyAnimation::
+.upAnimation
+.downAnimation
+.rightAnimation
+.leftAnimation
