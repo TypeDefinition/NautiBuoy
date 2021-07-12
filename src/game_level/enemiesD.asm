@@ -114,6 +114,7 @@ UpdateEnemyD::
     ld c, DIR_RIGHT
     jr c, .finishFindingPlayer ; player on right of enemy
     ld c, DIR_LEFT
+    jr z, .move
 
 .finishFindingPlayer
     ; c = direction
@@ -125,6 +126,7 @@ UpdateEnemyD::
     ld a, c
     ld [hl], a
 
+.move
     pop hl ; POP HL = enemy address
     push hl ; PUSH HL = enemy address
 
