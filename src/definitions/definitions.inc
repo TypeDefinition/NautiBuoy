@@ -91,6 +91,7 @@ DEF ENEMY_TYPED_ANIMATION_FRAMES EQU 2
 DEF ENEMY_BOSS_HEALTH EQU 15
 DEF ENEMY_BOSS_ANIMATION_UPDATE_SPEED EQU $10
 DEF ENEMY_BOSS_HEALTH_BERSERK EQU 8
+DEF ENEMY_BOSS_DEFAULT_SHOOT_FRAME EQU 5
 
 
 /*************************************************Bullet*************************************************/

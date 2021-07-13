@@ -15,8 +15,11 @@ UpdateEnemyBoss::
     ; once health is lower than a certain value, it will keep doing the berserk behavior
     ; berserk behavior will switch between ramming the player and shooting out the sparks
 
-    ld de, Character_HP
+    ld de, Character_Direction
     add hl, de
+    ld a, [hli] ; get direction
+    ld c, a
+
     ld a, [hli] ; get health
     ld b, a ; b = health
 
@@ -29,10 +32,10 @@ UpdateEnemyBoss::
     
     ; need update animation and updateframecounter int portion
     ld a, [hli] ; get int portion of updateFrameCounter
-    ld c, a
+    ld e, a
     jr nc, .checkHealth
 
-    inc c
+    inc e
     ld a, [hli] ; get curr frame
     inc a
     ld d, a ; d = curr frame
@@ -44,7 +47,7 @@ UpdateEnemyBoss::
     ld d, 0 ; reset curr frame
 
 .updateCurrFrame
-    ; d = curr frame, c = int part of updateFrameCounter, b = health
+    ; d = curr frame, e = int part of updateFrameCounter, b = health, c = direction
     ld a, d
     dec hl
     ld [hl], a ; update curr frame
@@ -55,11 +58,20 @@ UpdateEnemyBoss::
     jr c, .berserkBehavior ; if less than a certain amount, go berserk mode
 
 .defaultBehavior ; Just follow player and shoot
-    ; c = int part of updateFrameCounter, hl = curr frame address
+    ; c = direction, e = int part of updateFrameCounter, hl = curr frame address
+    ld a, e
+    cp a, ENEMY_BOSS_DEFAULT_SHOOT_FRAME
+    jr nz, .updateDefaultBehavior
 
-    ; TODO:: check update frame counter to see if should shoot, if yes, make a = 0
-    ld a, c
+    pop de ; pop de = enemy address
+    push de ; push de = enemy address
+    push hl ; push hl = int part of updateFrameCounter
+    call EnemyShoot
+    pop hl ; pop hl = int part of updateFrameCounter
+    xor a
 
+.updateDefaultBehavior 
+    ; a = int part of updateFrameCounter, hl = int part of updateFrameCounter address
     dec hl
     ld [hl], a ; update int part of updateFrameCounter
 
