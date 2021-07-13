@@ -88,9 +88,9 @@ DEF ENEMY_TYPED_ANIMATION_MAX_FRAME EQU 2 ; max animation frame for type D
 DEF ENEMY_TYPED_ANIMATION_FRAMES EQU 2
 
 ; Enemy Boss
-DEF ENEMY_BOSS_HEALTH EQU 5
+DEF ENEMY_BOSS_HEALTH EQU 15
 DEF ENEMY_BOSS_ANIMATION_UPDATE_SPEED EQU $10
-
+DEF ENEMY_BOSS_HEALTH_BERSERK EQU 8
 
 
 /*************************************************Bullet*************************************************/

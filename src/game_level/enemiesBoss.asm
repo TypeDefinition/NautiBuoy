@@ -15,20 +15,53 @@ UpdateEnemyBoss::
     ; once health is lower than a certain value, it will keep doing the berserk behavior
     ; berserk behavior will switch between ramming the player and shooting out the sparks
 
-    ld de, Character_UpdateFrameCounter
+    ld de, Character_HP
     add hl, de
-    ld a, [hl]
+    ld a, [hli] ; get health
+    ld b, a ; b = health
+
+    inc hl
+    inc hl
+
+    ld a, [hl] ; get fraction part of updateFrameCounter
     add a, ENEMY_BOSS_ANIMATION_UPDATE_SPEED
     ld [hli], a
-
+    
     ; need update animation and updateframecounter int portion
     ld a, [hli] ; get int portion of updateFrameCounter
+    ld c, a
+    jr nc, .checkHealth
 
-    ; check health, if less than x amount, berserk behavior
+    inc c
+    ld a, [hli] ; get curr frame
+    inc a
+    ld d, a ; d = curr frame
 
+    ld a, [hl] ; get max frames
+    cp a, d
+    jr nz, .updateCurrFrame
 
+    ld d, 0 ; reset curr frame
+
+.updateCurrFrame
+    ; d = curr frame, c = int part of updateFrameCounter
+    ld a, d
+    dec hl
+    ld [hl], a ; update curr frame
+
+.checkHealth
+    ld a, b ; get health
+    cp a, ENEMY_BOSS_HEALTH_BERSERK
+    jr c, .berserkBehavior ; if less than a certain amount, go berserk mode
 
 .defaultBehavior ; Just follow player and shoot
+    ; c = int part of updateFrameCounter, hl = curr frame address
+
+    ; TODO:: check update frame counter to see if should shoot, if yes, make a = 0
+    ld a, c
+
+    dec hl
+    ld [hl], a ; update int part of updateFrameCounter
 
     pop hl
     push hl
@@ -143,7 +176,7 @@ FindPlayerDirectionFromBossAndMove:
         - hl, enemy address
 */
 UpdateEnemyBossShadowOAM:
-    push hl ; PUSH HL = enemy address
+    ;push hl ; PUSH HL = enemy address
 
     inc hl
     inc hl
@@ -166,7 +199,17 @@ UpdateEnemyBossShadowOAM:
 
     inc hl
 
-    ld a, [hl] ; check direction of enemy and init sprite data
+    ld a, [hli] ; check direction of enemy and init sprite data
+    push af ; PUSH AF = direction
+
+    ; TODO FIX THIS HERE
+    ld a, [hli] ; get health
+    inc hl
+    inc hl
+    inc hl
+    ld a, [hli] ; get updateframecounter int part
+
+    pop af ; pop af = direction
     and a, DIR_BIT_MASK
 
     ASSERT DIR_UP == 0
@@ -193,19 +236,19 @@ UpdateEnemyBossShadowOAM:
     ld bc, BossEnemyAnimation.leftAnimation
 
 .getAnimation
+    ; hl = curr frame address
 
-    pop hl ; POP HL = enemy address
-    ;ld de, Character_CurrAnimationFrame
-    ;add hl, de
-    ;ld a, [hl] ; get curr frame
+    ld a, [hl] ; get curr frame
 
-    ;sla a 
-    ;sla a ; curr animation frame x 4
-    ;add a, c
-    ;ld c, a
-    ;ld a, b
-    ;adc a, 0 ; add offset to animation address: bc + a
-    ;ld b, a 
+    sla a 
+    sla a 
+    sla a
+    sla a ; curr animation frame x 16
+    add a, c
+    ld c, a
+    ld a, b
+    adc a, 0 ; add offset to animation address: bc + a
+    ld b, a
 
 
 .startUpdateOAM
