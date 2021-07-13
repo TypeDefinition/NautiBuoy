@@ -31,17 +31,15 @@ LoadResetScreen:
     ret
 
 UpdateResetScreen:
-    call UpdateInput
-
     ; Update Sound
     set_romx_bank BANK(MainMenuBGM)
     call _hUGE_dosound
 
     ; Get Input
+    call UpdateInput
     ld a, [wNewlyInputKeys]
     ld d, a
     
-
     ; Select Previous/Next Option
     ld a, [wResetOption]
 .onLeft

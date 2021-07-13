@@ -10,6 +10,9 @@ SECTION "Lose Screen WRAM", WRAM0
 wLoseReason::
     ds 1
 
+wBGMTimer:
+    ds 2
+
 SECTION "Lose Screen", ROM0
 ; Global Jumps
 JumpLoadLoseScreen::
@@ -86,6 +89,11 @@ LoadLoseScreen:
 
     call ResetBGWindowUpdateQueue
 
+    ; Reset BGM Timer
+    xor a
+    ld [wBGMTimer], a
+    ld [wBGMTimer+1], a
+
     call LCDOn
 
     ; Set BGM
@@ -99,13 +107,23 @@ LoadLoseScreen:
     ret
 
 UpdateLoseScreen:
-    call UpdateInput
-
-    ; Update Sound
+    ; Update Sound (Stop BGM after ~4 seconds.)
+    ld a, [wBGMTimer]
+    cp a, $01
+    call z, SoundOff
+    jr z, .getInput
+    ld a, [wBGMTimer+1]
+    add a, $01
+    ld [wBGMTimer+1], a
+    ld a, [wBGMTimer]
+    adc a, $00
+    ld [wBGMTimer], a
     set_romx_bank BANK(LoseScreenBGM)
     call _hUGE_dosound
 
     ; Get Input
+.getInput
+    call UpdateInput
     ld a, [wNewlyInputKeys]
     ld b, a
 .onB

@@ -3,6 +3,10 @@ INCLUDE "./src/include/util.inc"
 INCLUDE "./src/include/hUGE.inc"
 INCLUDE "./src/definitions/definitions.inc"
 
+SECTION "Win Screen WRAM", WRAM0
+wBGMTimer:
+    ds 2
+
 SECTION "Win Screen", ROM0
 ; Global Jumps
 JumpLoadWinScreen::
@@ -43,6 +47,11 @@ LoadWinScreen:
 
     call ResetBGWindowUpdateQueue
 
+    ; Reset BGM Timer
+    xor a
+    ld [wBGMTimer], a
+    ld [wBGMTimer+1], a
+
     call LCDOn
 
     ; Set BGM
@@ -56,13 +65,23 @@ LoadWinScreen:
     ret
 
 UpdateWinScreen:
-    call UpdateInput
-
-    ; Update Sound
+    ; Update Sound (Stop BGM after ~3 seconds.)
+    ld a, [wBGMTimer]
+    cp a, $02
+    call z, SoundOff
+    jr z, .getInput
+    ld a, [wBGMTimer+1]
+    add a, $03
+    ld [wBGMTimer+1], a
+    ld a, [wBGMTimer]
+    adc a, $00
+    ld [wBGMTimer], a
     set_romx_bank BANK(WinScreenBGM)
     call _hUGE_dosound
 
     ; Get Input
+.getInput
+    call UpdateInput
     ld a, [wNewlyInputKeys]
     ld b, a
 .onB
