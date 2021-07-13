@@ -103,6 +103,10 @@ InitEnemiesAndPlaceOnMap::
     jr nz, .loop
 .endloop
     call UpdateEnemyCounterUI
+
+    xor a
+    ld [wBossStateTracker], a
+
     ret
 
 
@@ -263,7 +267,7 @@ EnemyShoot::
     ld a, TYPE_BULLET_WIND
 
 .initProjectile ; set the variables
-    ; a = type
+    ; a = type, de = enemy address, c = dir
     or a, FLAG_ACTIVE | FLAG_ENEMY
     ld [hli], a ; its alive
 

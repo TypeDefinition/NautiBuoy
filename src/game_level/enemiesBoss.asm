@@ -1,6 +1,10 @@
 INCLUDE "./src/include/entities.inc"
 INCLUDE "./src/definitions/definitions.inc"
 
+SECTION "Boss Data", WRAM0
+wBossStateTracker:: ds 1 ; helps keep track of the boss current states and behavior
+wPlayerLastPosTracker:: ds 2 ; first half is pos Y, second half is pos X
+
 SECTION "Boss Enemy", ROM0
 
 /*  Update for the boss behavior 
@@ -81,12 +85,46 @@ UpdateEnemyBoss::
 
     pop hl
     push hl
-    ;call EnemyMoveBasedOnDi
+    ;call EnemyMoveBasedOnDir
+    jr .end
 
 .berserkBehavior
+    ; a = int part of updateFrameCounter, hl = int part of updateFrameCounter address
+    cp a, ENEMY_BOSS_START_RAM_FRAME
+    jr nc, .ram
+
+    dec hl
+    ld [hl], a ; update int part of updateFrameCounter
+
+    pop hl
+    push hl
+    call FindPlayerDirectionFromBossAndMove ; face the player
+
+    ; take note of player last y and x pos
+    ld a, [wPlayer_PosYInterpolateTarget]
+    ld [wPlayerLastPosTracker], a
+
+    ld a, [wPlayer_PosXInterpolateTarget]
+    ld [wPlayerLastPosTracker + 1], a
+
+    jr .end
+
+.ram ; charge in one direction at fast speeds
+
+    ; find player, wait for a short while, charge in that direction for a short while, 
+    ; if dizzy, just dont move
+    ; in berserk mode
+    ; should do this 3 times
+    ;call EnemyMoveBasedOnDir
+
+    ; if position is same as player last position, go back to charge mode, stop and change mode
+    ;ld a, [wPlayerLastPosTracker]
 
 
 
+    ; IF RAM into a wall, chanmge to dizzy mode
+
+.end
     pop hl ; POP hl = enemy address
     call UpdateEnemyBossShadowOAM
     ret
