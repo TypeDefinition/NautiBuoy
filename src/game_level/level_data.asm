@@ -60,7 +60,7 @@ Stage0EnemyData::
 
 /* Powerup information and data for level 1 */
 Level0PowerUpData::
-    db 5 ; number of powerups in level
+    db 4 ; number of powerups in level
 .powerUpOne
     db TYPE_HEALTH_POWERUP | FLAG_ACTIVE
     db 9 * 8 ; y 
@@ -88,10 +88,10 @@ StageXXEnemyData::
     db 1 ; number of enemies in level
 .enemyOne
     db TYPE_ENEMY_BOSS | FLAG_ENEMY | FLAG_ACTIVE   
-    db 23 * 8 ; y 
-    db 23 * 8 ; x
+    db 15 * 8 ; y 
+    db 15 * 8 ; x
     db DIR_LEFT
-    db ENEMY_TYPEA_HEALTH
+    db ENEMY_BOSS_HEALTH
     dw VELOCITY_VSLOW ; cpu allocate and auto store in little endian
     db ENEMY_TYPEA_WALK_FRAMES
 .endStageXXEnemyData:

@@ -12,17 +12,78 @@ UpdateEnemyBoss::
 
     ; check health and determine which behavior from there?
     ; followPlayer and shoot, only change direction if theres a difference of x amt?
+    ; once health is lower than a certain value, it will keep doing the berserk behavior
+    ; berserk behavior will switch between ramming the player and shooting out the sparks
 
-.defaultBehavior /* Just follow player and shoot */
+    ld de, Character_Direction
+    add hl, de
+    ld a, [hli] ; get direction
+    ld c, a
+
+    ld a, [hli] ; get health
+    ld b, a ; b = health
+
+    inc hl
+    inc hl
+
+    ld a, [hl] ; get fraction part of updateFrameCounter
+    add a, ENEMY_BOSS_ANIMATION_UPDATE_SPEED
+    ld [hli], a
+    
+    ; need update animation and updateframecounter int portion
+    ld a, [hli] ; get int portion of updateFrameCounter
+    ld e, a
+    jr nc, .checkHealth
+
+    inc e
+    ld a, [hli] ; get curr frame
+    inc a
+    ld d, a ; d = curr frame
+
+    ld a, [hl] ; get max frames
+    cp a, d
+    jr nz, .updateCurrFrame
+
+    ld d, 0 ; reset curr frame
+
+.updateCurrFrame
+    ; d = curr frame, e = int part of updateFrameCounter, b = health, c = direction
+    ld a, d
+    dec hl
+    ld [hl], a ; update curr frame
+
+.checkHealth
+    ld a, b ; get health
+    cp a, ENEMY_BOSS_HEALTH_BERSERK
+    jr c, .berserkBehavior ; if less than a certain amount, go berserk mode
+
+.defaultBehavior ; Just follow player and shoot
+    ; c = direction, e = int part of updateFrameCounter, hl = curr frame address
+    ld a, e
+    cp a, ENEMY_BOSS_DEFAULT_SHOOT_FRAME
+    jr nz, .updateDefaultBehavior
+
+    pop de ; pop de = enemy address
+    push de ; push de = enemy address
+    push hl ; push hl = int part of updateFrameCounter
+    call EnemyShoot
+    pop hl ; pop hl = int part of updateFrameCounter
+    xor a
+
+.updateDefaultBehavior 
+    ; a = int part of updateFrameCounter, hl = int part of updateFrameCounter address
+    dec hl
+    ld [hl], a ; update int part of updateFrameCounter
+
     pop hl
     push hl
     call FindPlayerDirectionFromBossAndMove
 
     pop hl
     push hl
-    call EnemyMoveBasedOnDir
+    ;call EnemyMoveBasedOnDi
 
-
+.berserkBehavior
 
 
 
@@ -94,8 +155,6 @@ FindPlayerDirectionFromBossAndMove:
     pop hl
     jr c, .checkHorizontal ; move in the direction with the biggest offset dist 
 
-
-    ; TODO:: make sure to add some offset since its big
 .checkVertical 
     ld a, d ; a = enemy pos y
     cp a, b
@@ -112,11 +171,13 @@ FindPlayerDirectionFromBossAndMove:
     ld a, DIR_RIGHT
     jr c, .finishFindingPlayer ; player on right of enemy
     ld a, DIR_LEFT
+    jr z, .end
 
 .finishFindingPlayer
     inc hl
     ld [hl], a ; init new direction
 
+.end
     ret
 
 
@@ -127,7 +188,7 @@ FindPlayerDirectionFromBossAndMove:
         - hl, enemy address
 */
 UpdateEnemyBossShadowOAM:
-    push hl ; PUSH HL = enemy address
+    ;push hl ; PUSH HL = enemy address
 
     inc hl
     inc hl
@@ -150,7 +211,17 @@ UpdateEnemyBossShadowOAM:
 
     inc hl
 
-    ld a, [hl] ; check direction of enemy and init sprite data
+    ld a, [hli] ; check direction of enemy and init sprite data
+    push af ; PUSH AF = direction
+
+    ; TODO FIX THIS HERE
+    ld a, [hli] ; get health
+    inc hl
+    inc hl
+    inc hl
+    ld a, [hli] ; get updateframecounter int part
+
+    pop af ; pop af = direction
     and a, DIR_BIT_MASK
 
     ASSERT DIR_UP == 0
@@ -177,19 +248,19 @@ UpdateEnemyBossShadowOAM:
     ld bc, BossEnemyAnimation.leftAnimation
 
 .getAnimation
+    ; hl = curr frame address
 
-    pop hl ; POP HL = enemy address
-    ;ld de, Character_CurrAnimationFrame
-    ;add hl, de
-    ;ld a, [hl] ; get curr frame
+    ld a, [hl] ; get curr frame
 
-    ;sla a 
-    ;sla a ; curr animation frame x 4
-    ;add a, c
-    ;ld c, a
-    ;ld a, b
-    ;adc a, 0 ; add offset to animation address: bc + a
-    ;ld b, a 
+    sla a 
+    sla a 
+    sla a
+    sla a ; curr animation frame x 16
+    add a, c
+    ld c, a
+    ld a, b
+    adc a, 0 ; add offset to animation address: bc + a
+    ld b, a
 
 
 .startUpdateOAM
