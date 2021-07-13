@@ -44,7 +44,7 @@ UpdateEnemyBoss::
     ld d, 0 ; reset curr frame
 
 .updateCurrFrame
-    ; d = curr frame, c = int part of updateFrameCounter
+    ; d = curr frame, c = int part of updateFrameCounter, b = health
     ld a, d
     dec hl
     ld [hl], a ; update curr frame

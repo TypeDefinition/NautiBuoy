@@ -60,7 +60,7 @@ Stage0EnemyData::
 
 /* Powerup information and data for level 1 */
 Level0PowerUpData::
-    db 5 ; number of powerups in level
+    db 4 ; number of powerups in level
 .powerUpOne
     db TYPE_HEALTH_POWERUP | FLAG_ACTIVE
     db 9 * 8 ; y 
