@@ -246,13 +246,24 @@ EnemyShoot::
     ; check what projectile type it should be
     ld a, [de] ; get flags
     and a, BIT_MASK_TYPE
-    cp a, TYPE_ENEMYA ; check if the squid
-    ld a, TYPE_BULLET_INK
-    jr z, .initProjectile
 
+.checkType
+    cp a, TYPE_ENEMYA ; check if the squid
+    jr nz, .spikeBullet
+    ld a, TYPE_BULLET_INK
+    jr .initProjectile
+    
+.spikeBullet
+    cp a, TYPE_ENEMYC ; check if the blowfish
+    jr nz, .windProjectile
     ld a, TYPE_BULLET_SPIKE
+    jr .initProjectile
+
+.windProjectile
+    ld a, TYPE_BULLET_WIND
 
 .initProjectile ; set the variables
+    ; a = type
     or a, FLAG_ACTIVE | FLAG_ENEMY
     ld [hli], a ; its alive
 

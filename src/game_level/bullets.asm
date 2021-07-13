@@ -251,6 +251,88 @@ UpdateBulletShadowOAM:
     ld [wCurrentShadowOAMPtr], a
     ret
 
+; Update Bullet Shadow OAM
+; @ bc: Bullet Sprite address
+; @ hl: Bullet Memory Address
+; Register change:
+;   - AF
+;   - BC
+;   - DE
+;   - HL
+UpdateBigBulletShadowOAM:
+    ld bc, BulletSprites.upWindProjectileSprite
+
+    inc hl
+    ld a, [hli] ; get direction
+    ld d, a
+    sla d
+    sla d ; direction x 4 to get offset
+
+    ld a, c ; offset the bullet sprite address
+    add a, d
+    ld c, a
+    ld a, b
+    adc a, 0
+    ld b, a 
+
+    inc hl
+    inc hl
+    
+    ; translate to screen pos
+    ld a, [wShadowSCData]
+    ld d, a
+    ld a, [hli] ; bullet y pos
+    sub a, d ; decrease by screen offset
+    add a, 8 ; bullet sprite y offset = 8
+    ld d, a
+    
+    inc hl
+
+    ld a, [wShadowSCData + 1]
+    ld e, a
+    ld a, [hl] ; bullet x pos
+    sub a, e ; decrease by screen offset
+    ld e, a
+
+    ; get the current address of shadow OAM to hl
+    ld a, [wCurrentShadowOAMPtr]
+    ld l, a
+    ld h, HIGH(wShadowOAM)
+
+    ld a, d
+    ld [hli], a ; update y pos
+
+    ld a, e
+    ld [hli], a ; update x pos
+
+    ld a, [bc] ; sprite ID
+    ld [hli], a 
+
+    inc bc
+    ld a, [bc] ; flags
+    ld [hli], a ; flags
+
+    ; second half
+    ld a, d
+    ld [hli], a ; update y pos
+
+    ld a, e
+    add a, 8 ; bullet sprite x offset = 8
+    ld [hli], a ; update x pos
+
+    inc bc
+    ld a, [bc] ; sprite ID
+    ld [hli], a 
+
+    inc bc
+    ld a, [bc] ; flags
+    ld [hli], a ; flags
+
+    ; update the current address from hl to the wCurrentShadowOAMPtr
+    ld a, l
+    ld [wCurrentShadowOAMPtr], a
+    ret
+
 /* Global Functions */
 ; Reset all bullet data.
 ResetAllBullets::
@@ -362,6 +444,12 @@ UpdateBullets::
 .translationEnd
     pop hl ; POP HL = bullet address
     push hl ; PUSH HL = bullet address
+
+    ld a, [hl]
+    and a, BIT_MASK_TYPE
+    cp a, TYPE_BULLET_WIND
+    call z, UpdateBigBulletShadowOAM
+
     call UpdateBulletShadowOAM
     pop hl ; POP HL = bullet address
 

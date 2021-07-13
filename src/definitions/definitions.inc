@@ -100,6 +100,8 @@ DEF TYPE_BULLET_DEFAULT EQU 0 ; bit 2, 3 & 4, %000 000 00
 DEF TYPE_BULLET_POWER_UP EQU 4 ; bit 2, 3 & 4, %000 001 00
 DEF TYPE_BULLET_SPIKE EQU 8 ; bit 2, 3 & 4, %000 010 00
 DEF TYPE_BULLET_INK EQU 12 ; bit 2, 3 & 4, %000 011 00
+; projectiles that are 4x4 tiles wide below
+DEF TYPE_BULLET_WIND EQU 16 ; bit 2, 3 & 4, %000 100 00
 
 /*************************************************Particle Effects*************************************************/
 DEF FLAG_PARTICLE_EFFECT_ANIMATION EQU $02 ; bit 1, %0000 00 1 0

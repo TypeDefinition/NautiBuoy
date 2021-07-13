@@ -88,6 +88,28 @@ BulletSprites::
     db $8E ; sprite ID
     db OAMF_PAL0 | OAMF_XFLIP
 
+.upWindProjectileSprite::
+    db $CA ; sprite ID
+    db OAMF_PAL0 | OAMF_YFLIP
+    db $CE ; sprite ID
+    db OAMF_PAL0 | OAMF_YFLIP
+.downWindProjectileSprite
+    db $CA ; sprite ID
+    db OAMF_PAL0 
+    db $CE ; sprite ID
+    db OAMF_PAL0 
+.leftWindProjectileSprite
+    db $C8 ; sprite ID
+    db OAMF_PAL0
+    db $CC ; sprite ID
+    db OAMF_PAL0
+.rightWindProjectileSprite
+    db $CC ; sprite ID
+    db OAMF_PAL0 | OAMF_XFLIP
+    db $C8 ; sprite ID
+    db OAMF_PAL0 | OAMF_XFLIP
+
+
 PlayerAnimation::
 .upAnimation::
     ; Frame 1
