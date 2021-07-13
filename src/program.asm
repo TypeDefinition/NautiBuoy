@@ -70,7 +70,7 @@ RunProgram:
     ld sp, $E000 ; Initialise our stack pointer to the end of WRAM.
 
     call LCDOff
-    call SoundOn
+    call SoundOff
     call CopyDMARoutine ; Copy DMARoutine from ROM to HRAM.
 
     ; Reset hWaitVBlankFlag.

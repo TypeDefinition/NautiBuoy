@@ -147,6 +147,9 @@ LoadGameLevel:
     set_romx_bank BANK(GameLevelBGM)
     ld hl, GameLevelBGM
     call hUGE_init
+    ld b, $00
+    ld c, $01
+    call hUGE_mute_channel
 
     ; Set STAT interrupt flags.
     ld a, VIEWPORT_SIZE_Y
