@@ -1,7 +1,7 @@
 include "./src/include/hUGE.inc"
 
 ; GB-Studio-Community Assets: Great Melody 01
-SECTION "Main Menu BGM Data", ROMX
+SECTION "Main Menu BGM", ROMX
 
 MainMenuBGM::
 db 7
@@ -3978,57 +3978,57 @@ P143:
  dn ___,0,$000
 
 duty_instruments:
-itSquareinst1: db 8,64,48,128
-itSquareinst2: db 8,128,48,128
-itSquareinst3: db 8,192,48,128
-itSquareinst4: db 8,0,48,128
-itSquareinst5: db 8,128,48,128
-itSquareinst6: db 8,128,48,128
-itSquareinst7: db 8,128,48,128
-itSquareinst8: db 8,128,48,128
-itSquareinst9: db 8,128,48,128
-itSquareinst10: db 8,128,48,128
-itSquareinst11: db 8,128,48,128
-itSquareinst12: db 8,128,48,128
-itSquareinst13: db 8,128,48,128
-itSquareinst14: db 8,128,48,128
-itSquareinst15: db 8,128,48,128
+itSquareinst1: db 8,64,240,128
+itSquareinst2: db 8,128,240,128
+itSquareinst3: db 8,192,240,128
+itSquareinst4: db 8,0,240,128
+itSquareinst5: db 8,128,240,128
+itSquareinst6: db 8,128,240,128
+itSquareinst7: db 8,128,240,128
+itSquareinst8: db 8,128,240,128
+itSquareinst9: db 8,128,240,128
+itSquareinst10: db 8,128,240,128
+itSquareinst11: db 8,128,240,128
+itSquareinst12: db 8,128,240,128
+itSquareinst13: db 8,128,240,128
+itSquareinst14: db 8,128,240,128
+itSquareinst15: db 8,128,240,128
 
 
 wave_instruments:
-itWaveinst1: db 0,96,0,128
-itWaveinst2: db 0,96,1,128
-itWaveinst3: db 0,96,2,128
-itWaveinst4: db 0,96,3,128
-itWaveinst5: db 0,96,4,128
-itWaveinst6: db 0,96,5,128
-itWaveinst7: db 0,96,6,128
-itWaveinst8: db 0,96,0,128
-itWaveinst9: db 0,96,1,128
-itWaveinst10: db 0,96,2,128
-itWaveinst11: db 0,96,3,128
-itWaveinst12: db 0,96,4,128
-itWaveinst13: db 0,96,5,128
-itWaveinst14: db 0,96,6,128
-itWaveinst15: db 0,96,7,128
+itWaveinst1: db 0,32,0,128
+itWaveinst2: db 0,32,1,128
+itWaveinst3: db 0,32,2,128
+itWaveinst4: db 0,32,3,128
+itWaveinst5: db 0,32,4,128
+itWaveinst6: db 0,32,5,128
+itWaveinst7: db 0,32,6,128
+itWaveinst8: db 0,32,0,128
+itWaveinst9: db 0,32,1,128
+itWaveinst10: db 0,32,2,128
+itWaveinst11: db 0,32,3,128
+itWaveinst12: db 0,32,4,128
+itWaveinst13: db 0,32,5,128
+itWaveinst14: db 0,32,6,128
+itWaveinst15: db 0,32,7,128
 
 
 noise_instruments:
-itNoiseinst1: db 48,0,0,0,0,0,0,0
-itNoiseinst2: db 48,0,0,0,0,0,0,0
-itNoiseinst3: db 48,0,0,0,0,0,0,0
-itNoiseinst4: db 48,0,0,0,0,0,0,0
-itNoiseinst5: db 48,0,0,0,0,0,0,0
-itNoiseinst6: db 48,0,0,0,0,0,0,0
-itNoiseinst7: db 48,0,0,0,0,0,0,0
-itNoiseinst8: db 48,0,0,0,0,0,0,0
-itNoiseinst9: db 48,0,0,0,0,0,0,0
-itNoiseinst10: db 48,0,0,0,0,0,0,0
-itNoiseinst11: db 48,0,0,0,0,0,0,0
-itNoiseinst12: db 48,0,0,0,0,0,0,0
-itNoiseinst13: db 48,0,0,0,0,0,0,0
-itNoiseinst14: db 48,0,0,0,0,0,0,0
-itNoiseinst15: db 48,0,0,0,0,0,0,0
+itNoiseinst1: db 240,0,0,0,0,0,0,0
+itNoiseinst2: db 240,0,0,0,0,0,0,0
+itNoiseinst3: db 240,0,0,0,0,0,0,0
+itNoiseinst4: db 240,0,0,0,0,0,0,0
+itNoiseinst5: db 240,0,0,0,0,0,0,0
+itNoiseinst6: db 240,0,0,0,0,0,0,0
+itNoiseinst7: db 240,0,0,0,0,0,0,0
+itNoiseinst8: db 240,0,0,0,0,0,0,0
+itNoiseinst9: db 240,0,0,0,0,0,0,0
+itNoiseinst10: db 240,0,0,0,0,0,0,0
+itNoiseinst11: db 240,0,0,0,0,0,0,0
+itNoiseinst12: db 240,0,0,0,0,0,0,0
+itNoiseinst13: db 240,0,0,0,0,0,0,0
+itNoiseinst14: db 240,0,0,0,0,0,0,0
+itNoiseinst15: db 240,0,0,0,0,0,0,0
 
 
 routines:
@@ -4121,12 +4121,12 @@ wave4: db 171,205,239,237,203,160,18,62,220,186,188,222,254,220,50,16
 wave5: db 255,238,221,204,187,170,153,136,119,102,85,68,51,34,17,0
 wave6: db 255,255,255,255,255,255,255,255,0,0,0,0,0,0,0,0
 wave7: db 121,188,222,239,255,238,220,185,117,67,33,16,0,17,35,69
-wave8: db 35,193,226,115,8,68,229,27,227,93,97,97,217,62,194,141
-wave9: db 181,142,160,131,189,86,20,93,61,51,229,86,151,235,206,121
-wave10: db 110,115,229,45,105,109,22,179,8,109,96,12,37,57,125,199
-wave11: db 35,84,84,106,94,149,67,186,154,83,201,51,150,4,180,40
-wave12: db 131,225,144,80,22,174,163,187,154,3,103,123,114,187,132,156
-wave13: db 67,116,25,201,187,23,16,122,128,164,139,61,98,198,161,26
-wave14: db 187,27,141,37,113,144,125,196,177,172,126,147,221,214,158,210
-wave15: db 11,213,168,234,129,220,70,180,136,34,83,25,135,109,89,92
+wave8: db 137,18,83,62,217,234,163,46,0,179,210,10,115,189,12,74
+wave9: db 17,99,233,51,120,160,48,115,113,93,214,62,146,186,210,173
+wave10: db 162,69,190,172,189,121,65,217,56,1,61,122,212,237,188,27
+wave11: db 233,228,38,226,214,60,120,177,197,172,180,19,108,109,130,84
+wave12: db 56,238,13,200,208,167,42,113,206,51,98,54,132,17,167,226
+wave13: db 60,122,116,21,74,139,217,145,133,188,42,149,152,146,24,113
+wave14: db 88,85,213,119,150,66,96,28,98,76,128,34,108,100,54,16
+wave15: db 145,21,48,129,2,60,77,128,168,123,160,185,68,148,203,87
 

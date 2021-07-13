@@ -15,25 +15,6 @@ SECTION "Player Camera Data", WRAM0
 
 /* Any logic/behavior/function related to player here */
 SECTION "Player", ROM0
-PlayAttackSFX:
-    ; Channel 1
-    ld a, %01000010
-    ld [rNR10], a
-
-    ld a, %01001100
-    ld [rNR11], a
-
-    ld a, %11111010
-    ld [rNR12], a
-
-    ld a, $FF
-    ld [rNR13], a
-
-    ld a, %11000011
-    ld [rNR14], a
-
-    ret
-
 InitialisePlayer::
     push af
 
@@ -316,7 +297,7 @@ UpdatePlayerAttack::
     ld a, [wPlayer_PosX + 1] 
     ld [hli], a ; load the other half of posX
     
-    call PlayAttackSFX
+    call PlayerShootSFX
 
 .finishAttack
     ret
