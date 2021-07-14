@@ -1,5 +1,7 @@
 INCLUDE "./src/include/entities.inc"
 INCLUDE "./src/definitions/definitions.inc"
+INCLUDE "./src/include/movement.inc"
+INCLUDE "./src/include/tile_collision.inc"
 
 SECTION "Boss Data", WRAM0
 wBossStateTracker:: ds 1 ; helps keep track of the boss current states and behavior
@@ -89,12 +91,16 @@ UpdateEnemyBoss::
     jr .end
 
 .berserkBehavior
-    ; a = int part of updateFrameCounter, hl = int part of updateFrameCounter address
+    ; c = direction, e = int part of updateFrameCounter, hl = curr frame address
+
+    ld a, e
+    dec hl
+    ld [hl], a ; update int part of updateFrameCounter
+
     cp a, ENEMY_BOSS_START_RAM_FRAME
     jr nc, .ram
 
-    dec hl
-    ld [hl], a ; update int part of updateFrameCounter
+
 
     pop hl
     push hl
@@ -111,7 +117,7 @@ UpdateEnemyBoss::
 
 .ram ; charge in one direction at fast speeds
 
-    ; find player, wait for a short while, charge in that direction for a short while, 
+    
     ; if dizzy, just dont move
     ; in berserk mode
     ; should do this 3 times
@@ -119,7 +125,9 @@ UpdateEnemyBoss::
 
     ; if position is same as player last position, go back to charge mode, stop and change mode
     ;ld a, [wPlayerLastPosTracker]
-
+    pop hl
+    push hl
+    call RamMovement
 
 
     ; IF RAM into a wall, chanmge to dizzy mode
@@ -128,6 +136,137 @@ UpdateEnemyBoss::
     pop hl ; POP hl = enemy address
     call UpdateEnemyBossShadowOAM
     ret
+
+
+/*  Behavior for moving in ram mode
+    Paramaters:
+        - hl, enemy starting address
+*/
+RamMovement:
+    push hl ; PUSH hl = enemy starting address
+
+    ld b, ENEMY_BOSS_RAM_SPEED
+    xor a
+    ld c, a
+    
+    ; hl = pos y address, de = pos x address
+    inc hl
+    inc hl 
+
+    ld d, h
+    ld e, l
+    inc de
+    inc de
+    inc de 
+    
+    inc de
+    inc de
+    ld a, [de] ; get direction
+    and a, DIR_BIT_MASK ; only want the first 2 bits for move direction
+    dec de
+    dec de
+
+    ASSERT DIR_UP == 0
+    and a, a ; cp a, 0
+    jr z, .upDir
+    ASSERT DIR_DOWN == 1
+    dec a
+    jp z, .downDir
+    ASSERT DIR_LEFT == 2
+    dec a
+    jp z, .leftDir
+    ASSERT DIR_RIGHT > 2
+
+    ; bc = velocity, hl = pos y address, de = pos x address
+.rightDir
+    push bc ; PUSH BC = velocity
+    tile_collision_check_right_reg BOSS_COLLIDER_SIZE, CHARACTER_COLLIDABLE_TILES, .collideOnWall
+    pop bc ; POP BC = velocity
+    ld h, d
+    ld l, e
+    interpolate_pos_inc_reg
+
+    ; check if reach up stop pos
+    dec hl
+    ld a, [hl] ; get x pos
+    ld b, a
+    ld a, [wPlayerLastPosTracker + 1]
+    add a, ENEMY_BOSS_STOP_DIST_OFFSET 
+    cp a, b
+    jp c, .stopRam
+
+    pop hl ; POP hl = enemy starting address
+    ret
+
+.upDir
+    push bc ; PUSH BC = velocity
+    tile_collision_check_up_reg BOSS_COLLIDER_SIZE, CHARACTER_COLLIDABLE_TILES, .collideOnWall
+    pop bc ; POP BC = velocity
+
+    interpolate_pos_dec_reg
+
+    ; check if reach up stop pos
+    dec hl
+    ld a, [hl] ; get y pos
+    ld b, a
+    ld a, [wPlayerLastPosTracker]
+    sub a, ENEMY_BOSS_STOP_DIST_OFFSET 
+    cp a, b
+    jp nc, .stopRam
+
+    pop hl ; POP hl = enemy starting address
+    ret
+
+.downDir
+    push bc ; PUSH BC = velocity
+    tile_collision_check_down_reg BOSS_COLLIDER_SIZE, CHARACTER_COLLIDABLE_TILES, .collideOnWall
+    pop bc ; POP BC = velocity
+    interpolate_pos_inc_reg
+
+    ; check if reach down stop pos
+    dec hl
+    ld a, [hl] ; get y pos
+    ld b, a
+    ld a, [wPlayerLastPosTracker]
+    add a, ENEMY_BOSS_STOP_DIST_OFFSET 
+    cp a, b
+    jp c, .stopRam
+
+    pop hl ; POP hl = enemy starting address
+    ret
+
+.leftDir
+    push bc ; PUSH BC = velocity
+    tile_collision_check_left_reg BOSS_COLLIDER_SIZE, CHARACTER_COLLIDABLE_TILES, .collideOnWall
+    pop bc ; POP BC = velocity
+    ld h, d
+    ld l, e
+    interpolate_pos_dec_reg
+    
+    ; check if reach left stop pos
+    dec hl
+    ld a, [hl] ; get x pos
+    ld b, a
+    ld a, [wPlayerLastPosTracker + 1]
+    sub a, ENEMY_BOSS_STOP_DIST_OFFSET 
+    cp a, b
+    jr nc, .stopRam
+
+    pop hl ; POP hl = enemy starting address
+    ret
+
+.collideOnWall
+    pop bc ; POP BC = velocity
+
+.stopRam ; reset ram, make it charge again
+   pop hl ; POP hl = enemy starting address
+   ld de, Character_UpdateFrameCounter + 1
+   add hl, de
+   ld a, ENEMY_BOSS_RESET_RAM_FRAME
+   ld [hl], a ; reset int part of update frame counter
+
+   ret
+
 
 
 /*  Finds which direction the player is in from the boss and init new direction

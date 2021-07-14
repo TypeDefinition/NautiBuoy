@@ -88,7 +88,7 @@ DEF ENEMY_TYPED_ANIMATION_MAX_FRAME EQU 2 ; max animation frame for type D
 DEF ENEMY_TYPED_ANIMATION_FRAMES EQU 2
 
 ; Enemy Boss
-DEF ENEMY_BOSS_HEALTH EQU 15
+DEF ENEMY_BOSS_HEALTH EQU 5
 DEF ENEMY_BOSS_ANIMATION_UPDATE_SPEED EQU $10
 DEF ENEMY_BOSS_HEALTH_BERSERK EQU 8
 DEF ENEMY_BOSS_DEFAULT_SHOOT_FRAME EQU 5
@@ -99,8 +99,9 @@ DEF ENEMY_BOSS_STATES_FIRE EQU ENEMY_BOSS_STATES_CHARGE + ENEMY_BOSS_RAM_NO_TIME
 
 DEF ENEMY_BOSS_STATES_DIZZY EQU 3
 
-DEF ENEMY_BOSS_START_RAM_FRAME EQU 4
-
+DEF ENEMY_BOSS_START_RAM_FRAME EQU 5 ; amt of 'charging time'
+DEF ENEMY_BOSS_RESET_RAM_FRAME EQU 3 ; next amt of charging time
+DEF ENEMY_BOSS_STOP_DIST_OFFSET EQU 8*1 ; have an offset so it goes slightly beyond player's position
 
 /*************************************************Bullet*************************************************/
 ; MUST be in order declared in textures.asm for the projectile section
@@ -178,6 +179,7 @@ DEF TIMER_POWER_UP_INC_AMT EQU 10 ; in seconds
 /*************************************************Collision*************************************************/
 DEF PLAYER_COLLIDER_SIZE EQU $08
 DEF ENEMY_COLLIDER_SIZE EQU $00
+DEF BOSS_COLLIDER_SIZE EQU $08
 DEF ENEMY_BULLET_COLLIDER_SIZE EQU $08 ; hit box for enemy vs bullet
 DEF ENEMY_PLAYER_COLLIDER_SIZE EQU $04 ; hit box for enemy vs player
 DEF BULLET_COLLIDER_SIZE EQU $02
@@ -230,6 +232,7 @@ DEF VELOCITY_VFAST EQU $0400
 DEF PLAYER_DEFAULT_VELOCITY EQU VELOCITY_SLIGHTLY_SLOW
 DEF PLAYER_INCREASED_VELOCITY EQU VELOCITY_NORMAL
 DEF BULLET_VELOCITY EQU $02 ; VELOCITY_FAST
+DEF ENEMY_BOSS_RAM_SPEED EQU $02 ; VELOCITY_FAST
 
 INCLUDE "./src/definitions/tile_definitions.inc"
 
