@@ -90,7 +90,7 @@ StageXXEnemyData::
     db TYPE_ENEMY_BOSS | FLAG_ENEMY | FLAG_ACTIVE   
     db 11 * 8 ; y 
     db 12 * 8 ; x
-    db DIR_LEFT
+    db DIR_LEFT | SHOOT_DIR_DOWN | SHOOT_DIR_RIGHT | SHOOT_DIR_UP | SHOOT_DIR_LEFT
     db ENEMY_BOSS_HEALTH
     dw VELOCITY_VSLOW ; cpu allocate and auto store in little endian
     db ENEMY_TYPEA_WALK_FRAMES

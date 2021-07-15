@@ -103,6 +103,10 @@ DEF ENEMY_BOSS_START_RAM_FRAME EQU 5 ; amt of 'charging time'
 DEF ENEMY_BOSS_RESET_RAM_FRAME EQU 3 ; next amt of charging time
 DEF ENEMY_BOSS_STOP_DIST_OFFSET EQU 8*1 ; have an offset so it goes slightly beyond player's position
 
+DEF ENEMY_BOSS_BARRAGE_SHOOT_FRAME EQU 4
+DEF ENEMY_BOSS_BARRAGE_SHOOT_INTERVAL EQU 2
+DEF ENEMY_BOSS_BARRAGE_SHOOT_FRAME_RESET EQU ENEMY_BOSS_BARRAGE_SHOOT_FRAME - ENEMY_BOSS_BARRAGE_SHOOT_INTERVAL
+
 /*************************************************Bullet*************************************************/
 ; MUST be in order declared in textures.asm for the projectile section
 DEF TYPE_BULLET_DEFAULT EQU 0 ; bit 2, 3 & 4, %000 000 00

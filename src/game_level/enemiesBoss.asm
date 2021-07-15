@@ -61,7 +61,7 @@ UpdateEnemyBoss::
 .checkHealth
     ld a, b ; get health
     cp a, ENEMY_BOSS_HEALTH_BERSERK
-    jr c, .berserkBehavior ; if less than a certain amount, go berserk mode
+    jr c, .projectileBarrage ; if less than a certain amount, go berserk mode
 
 .defaultBehavior ; Just follow player and shoot
     ; c = direction, e = int part of updateFrameCounter, hl = curr frame address
@@ -92,18 +92,15 @@ UpdateEnemyBoss::
 
 .berserkBehavior
     ; c = direction, e = int part of updateFrameCounter, hl = curr frame address
-
     ld a, e
     dec hl
     ld [hl], a ; update int part of updateFrameCounter
 
+    pop hl
+    push hl
     cp a, ENEMY_BOSS_START_RAM_FRAME
     jr nc, .ram
 
-
-
-    pop hl
-    push hl
     call FindPlayerDirectionFromBossAndMove ; face the player
 
     ; take note of player last y and x pos
@@ -117,20 +114,27 @@ UpdateEnemyBoss::
 
 .ram ; charge in one direction at fast speeds
 
-    
-    ; if dizzy, just dont move
-    ; in berserk mode
-    ; should do this 3 times
-    ;call EnemyMoveBasedOnDir
-
-    ; if position is same as player last position, go back to charge mode, stop and change mode
-    ;ld a, [wPlayerLastPosTracker]
-    pop hl
-    push hl
     call RamMovement
+    jr .end
 
+.projectileBarrage
+    ; c = direction, e = int part of updateFrameCounter, hl = curr frame address
+    ld a, e
+    dec hl
+    ld [hl], a ; update int part of updateFrameCounter
 
-    ; IF RAM into a wall, chanmge to dizzy mode
+    cp a, ENEMY_BOSS_BARRAGE_SHOOT_FRAME
+    jr nz, .end
+
+    pop de ; pop DE = enemy address
+    push de ; push de = enemy address
+    push hl ; push hl = curr frame address
+    call EnemyShootDir
+    pop hl ; pop hl = curr frame address
+
+    ld a, ENEMY_BOSS_BARRAGE_SHOOT_FRAME_RESET
+    ;dec hl
+    ld [hl], a ; reset updateFrameCounter with the frame resetter amt
 
 .end
     pop hl ; POP hl = enemy address
