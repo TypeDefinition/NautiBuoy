@@ -320,6 +320,7 @@ PauseGame::
     call PauseUI
     ld hl, JumpUpdatePausedGameLevel
     call SetProgramLoopCallback
+    call SoundOff
     ret
 
 ResumeGame::
@@ -331,6 +332,7 @@ ResumeGame::
     call ResumeUI
     ld hl, JumpUpdateGameLevel
     call SetProgramLoopCallback
+    call SoundOn
     ret
 
 SaveCurrentScore::
