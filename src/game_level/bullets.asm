@@ -448,8 +448,13 @@ UpdateBullets::
     ld a, [hl]
     and a, BIT_MASK_TYPE
     cp a, TYPE_BULLET_WIND
-    call z, UpdateBigBulletShadowOAM
+    jr nz, .defaultBulletSprite
 
+    call UpdateBigBulletShadowOAM
+    pop hl ; POP HL = bullet address
+    jr .loopEnd
+
+.defaultBulletSprite
     call UpdateBulletShadowOAM
     pop hl ; POP HL = bullet address
 
