@@ -16,8 +16,6 @@ SECTION "Boss Enemy", ROM0
 UpdateEnemyBoss::
     push hl ; PUSH HL = enemy address
 
-    ; check health and determine which behavior from there?
-    ; followPlayer and shoot, only change direction if theres a difference of x amt?
     ; once health is lower than a certain value, it will keep doing the berserk behavior
     ; berserk behavior will switch between ramming the player and shooting out the sparks
 
@@ -61,7 +59,7 @@ UpdateEnemyBoss::
 .checkHealth
     ld a, b ; get health
     cp a, ENEMY_BOSS_HEALTH_BERSERK
-    jr c, .projectileBarrage ; if less than a certain amount, go berserk mode
+    jr c, .berserkBehavior ; if less than a certain amount, go berserk mode
 
 .defaultBehavior ; Just follow player and shoot
     ; c = direction, e = int part of updateFrameCounter, hl = curr frame address
@@ -96,8 +94,18 @@ UpdateEnemyBoss::
     dec hl
     ld [hl], a ; update int part of updateFrameCounter
 
-    pop hl
-    push hl
+    ; check current state
+    ld a, [wBossStateTracker]
+    cp a, ENEMY_BOSS_STATES_PROJECTILE_BARRAGE
+    jr nc, .projectileBarrage
+    ;jr .projectileBarrage
+
+.checkRam
+    ; c = direction, e = int part of updateFrameCounter, hl = update frame counter address
+    pop hl ; POP hl = enemy address
+    push hl ; PUSH hl = enemy address
+
+    ld a, e
     cp a, ENEMY_BOSS_START_RAM_FRAME
     jr nc, .ram
 
@@ -113,28 +121,35 @@ UpdateEnemyBoss::
     jr .end
 
 .ram ; charge in one direction at fast speeds
-
     call RamMovement
     jr .end
 
 .projectileBarrage
-    ; c = direction, e = int part of updateFrameCounter, hl = curr frame address
+    ; e = int part of updateFrameCounter, hl = update frame counter address
     ld a, e
-    dec hl
-    ld [hl], a ; update int part of updateFrameCounter
-
     cp a, ENEMY_BOSS_BARRAGE_SHOOT_FRAME
     jr nz, .end
 
     pop de ; pop DE = enemy address
     push de ; push de = enemy address
-    push hl ; push hl = curr frame address
+    push hl ; push hl = update frame counter address
     call EnemyShootDir
-    pop hl ; pop hl = curr frame address
+    pop hl ; pop hl = update frame counter address
 
     ld a, ENEMY_BOSS_BARRAGE_SHOOT_FRAME_RESET
-    ;dec hl
     ld [hl], a ; reset updateFrameCounter with the frame resetter amt
+
+    ; add to the state, if the state is more than x amt, change
+    ld a, [wBossStateTracker]
+    inc a
+    cp a, ENEMY_BOSS_RESET_BERSERK
+    jr nz, .endProjectileBarrage
+    xor a
+
+    ; TODO, REMEMBER TO RESET THE ANIMATION AND UPDATE FRAME COUNTER AMT
+
+.endProjectileBarrage
+    ld [wBossStateTracker], a
 
 .end
     pop hl ; POP hl = enemy address
@@ -263,11 +278,16 @@ RamMovement:
     pop bc ; POP BC = velocity
 
 .stopRam ; reset ram, make it charge again
-   pop hl ; POP hl = enemy starting address
-   ld de, Character_UpdateFrameCounter + 1
-   add hl, de
-   ld a, ENEMY_BOSS_RESET_RAM_FRAME
-   ld [hl], a ; reset int part of update frame counter
+    pop hl ; POP hl = enemy starting address
+    ld de, Character_UpdateFrameCounter + 1
+    add hl, de
+    ld a, ENEMY_BOSS_RESET_RAM_FRAME
+    ld [hl], a ; reset int part of update frame counter
+
+    ; add to the state, if the state is more than x amt, change
+    ld a, [wBossStateTracker]
+    inc a
+    ld [wBossStateTracker], a
 
    ret
 
@@ -356,6 +376,11 @@ FindPlayerDirectionFromBossAndMove:
 
 .finishFindingPlayer
     inc hl
+    
+    ld e, a
+    ld a, [hl]
+    and a, DIR_BIT_MASK_RMV
+    or a, e
     ld [hl], a ; init new direction
 
 .end
