@@ -699,17 +699,14 @@ BossEnemyAnimation::
     db OAMF_PAL0 | OAMF_XFLIP
     db $B6 ; bottom right
     db OAMF_PAL0 | OAMF_XFLIP
-
     db $B0 ; top middle right
     db OAMF_PAL0 | OAMF_XFLIP
     db $B2 ; bottom middle right
     db OAMF_PAL0 | OAMF_XFLIP
-
     db $AC ; top middle left
     db OAMF_PAL0 | OAMF_XFLIP
     db $AE ; bottom middle left
     db OAMF_PAL0 | OAMF_XFLIP
-
     db $A8 ; top left
     db OAMF_PAL0 | OAMF_XFLIP
     db $AA ; bottom left
@@ -739,17 +736,14 @@ BossEnemyAnimation::
     db OAMF_PAL0 | OAMF_YFLIP
     db $B8 ; top left
     db OAMF_PAL0 | OAMF_YFLIP
-
     db $BE ; middle bottom left
     db OAMF_PAL0 | OAMF_YFLIP
     db $BC ; middle top left
     db OAMF_PAL0 | OAMF_YFLIP
-
     db $C2 ; middle bottom right
     db OAMF_PAL0 | OAMF_YFLIP
     db $C0 ; middle top right
     db OAMF_PAL0 | OAMF_YFLIP
-
     db $C6 ; bottom right
     db OAMF_PAL0 | OAMF_YFLIP
     db $C4 ; top right
@@ -792,4 +786,156 @@ BossEnemyAnimation::
     db OAMF_PAL0 | OAMF_XFLIP | OAMF_YFLIP
     db $B8 ; top left
     db OAMF_PAL0 | OAMF_XFLIP | OAMF_YFLIP
+
+.chargeAnimationUp::
+    ; first frame
+    db $B6 ; bottom right
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_XFLIP
+    db $B4 ; top right
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_XFLIP
+    db $B2 ; bottom middle right
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_XFLIP
+    db $B0 ; top middle right
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_XFLIP
+    db $AE ; bottom middle left
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_XFLIP
+    db $AC ; top middle left
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_XFLIP
+    db $AA ; bottom left
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_XFLIP
+    db $A8 ; top left
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_XFLIP
+
+    ; second frame
+    db $D2 ; bottom left
+    db OAMF_PAL0 | OAMF_YFLIP
+    db $D0 ; top left
+    db OAMF_PAL0 | OAMF_YFLIP
+    db $D6 ; bottom middle left
+    db OAMF_PAL0 | OAMF_YFLIP
+    db $D4 ; top middle left
+    db OAMF_PAL0 | OAMF_YFLIP
+    db $DA ; bottom middle right
+    db OAMF_PAL0 | OAMF_YFLIP
+    db $D8 ; top middle right
+    db OAMF_PAL0 | OAMF_YFLIP
+    db $DE ; bottom right
+    db OAMF_PAL0 | OAMF_YFLIP
+    db $DC ; top right
+    db OAMF_PAL0 | OAMF_YFLIP
+
+.chargeAnimationDown::
+    ; first frame
+    db $B4 ; top right
+    db OAMF_PAL0 | OAMF_XFLIP
+    db $B6 ; bottom right
+    db OAMF_PAL0 | OAMF_XFLIP
+    db $B0 ; top middle right
+    db OAMF_PAL0 | OAMF_XFLIP
+    db $B2 ; bottom middle right
+    db OAMF_PAL0 | OAMF_XFLIP
+    db $AC ; top middle left
+    db OAMF_PAL0 | OAMF_XFLIP
+    db $AE ; bottom middle left
+    db OAMF_PAL0 | OAMF_XFLIP
+    db $A8 ; top left
+    db OAMF_PAL0 | OAMF_XFLIP
+    db $AA ; bottom left
+    db OAMF_PAL0 | OAMF_XFLIP
+
+    ; second frame
+    db $D0 ; top left
+    db OAMF_PAL0 
+    db $D2 ; bottom left
+    db OAMF_PAL0
+    db $D4 ; top middle left
+    db OAMF_PAL0
+    db $D6 ; bottom middle left
+    db OAMF_PAL0
+    db $D8 ; top middle right
+    db OAMF_PAL0
+    db $DA ; bottom middle right
+    db OAMF_PAL0
+    db $DC ; top right
+    db OAMF_PAL0
+    db $DE ; bottom right
+    db OAMF_PAL0
+
+.chargeAnimationRight::
+    ; first frame
+    db $BA ; bottom left
+    db OAMF_PAL0 | OAMF_YFLIP
+    db $B8 ; top left
+    db OAMF_PAL0 | OAMF_YFLIP
+    db $BE ; middle bottom left
+    db OAMF_PAL0 | OAMF_YFLIP
+    db $BC ; middle top left
+    db OAMF_PAL0 | OAMF_YFLIP
+    db $C2 ; middle bottom right
+    db OAMF_PAL0 | OAMF_YFLIP
+    db $C0 ; middle top right
+    db OAMF_PAL0 | OAMF_YFLIP
+    db $C6 ; bottom right
+    db OAMF_PAL0 | OAMF_YFLIP
+    db $C4 ; top right
+    db OAMF_PAL0 | OAMF_YFLIP
+    
+    ; SECOND FRAME
+    db $E0 ; top left
+    db OAMF_PAL0
+    db $E2 ; bottom left
+    db OAMF_PAL0
+    db $E4 ; middle top left
+    db OAMF_PAL0
+    db $E6 ; middle bottom left
+    db OAMF_PAL0
+    db $E8 ; middle top right
+    db OAMF_PAL0
+    db $EA ; middle bottom right
+    db OAMF_PAL0
+    db $EC ; top right
+    db OAMF_PAL0
+    db $EE ; bottom right
+    db OAMF_PAL0
+
+.chargeAnimationLeft::
+    ; SECOND FRAME
+    db $C6 ; bottom right
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_YFLIP
+    db $C4 ; top right
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_YFLIP
+    db $C2 ; middle bottom right
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_YFLIP
+    db $C0 ; middle top right
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_YFLIP
+    db $BE ; middle bottom left
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_YFLIP
+    db $BC ; middle top left
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_YFLIP
+    db $BA ; bottom left
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_YFLIP
+    db $B8 ; top left
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_YFLIP
+
+    ; SECOND FRAME
+    db $EC ; top right
+    db OAMF_PAL0 | OAMF_XFLIP
+    db $EE ; bottom right
+    db OAMF_PAL0 | OAMF_XFLIP
+    db $E8 ; middle top right
+    db OAMF_PAL0 | OAMF_XFLIP
+    db $EA ; middle bottom right
+    db OAMF_PAL0 | OAMF_XFLIP
+    db $E4 ; middle top left
+    db OAMF_PAL0 | OAMF_XFLIP
+    db $E6 ; middle bottom left
+    db OAMF_PAL0 | OAMF_XFLIP
+    db $E0 ; top left
+    db OAMF_PAL0 | OAMF_XFLIP
+    db $E2 ; bottom left
+    db OAMF_PAL0 | OAMF_XFLIP
+
+
+
+
 
