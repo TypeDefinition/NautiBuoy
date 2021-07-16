@@ -437,36 +437,52 @@ UpdateEnemyBossShadowOAM:
 
     ; TODO FIX THIS HERE
     ld a, [hli] ; get health
-    inc hl
+    cp a, ENEMY_BOSS_HEALTH_BERSERK
+
+    inc hl ; inc does not set the carry flag
     inc hl
     inc hl
     ld a, [hli] ; get updateframecounter int part
+    ld b, a
+    jr nc, .defaultSprite
 
+    ld a, [wBossStateTracker]
+    cp a, ENEMY_BOSS_STATES_PROJECTILE_BARRAGE
+    jr nc, .projectileBarrageSprite
+    
+.chargingSprite
+    ; b = updateFrameCounter int part
+    ld a, b
+    ld bc, BossEnemyAnimation.chargeAnimationUp
+    cp a, ENEMY_BOSS_START_RAM_FRAME
+    jr c, .spriteDir
+
+.ramSprite
+    ld bc, BossEnemyAnimation.ramUp
+    jr .spriteDir
+
+.projectileBarrageSprite
+    ld bc, BossEnemyAnimation.ramUp
+    jr .spriteDir
+
+.defaultSprite
+    ld bc, BossEnemyAnimation.projectileBarrageUp
+
+.spriteDir
     pop af ; pop af = direction
     and a, DIR_BIT_MASK
 
-    ASSERT DIR_UP == 0
-    and a, a ; cp a, 0
-    jr z, .upDir
-    ASSERT DIR_DOWN == 1
-    dec a
-    jr z, .downDir
-    ASSERT DIR_LEFT == 2
-    dec a
-    jr z, .leftDir
-    ASSERT DIR_RIGHT > 2
+    sla a
+    sla a
+    sla a ; x8
+    add a, a ; x16
+    add a, a ; x 32
 
-.rightDir
-    ld bc, BossEnemyAnimation.ramRight
-    jr .getAnimation
-.upDir
-    ld bc, BossEnemyAnimation.ramUp
-    jr .getAnimation
-.downDir
-    ld bc, BossEnemyAnimation.ramDown
-    jr .getAnimation
-.leftDir
-    ld bc, BossEnemyAnimation.ramLeft
+    add a, c
+    ld c, a
+    ld a, b
+    adc a, 0 ; add direction offset to animation address: bc + a
+    ld b, a 
 
 .getAnimation
     ; hl = curr frame address
@@ -482,8 +498,11 @@ UpdateEnemyBossShadowOAM:
     adc a, 0 ; add offset to animation address: bc + a
     ld b, a
 
+
+    ;x 32?
+
 .startUpdateOAM
-    ; hl = shadow OAM, d = pos y, e = pos x
+    ; hl = shadow OAM, d = pos y, e = pos x, bc = animation address
     ld a, [wCurrentShadowOAMPtr]
     ld l, a
     ld h, HIGH(wShadowOAM)

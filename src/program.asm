@@ -81,7 +81,7 @@ RunProgram:
     ld a, %11100100
     ld [rBGP], a ; Set Background Palette
     ld [rOBP0], a ; Set Object Palette 0
-    ld a, %01001011
+    ld a, %00011011
     ld [rOBP1], a ; Set Object Palette 1
 
     ; Set Selected Stage
