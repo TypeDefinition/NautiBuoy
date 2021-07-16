@@ -522,7 +522,6 @@ BulletSpriteCollisionCheck:
     push af ; PUSH AF = bullet flags
 
     ld d, BULLET_COLLIDER_SIZE
-    ld e, ENEMY_BULLET_COLLIDER_SIZE
 
     call CheckEnemyCollisionLoop
     and a

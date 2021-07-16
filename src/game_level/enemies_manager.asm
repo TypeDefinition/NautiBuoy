@@ -454,6 +454,8 @@ EnemyMoveBasedOnDir::
         - af
         - de
         - hl
+    Return:
+        - hl: flicker effect int address
 */
 UpdateEnemyEffects::
     ld de, Character_FlickerEffect
@@ -466,11 +468,11 @@ UpdateEnemyEffects::
     ld a, [hl] ; get fractional portion
     add a, ENEMY_FLICKER_UPDATE_SPEED
     ld [hl], a ; update fractional portion
+    dec hl
     jr nc, .end
 
     dec d
     ld a, d
-    dec hl
     ld [hl], a ; update new interger portion value
 
 .end
@@ -579,7 +581,6 @@ UpdateEnemySpriteOAM::
     b - entity pos Y
     c - entity pos X
     d - entity collider size
-    e - enemy collider size
     return value:
         a  : if more than 0, means collided
         hl : enemy collided address
@@ -599,7 +600,15 @@ CheckEnemyCollisionLoop::
 
     inc hl 
     inc hl
+    
+    ld e, ENEMY_BULLET_COLLIDER_SIZE
+    and a, BIT_MASK_TYPE ; check type
+    cp a, TYPE_ENEMY_BOSS
+    jr nz, .checkCollision
 
+    ld e, BOSS_ENEMY_COLLIDER_SIZE
+
+.checkCollision
     push de ; PUSH DE = collider size for enemy and other entity
 
     ld a, [hli] ; get enemy pos Y

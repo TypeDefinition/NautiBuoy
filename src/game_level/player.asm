@@ -366,8 +366,7 @@ PlayerSpriteCollisionCheck:
     ld a, [wPlayer_PosX]
     ld c, a
 
-    ld d, PLAYER_COLLIDER_SIZE
-    ld e, ENEMY_PLAYER_COLLIDER_SIZE
+    ld d, PLAYER_ENEMY_COLLIDER_SIZE
  
     call CheckEnemyCollisionLoop
     and a, a

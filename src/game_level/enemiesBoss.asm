@@ -22,6 +22,7 @@ UpdateEnemyBoss::
     ld de, Character_Direction
     add hl, de
     ld a, [hli] ; get direction
+    and a, DIR_BIT_MASK
     ld c, a
 
     ld a, [hli] ; get health
@@ -70,7 +71,7 @@ UpdateEnemyBoss::
     pop de ; pop de = enemy address
     push de ; push de = enemy address
     push hl ; push hl = int part of updateFrameCounter
-    call EnemyShoot
+    ;call EnemyShoot
     pop hl ; pop hl = int part of updateFrameCounter
     xor a
 
@@ -402,7 +403,13 @@ FindPlayerDirectionFromBossAndMove:
         - hl, enemy address
 */
 UpdateEnemyBossShadowOAM:
-    ;push hl ; PUSH HL = enemy address
+    push hl ; PUSH HL = enemy address
+
+    call UpdateEnemyEffects
+    ld a, [hl] ; get flicker effect int
+    and a, FLICKER_BITMASK
+    pop hl ; POP HL = enemy address
+    ret nz
 
     inc hl
     inc hl
@@ -450,16 +457,16 @@ UpdateEnemyBossShadowOAM:
     ASSERT DIR_RIGHT > 2
 
 .rightDir
-    ld bc, BossEnemyAnimation.rightAnimation
+    ld bc, BossEnemyAnimation.ramRight
     jr .getAnimation
 .upDir
-    ld bc, BossEnemyAnimation.upAnimation
+    ld bc, BossEnemyAnimation.ramUp
     jr .getAnimation
 .downDir
-    ld bc, BossEnemyAnimation.downAnimation
+    ld bc, BossEnemyAnimation.ramDown
     jr .getAnimation
 .leftDir
-    ld bc, BossEnemyAnimation.leftAnimation
+    ld bc, BossEnemyAnimation.ramLeft
 
 .getAnimation
     ; hl = curr frame address
