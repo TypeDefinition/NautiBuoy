@@ -681,6 +681,11 @@ HitEnemy::
     push hl ; PUSH hl = enemy address
 
 .hitEnemy
+    ; b = deduct health
+    ld a, [hl] ; get flags
+    and a, BIT_MASK_TYPE
+    ld c, a
+
     ld de, Character_HP
     add hl, de
     ld a, [hl]
@@ -692,6 +697,11 @@ HitEnemy::
     jr z, .dead
     cp a, 127
     jr nc, .dead ; value underflowed, go to dead
+
+    ld b, a ; b = health
+    ld a, c
+    cp a, TYPE_ENEMY_BOSS
+    call z, BossCheckHealth
 
 .flickerEffect ; not dead, set damage flicker effect
     pop hl ; POP HL = enemy address

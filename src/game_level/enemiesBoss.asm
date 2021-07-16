@@ -25,9 +25,7 @@ UpdateEnemyBoss::
     and a, DIR_BIT_MASK
     ld c, a
 
-    ld a, [hli] ; get health
-    ld b, a ; b = health
-
+    inc hl
     inc hl
     inc hl
 
@@ -38,7 +36,7 @@ UpdateEnemyBoss::
     ; need update animation and updateframecounter int portion
     ld a, [hli] ; get int portion of updateFrameCounter
     ld e, a
-    jr nc, .checkHealth
+    jr nc, .checkState
 
     inc e
     ld a, [hli] ; get curr frame
@@ -52,15 +50,15 @@ UpdateEnemyBoss::
     ld d, 0 ; reset curr frame
 
 .updateCurrFrame
-    ; d = curr frame, e = int part of updateFrameCounter, b = health, c = direction
+    ; d = curr frame, e = int part of updateFrameCounter, c = direction
     ld a, d
     dec hl
     ld [hl], a ; update curr frame
 
-.checkHealth
-    ld a, b ; get health
-    cp a, ENEMY_BOSS_HEALTH_BERSERK
-    jr c, .berserkBehavior ; if less than a certain amount, go berserk mode
+.checkState
+    ld a, [wBossStateTracker]
+    and a, a
+    jr nz, .berserkBehavior ; if less than a certain amount, go berserk mode
 
 .defaultBehavior ; Just follow player and shoot
     ; c = direction, e = int part of updateFrameCounter, hl = curr frame address
@@ -90,16 +88,13 @@ UpdateEnemyBoss::
     jr .end
 
 .berserkBehavior
-    ; c = direction, e = int part of updateFrameCounter, hl = curr frame address
+    ; a = curr state, c = direction, e = int part of updateFrameCounter, hl = curr frame address
+    cp a, ENEMY_BOSS_STATES_PROJECTILE_BARRAGE
     ld a, e
     dec hl
     ld [hl], a ; update int part of updateFrameCounter
-
-    ; check current state
-    ld a, [wBossStateTracker]
-    cp a, ENEMY_BOSS_STATES_PROJECTILE_BARRAGE
     jr nc, .projectileBarrage
-
+    
 .checkRam
     ; c = direction, e = int part of updateFrameCounter, hl = update frame counter address
     pop hl ; POP hl = enemy address
@@ -143,16 +138,14 @@ UpdateEnemyBoss::
     inc a
     cp a, ENEMY_BOSS_RESET_BERSERK
     jr nz, .endProjectileBarrage
-    xor a
-    ld e, a
+    ld e, 0
+    ld a, ENEMY_BOSS_STATES_CHARGE
 
 .endProjectileBarrage
-    ; e = updateFrameCounter amt, hl = update frame counter address
+    ; a = state, e = updateFrameCounter amt, hl = update frame counter address
     ld [wBossStateTracker], a
     ld a, e
     ld [hl], a ; reset updateFrameCounter with the frame resetter amt
-
-    ; TODO, REMEMBER TO RESET THE ANIMATION 
 
 .end
     pop hl ; POP hl = enemy address
@@ -435,18 +428,17 @@ UpdateEnemyBossShadowOAM:
     ld a, [hli] ; check direction of enemy and init sprite data
     push af ; PUSH AF = direction
 
-    ; TODO FIX THIS HERE
-    ld a, [hli] ; get health
-    cp a, ENEMY_BOSS_HEALTH_BERSERK
-
+    inc hl
+    inc hl 
+    inc hl
     inc hl ; inc does not set the carry flag
-    inc hl
-    inc hl
     ld a, [hli] ; get updateframecounter int part
     ld b, a
-    jr nc, .defaultSprite
 
     ld a, [wBossStateTracker]
+    and a, a
+    jr z, .defaultSprite
+
     cp a, ENEMY_BOSS_STATES_PROJECTILE_BARRAGE
     jr nc, .projectileBarrageSprite
     
@@ -462,11 +454,11 @@ UpdateEnemyBossShadowOAM:
     jr .spriteDir
 
 .projectileBarrageSprite
-    ld bc, BossEnemyAnimation.ramUp
+    ld bc, BossEnemyAnimation.projectileBarrageUp
     jr .spriteDir
 
 .defaultSprite
-    ld bc, BossEnemyAnimation.projectileBarrageUp
+    ld bc, BossEnemyAnimation.upAnimation
 
 .spriteDir
     pop af ; pop af = direction
@@ -497,9 +489,6 @@ UpdateEnemyBossShadowOAM:
     ld a, b
     adc a, 0 ; add offset to animation address: bc + a
     ld b, a
-
-
-    ;x 32?
 
 .startUpdateOAM
     ; hl = shadow OAM, d = pos y, e = pos x, bc = animation address
@@ -641,4 +630,26 @@ UpdateEnemyBossShadowOAM:
     ld [wCurrentShadowOAMPtr], a
 
 .end
+    ret
+
+
+/*  Boss enemy check health to see if go to berserk mode 
+    Parameters:
+        - b: health   
+        - hl: health address
+*/
+BossCheckHealth::
+    ld a, b
+    cp a, ENEMY_BOSS_HEALTH_BERSERK
+    ret nc
+    
+    ld a, ENEMY_BOSS_STATES_CHARGE
+    ld [wBossStateTracker], a
+
+    inc hl
+    inc hl
+    inc hl
+    xor a
+    ld [hl], a ; reset update frame counter
+
     ret
