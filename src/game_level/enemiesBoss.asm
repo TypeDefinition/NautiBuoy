@@ -98,7 +98,6 @@ UpdateEnemyBoss::
     ld a, [wBossStateTracker]
     cp a, ENEMY_BOSS_STATES_PROJECTILE_BARRAGE
     jr nc, .projectileBarrage
-    ;jr .projectileBarrage
 
 .checkRam
     ; c = direction, e = int part of updateFrameCounter, hl = update frame counter address
@@ -136,20 +135,23 @@ UpdateEnemyBoss::
     call EnemyShootDir
     pop hl ; pop hl = update frame counter address
 
-    ld a, ENEMY_BOSS_BARRAGE_SHOOT_FRAME_RESET
-    ld [hl], a ; reset updateFrameCounter with the frame resetter amt
-
+    ld e, ENEMY_BOSS_BARRAGE_SHOOT_FRAME_RESET
+    
     ; add to the state, if the state is more than x amt, change
     ld a, [wBossStateTracker]
     inc a
     cp a, ENEMY_BOSS_RESET_BERSERK
     jr nz, .endProjectileBarrage
     xor a
-
-    ; TODO, REMEMBER TO RESET THE ANIMATION AND UPDATE FRAME COUNTER AMT
+    ld e, a
 
 .endProjectileBarrage
+    ; e = updateFrameCounter amt, hl = update frame counter address
     ld [wBossStateTracker], a
+    ld a, e
+    ld [hl], a ; reset updateFrameCounter with the frame resetter amt
+
+    ; TODO, REMEMBER TO RESET THE ANIMATION 
 
 .end
     pop hl ; POP hl = enemy address
@@ -278,16 +280,22 @@ RamMovement:
     pop bc ; POP BC = velocity
 
 .stopRam ; reset ram, make it charge again
+    ld a, [wBossStateTracker]
+    inc a
+    ld [wBossStateTracker], a ; add to the states tracker
+
+    cp a, ENEMY_BOSS_STATES_PROJECTILE_BARRAGE
+    ld a, ENEMY_BOSS_RESET_RAM_FRAME
+    jr nz, .updateFrameCounter
+
+    xor a
+
+.updateFrameCounter
+    ; a = updateFrameCounter amt
     pop hl ; POP hl = enemy starting address
     ld de, Character_UpdateFrameCounter + 1
     add hl, de
-    ld a, ENEMY_BOSS_RESET_RAM_FRAME
     ld [hl], a ; reset int part of update frame counter
-
-    ; add to the state, if the state is more than x amt, change
-    ld a, [wBossStateTracker]
-    inc a
-    ld [wBossStateTracker], a
 
    ret
 
@@ -376,7 +384,7 @@ FindPlayerDirectionFromBossAndMove:
 
 .finishFindingPlayer
     inc hl
-    
+
     ld e, a
     ld a, [hl]
     and a, DIR_BIT_MASK_RMV
@@ -455,7 +463,6 @@ UpdateEnemyBossShadowOAM:
 
 .getAnimation
     ; hl = curr frame address
-
     ld a, [hl] ; get curr frame
 
     sla a 
@@ -467,7 +474,6 @@ UpdateEnemyBossShadowOAM:
     ld a, b
     adc a, 0 ; add offset to animation address: bc + a
     ld b, a
-
 
 .startUpdateOAM
     ; hl = shadow OAM, d = pos y, e = pos x
