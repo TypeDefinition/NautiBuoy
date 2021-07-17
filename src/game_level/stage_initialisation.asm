@@ -123,6 +123,7 @@ InitStage1::
     ; TEMP: Temporary code.
     set_romx_bank BANK(Sprites)
     call InitialisePlayer
+    call UpdatePlayerShadowOAM
 
     xor a
     ld [wBossStateTracker], a
