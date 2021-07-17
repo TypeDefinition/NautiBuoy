@@ -236,7 +236,7 @@ EnemyShootDir::
 EnemyShoot::
     ; hl - address of bullet, de - address of enemy
     ld hl, w_BulletObjectPlayerEnd
-    ld b, ENEMY_TYPEA_BULLET_NUM
+    ld b, ENEMY_BULLET_NUM
     call GetInactiveBullet ; get bullet address, store in hl
 
     ld a, [hl] ; check if bullet is active
