@@ -216,6 +216,13 @@ UpdateBulletShadowOAM:
     ld d, a
     ld a, [hli] ; bullet y pos
     sub a, d ; decrease by screen offset
+    jr c, .end
+
+.checkWithinYAxis
+    cp a, VIEWPORT_SIZE_Y + SCREEN_UPPER_OFFSET_Y * 2 ; check if bullet pos is within y screen pos
+    jr nc, .end
+
+.getXAxis
     add a, 8 ; bullet sprite y offset = 8
     ld d, a
     
@@ -225,9 +232,16 @@ UpdateBulletShadowOAM:
     ld e, a
     ld a, [hl] ; bullet x pos
     sub a, e ; decrease by screen offset
+    jr c, .end
+
+.checkWithinXAxis
+    cp a, VIEWPORT_SIZE_X + SCREEN_LEFT_OFFSET_X * 2
+    jr nc, .end
+
     add a, 4 ; bullet sprite y offset = 4
     ld e, a
 
+.updateOAM
     ; get the current address of shadow OAM to hl
     ld a, [wCurrentShadowOAMPtr]
     ld l, a
@@ -249,6 +263,8 @@ UpdateBulletShadowOAM:
     ; update the current address from hl to the wCurrentShadowOAMPtr
     ld a, l
     ld [wCurrentShadowOAMPtr], a
+
+.end
     ret
 
 ; Update Bullet Shadow OAM
@@ -283,6 +299,13 @@ UpdateBigBulletShadowOAM:
     ld d, a
     ld a, [hli] ; bullet y pos
     sub a, d ; decrease by screen offset
+    jr c, .end
+
+.checkWithinYAxis
+    cp a, VIEWPORT_SIZE_Y + SCREEN_UPPER_OFFSET_Y * 2 ; check if bullet pos is within y screen pos
+    jr nc, .end
+
+.getXAxis
     add a, 8 ; bullet sprite y offset = 8
     ld d, a
     
@@ -292,6 +315,12 @@ UpdateBigBulletShadowOAM:
     ld e, a
     ld a, [hl] ; bullet x pos
     sub a, e ; decrease by screen offset
+    jr c, .end
+
+.checkWithinXAxis
+    cp a, VIEWPORT_SIZE_X + SCREEN_LEFT_OFFSET_X * 2
+    jr nc, .end
+
     ld e, a
 
     ; get the current address of shadow OAM to hl
@@ -331,6 +360,8 @@ UpdateBigBulletShadowOAM:
     ; update the current address from hl to the wCurrentShadowOAMPtr
     ld a, l
     ld [wCurrentShadowOAMPtr], a
+
+.end
     ret
 
 /* Global Functions */

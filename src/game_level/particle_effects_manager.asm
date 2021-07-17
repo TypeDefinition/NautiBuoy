@@ -228,6 +228,13 @@ UpdateParticleEffectsShadowOAM::
     ld d, a
     ld a, [hli] ; pos y
     sub a, d ; decrease by screen offset
+    jr c, .end
+
+.checkWithinYAxis
+    cp a, VIEWPORT_SIZE_Y + SCREEN_UPPER_OFFSET_Y * 2 ; check if bullet pos is within y screen pos
+    jr nc, .end
+
+.getXAxis
     add a, 8 ; sprite y offset = 8
     ld d, a
 
@@ -235,6 +242,13 @@ UpdateParticleEffectsShadowOAM::
     ld e, a
     ld a, [hl] ; pos x
     sub a, e ; decrease by screen offset
+    jr c, .end
+
+.checkWithinXAxis
+    cp a, VIEWPORT_SIZE_X + SCREEN_LEFT_OFFSET_X * 2
+    jr nc, .end
+
+
     ld e, a
 
 .initShadowOAM
@@ -275,4 +289,5 @@ UpdateParticleEffectsShadowOAM::
     ld a, l
     ld [wCurrentShadowOAMPtr], a
 
+.end
     ret

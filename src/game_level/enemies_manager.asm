@@ -835,7 +835,7 @@ CheckEnemyInScreen::
     jr c, .endCheck
 
 .checkWithinYAxis
-    cp a, VIEWPORT_SIZE_Y + SCREEN_UPPER_OFFSET_Y * 2 ; check if enemy pos is within y screen pos
+    cp a, VIEWPORT_SIZE_Y + SCREEN_UPPER_OFFSET_Y * 1 ; check if enemy pos is within y screen pos
     jr nc, .endCheck
 
 .checkXOffset
