@@ -701,6 +701,9 @@ HitEnemy::
     ld b, a ; b = health
     ld a, c
     cp a, TYPE_ENEMY_BOSS
+
+    pop hl ; POP HL = enemy address
+    push hl ; PUSH HL = enemy address
     call z, BossCheckHealth
 
 .flickerEffect ; not dead, set damage flicker effect

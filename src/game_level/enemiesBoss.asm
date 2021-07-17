@@ -69,7 +69,7 @@ UpdateEnemyBoss::
     pop de ; pop de = enemy address
     push de ; push de = enemy address
     push hl ; push hl = int part of updateFrameCounter
-    ;call EnemyShoot
+    call EnemyShoot
     pop hl ; pop hl = int part of updateFrameCounter
     xor a
 
@@ -84,7 +84,7 @@ UpdateEnemyBoss::
 
     pop hl
     push hl
-    ;call EnemyMoveBasedOnDir
+    call EnemyMoveBasedOnDir
     jr .end
 
 .berserkBehavior
@@ -458,6 +458,14 @@ UpdateEnemyBossShadowOAM:
     jr .spriteDir
 
 .defaultSprite
+    ; b = updateFrameCounter int part
+    ld a, b
+    cp a, ENEMY_BOSS_DEFAULT_SHOOT_ANIM
+    jr c, .default
+    ld bc, BossEnemyAnimation.upAnimationDefaultFire
+    jr .spriteDir
+
+.default
     ld bc, BossEnemyAnimation.upAnimation
 
 .spriteDir
@@ -636,18 +644,34 @@ UpdateEnemyBossShadowOAM:
 /*  Boss enemy check health to see if go to berserk mode 
     Parameters:
         - b: health   
-        - hl: health address
+        - hl: enemy address
 */
 BossCheckHealth::
     ld a, b
     cp a, ENEMY_BOSS_HEALTH_BERSERK
     ret nc
-    
+
     ld a, ENEMY_BOSS_STATES_CHARGE
     ld [wBossStateTracker], a
 
     inc hl
     inc hl
+    ld a, [hl] ; get y pos
+    and a, %11111000 ; divide by 8
+    ld [hli], a
+
+    inc hl
+    inc hl
+
+    ld a, [hl] ; get x pos
+    and a, %11111000 ; divide by 8
+    ld [hli], a
+
+    inc hl ; skip pos x fraction
+    inc hl ; skip dir
+    inc hl ; skip hp
+    inc hl ; skip vel
+    inc hl ; skip vel
     inc hl
     xor a
     ld [hl], a ; reset update frame counter
