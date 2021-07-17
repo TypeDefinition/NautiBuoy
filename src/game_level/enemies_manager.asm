@@ -103,10 +103,6 @@ InitEnemiesAndPlaceOnMap::
     jr nz, .loop
 .endloop
     call UpdateEnemyCounterUI
-
-    xor a
-    ld [wBossStateTracker], a
-
     ret
 
 
