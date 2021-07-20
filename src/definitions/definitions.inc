@@ -246,6 +246,11 @@ DEF PLAYER_INCREASED_VELOCITY EQU VELOCITY_NORMAL
 DEF BULLET_VELOCITY EQU $02 ; VELOCITY_FAST
 DEF ENEMY_BOSS_RAM_SPEED EQU $02 ; VELOCITY_FAST
 
+/*************************************************Map Size*************************************************/
+DEF LEVEL0_MAP_SIZE_Y EQU $00B8
+DEF LEVEL0_MAP_SIZE_X EQU $00D0
+
+
 INCLUDE "./src/definitions/tile_definitions.inc"
 
 ENDC ; DEFINITIONS_INC

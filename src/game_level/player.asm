@@ -13,22 +13,28 @@ wPlayerFireRate:: ds 2 ; first half is fraction, second half is int
 SECTION "Player Camera Data", WRAM0
     dstruct PlayerCamera, wPlayerCamera
 
-/* Any logic/behavior/function related to player here */
+/* Any logic/behavior/function related to player here 
+    parameters:
+        - hl, player data address
+*/
 SECTION "Player", ROM0
 InitialisePlayer::
     push af
 
-    ; TODO: Make const variables for the initial HP, posX and posY, and velocity
     ld a, FLAG_ACTIVE | FLAG_PLAYER
     ld [wPlayer_Flags], a
+    
     ; Set Position
-    ld a, 128
+    ld a, [hli] ; get y pos
     ld [wPlayer_PosYInterpolateTarget], a
-    ld [wPlayer_PosXInterpolateTarget], a
     ld [wPlayer_PosY], a
-    ld [wPlayer_PosX], a
     ld [wPlayer_SpawnPosition], a
+    
+    ld a, [hli] ; get x pos
+    ld [wPlayer_PosX], a
+    ld [wPlayer_PosXInterpolateTarget], a
     ld [wPlayer_SpawnPosition + 1], a
+    
     xor a
     ld [wPlayer_PosY + 1], a
     ld [wPlayer_PosX + 1], a
@@ -36,7 +42,7 @@ InitialisePlayer::
     ld a, DIR_UP
     ld [wPlayer_Direction], a
     ; Set HP
-    ld a, PLAYER_HEALTH
+    ld a, [hl] ; get hp
     ld [wPlayer_HP], a
     ; Set Velocity
     ld hl, PLAYER_DEFAULT_VELOCITY

@@ -1,5 +1,6 @@
 INCLUDE "./src/include/hardware.inc"
 INCLUDE "./src/include/util.inc"
+INCLUDE "./src/definitions/definitions.inc"
 
 SECTION "Stage Initialisation WRAM", WRAM0
 wSelectedStage::
@@ -77,28 +78,28 @@ InitStage0::
     mem_copy wGameLevelTileMap, _SCRN0, wGameLevelTileMap.end-wGameLevelTileMap
     
     ; Set Map Size
-    ld a, HIGH($0100)
+    ld a, HIGH(LEVEL0_MAP_SIZE_Y)
     ld [wMapSizeY], a
-    ld a, LOW($0100)
+    ld a, LOW(LEVEL0_MAP_SIZE_Y)
     ld [wMapSizeY+1], a
 
-    ld a, HIGH($0100)
+    ld a, HIGH(LEVEL0_MAP_SIZE_X)
     ld [wMapSizeX], a
-    ld a, LOW($0100)
+    ld a, LOW(LEVEL0_MAP_SIZE_X)
     ld [wMapSizeX+1], a
 
-    ; Initialise Player
-    ; TEMP: Temporary code.
-    set_romx_bank BANK(Sprites)
-    call InitialisePlayer
-    call UpdatePlayerShadowOAM
-    
-    set_romx_bank BANK(Stage0EnemyData)
+    set_romx_bank BANK(Stage0PlayerData)
     ld bc, Stage0EnemyData
     call InitEnemiesAndPlaceOnMap
     ld bc, Level0PowerUpData
     call InitPowerupsAndPlaceOnMap
     call InitParticleEffects
+
+    ; Initialise Player
+    ld hl, Stage0PlayerData
+    call InitialisePlayer
+    set_romx_bank BANK(Sprites)
+    call UpdatePlayerShadowOAM
 
     ret
 
