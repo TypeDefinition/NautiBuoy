@@ -233,6 +233,7 @@ DEF BIT_SHOOT_LEFT_CMP EQU 6
 DEF BIT_SHOOT_RIGHT_CMP EQU 7
 
 /*************************************************Velocity*************************************************/
+DEF VELOCITY_NIL EQU $0000
 DEF VELOCITY_VSLOW EQU $0040
 DEF VELOCITY_SLOW EQU $0080
 DEF VELOCITY_SLIGHTLY_SLOW EQU $00C0
