@@ -198,27 +198,37 @@ Level0PowerUpData::
 .endPowerUp0
 
 Level1PowerUpData::
-    db 4 ; number of powerups in level
+    db 6 ; number of powerups in level
 .powerUpOne
     db TYPE_DAMAGE_POWERUP | FLAG_ACTIVE
     db 20 * 8 ; y 
     db 8 * 8 ; x
     db DAMAGE_POWERUP_SPRITE_ID
-.powerUpTwo
+.powerUpTwo ; at the very top
+    db TYPE_TIME_POWERUP | FLAG_ACTIVE
+    db 3 * 8 ; y 
+    db 10 * 8 ; x
+    db TIME_POWERUP_SPRITE_ID
+.powerUpThree ; in the plants
+    db TYPE_HEALTH_POWERUP | FLAG_ACTIVE
+    db 9 * 8 ; y 
+    db 4 * 8 ; x
+    db HEART_POWERUP_SPRITE_ID
+.powerUpFour ; next to the turtle in the middle
     db TYPE_DAMAGE_POWERUP | FLAG_ACTIVE
-    db 15 * 8 ; y 
-    db 9 * 8 ; x
+    db 14 * 8 ; y 
+    db 21 * 8 ; x
     db DAMAGE_POWERUP_SPRITE_ID
-.powerUpThree
-    db TYPE_DAMAGE_POWERUP | FLAG_ACTIVE
-    db 15 * 8 ; y 
-    db 9 * 8 ; x
-    db DAMAGE_POWERUP_SPRITE_ID
-.powerUpFour
-    db TYPE_DAMAGE_POWERUP | FLAG_ACTIVE
-    db 15 * 8 ; y 
-    db 9 * 8 ; x
-    db DAMAGE_POWERUP_SPRITE_ID
+.powerUpFive ; at the top near the water
+    db TYPE_HEALTH_POWERUP | FLAG_ACTIVE
+    db 5 * 8 ; y 
+    db 15 * 8 ; x
+    db HEART_POWERUP_SPRITE_ID
+.powerUpSix ; at the very right
+    db TYPE_TIME_POWERUP | FLAG_ACTIVE
+    db 18 * 8 ; y 
+    db 26 * 8 ; x
+    db TIME_POWERUP_SPRITE_ID
 .endPowerUp1
 
 Level2PowerUpData::
