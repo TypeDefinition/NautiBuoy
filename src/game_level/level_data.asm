@@ -25,7 +25,7 @@ Stage1PlayerData::
 
 Stage2PlayerData::
     db 20 * 8 ; spawn y pos
-    db 3 * 8 ; spawn x pos
+    db 5 * 8 ; spawn x pos
     db 3 ; starting health for level
 
 Stage3PlayerData::
@@ -144,7 +144,47 @@ Stage1EnemyData::
 .endStage1EnemyData:
 
 Stage2EnemyData::
-    db 1 ; number of enemies in level
+    db 6 ; number of enemies in level
+.enemyOne ; in the middle at the start
+    db TYPE_ENEMYC | FLAG_ENEMY | FLAG_ACTIVE   
+    db 11 * 8 ; y 
+    db 4 * 8 ; x
+    db DIR_RIGHT | SHOOT_DIR_UP | SHOOT_DIR_DOWN | SHOOT_DIR_RIGHT | SHOOT_DIR_LEFT
+    db ENEMY_TYPEC_HEALTH
+    dw VELOCITY_VSLOW ; cpu allocate and auto store in little endian
+    db ENEMY_TYPEC_NORMAL_STATE_MAX_FRAME
+.enemyTwo ; right
+    db TYPE_ENEMYC | FLAG_ENEMY | FLAG_ACTIVE   
+    db 6 * 8 ; y 
+    db 24 * 8 ; x
+    db DIR_UP | SHOOT_DIR_UP | SHOOT_DIR_DOWN | SHOOT_DIR_RIGHT | SHOOT_DIR_LEFT
+    db ENEMY_TYPEC_HEALTH
+    dw VELOCITY_VSLOW ; cpu allocate and auto store in little endian
+    db ENEMY_TYPEC_NORMAL_STATE_MAX_FRAME
+.enemyThree ; very right
+    db TYPE_ENEMYB | FLAG_ENEMY | FLAG_ACTIVE   
+    db 21 * 8 ; y 
+    db 27 * 8 ; x
+    db DIR_UP
+    db ENEMY_TYPEB_HEALTH
+    dw VELOCITY_VSLOW ; cpu allocate and auto store in little endian
+    db ENEMY_TYPEB_WALK_MAX_FRAMES
+.enemyFour ; very top
+    db TYPE_ENEMYB | FLAG_ENEMY | FLAG_ACTIVE   
+    db 2 * 8 ; y 
+    db 2 * 8 ; x
+    db DIR_RIGHT
+    db ENEMY_TYPEB_HEALTH
+    dw VELOCITY_VSLOW ; cpu allocate and auto store in little endian
+    db ENEMY_TYPEB_WALK_MAX_FRAMES
+.enemyFive ; bottom, squid, not moving
+    db TYPE_ENEMYA | FLAG_ENEMY | FLAG_ACTIVE   
+    db 16 * 8 ; y 
+    db 19 * 8 ; x
+    db DIR_DOWN
+    db ENEMY_TYPEA_HEALTH
+    dw VELOCITY_VSLOW ; cpu allocate and auto store in little endian
+    db ENEMY_TYPEA_WALK_FRAMES
 .endStage2EnemyData:
 
 Stage3EnemyData::
