@@ -1,4 +1,22 @@
 ==========
+2021-07-19
+==========
+- Improved the stability of the profiler
+- Added TMS palette as alternative palette for the Tile Viewer for SMS (thanks to sverx)
+- Added tooltips for the additional registers in the debugger
+- Added Sync To Audio as a new speed option
+- Added an option to the Memory Editor to copy the currently selected address
+- Fixed inproper initial window sizes for the viewers on some (mostly Linux) systems (thanks to basxto)
+- Fixed an incompatibility with Java 16, thank you Oracle... (thanks to RicardoLuis0)
+- Fixed that for small window sizes of the debugger, it did not properly scroll to the current address (thanks to Kabcorp)
+- Fixed an issue with Game Boy's sweep sometimes falsely muting the channel (thanks to DevEd and kivan117)
+- Fixed that on SMS the Tile Viewer used a wrong tile as the bottom tile of 8x16 tiles in 2nd bank of tiles
+- Fixed that an expression reading from non-existant cartridge RAM crashed the debugger (thanks to TypeDefinition)
+- Fixed wrong row/column numbers in Tilemap Viewer when grid is enabled
+- Fixed that sometimes the breakpoint console stopped updating
+- Fixed that Game Gear ports did not trigger port breakpoints (thanks to sverx and djbass)
+
+==========
 2021-06-07
 ==========
 - Improved Sprite Viewer to support 8x8 and 8x16 sprites at the same time
@@ -26,6 +44,7 @@
 - Added support for GameBoy BESS savestates that are interoperable with SameBoy and BGB (thanks to LIJI)
 - Added a workaround for the path issue when remote debugging from WSL (thanks to tbsp)
 - Added ROM bank and SRAM banks to the additional registers of the debugger
+- Added a prototypical assembler to the debugger
 - Fixed an issue with remote debugging that could make VS Code disconnect from Emulicious
 - Fixed Reload ROM shortcut did not always work
 - Fixed copy&paste in Go To boxes (thanks to Kabcorp)

@@ -34,14 +34,14 @@ General:
 	Speed up	- Page Up
 	Speed down	- Page Down
 Graphics:
-	Zoom In			- + (alternatively: 9)
-	Zoom Out		- - (alternatively: 8)
+	Zoom In			- +
+	Zoom Out		- -
 	Standardzoom		- 0
 	Increase frameskip	- ALT + Page Up
 	Decrease frameskip	- ALT + Page Down
 Sound:
-	Raise volume	- ALT with + (alternatively: ALT + 9)
-	Lower volume	- ALT with - (alternatively: ALT + 8)
+	Raise volume	- ALT with +
+	Lower volume	- ALT with -
 	Mute on/off	- ALT with 0
 
 =================
