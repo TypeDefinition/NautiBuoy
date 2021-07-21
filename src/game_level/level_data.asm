@@ -29,7 +29,7 @@ Stage2PlayerData::
     db 3 ; starting health for level
 
 Stage3PlayerData::
-    db 20 * 8 ; spawn y pos
+    db 28 * 8 ; spawn y pos
     db 3 * 8 ; spawn x pos
     db 3 ; starting health for level
 
@@ -188,7 +188,55 @@ Stage2EnemyData::
 .endStage2EnemyData:
 
 Stage3EnemyData::
-    db 1 ; number of enemies in level
+    db 6 ; number of enemies in level
+.enemyOne ; very top left
+    db TYPE_ENEMYD | FLAG_ENEMY | FLAG_ACTIVE   
+    db 3 * 8 ; y 
+    db 4 * 8 ; x
+    db DIR_DOWN 
+    db ENEMY_TYPED_HEALTH
+    dw ENEMY_TYPED_VELOCITY ; cpu allocate and auto store in little endian
+    db ENEMY_TYPED_ANIMATION_FRAMES
+.enemyTwo ; on the right
+    db TYPE_ENEMYC | FLAG_ENEMY | FLAG_ACTIVE   
+    db 15 * 8 ; y 
+    db 19 * 8 ; x
+    db DIR_RIGHT | SHOOT_DIR_UP | SHOOT_DIR_DOWN | SHOOT_DIR_RIGHT | SHOOT_DIR_LEFT
+    db ENEMY_TYPEC_HEALTH
+    dw ENEMY_TYPEC_VELOCITY ; cpu allocate and auto store in little endian
+    db ENEMY_TYPEC_NORMAL_STATE_MAX_FRAME
+.enemyThree ; on the top right
+    db TYPE_ENEMYB | FLAG_ENEMY | FLAG_ACTIVE   
+    db 2 * 8 ; y 
+    db 21 * 8 ; x
+    db DIR_RIGHT
+    db ENEMY_TYPEB_HEALTH
+    dw ENEMY_TYPEB_VELOCITY ; cpu allocate and auto store in little endian
+    db ENEMY_TYPEB_WALK_MAX_FRAMES
+.enemyFour ; at the very bottom
+    db TYPE_ENEMYB | FLAG_ENEMY | FLAG_ACTIVE   
+    db 28 * 8 ; y 
+    db 20 * 8 ; x
+    db DIR_RIGHT
+    db ENEMY_TYPEB_HEALTH
+    dw ENEMY_TYPEB_VELOCITY ; cpu allocate and auto store in little endian
+    db ENEMY_TYPEB_WALK_MAX_FRAMES
+.enemyFive ; at the very bottom
+    db TYPE_ENEMYA | FLAG_ENEMY | FLAG_ACTIVE   
+    db 19 * 8 ; y 
+    db 10 * 8 ; x
+    db DIR_LEFT
+    db ENEMY_TYPEA_HEALTH
+    dw ENEMY_TYPEA_VELOCITY ; cpu allocate and auto store in little endian
+    db ENEMY_TYPEA_WALK_FRAMES
+.enemySix ; at the very bottom right
+    db TYPE_ENEMYA | FLAG_ENEMY | FLAG_ACTIVE   
+    db 29 * 8 ; y 
+    db 28 * 8 ; x
+    db DIR_UP
+    db ENEMY_TYPEA_HEALTH
+    dw ENEMY_TYPEA_VELOCITY ; cpu allocate and auto store in little endian
+    db ENEMY_TYPEA_WALK_FRAMES
 .endStage3EnemyData:
 
 Stage4EnemyData::
@@ -202,7 +250,7 @@ Stage5EnemyData::
 /* Final level data */
 StageXXEnemyData::
     db 1 ; number of enemies in level
-.enemyOne
+.enemyOne ; at the
     db TYPE_ENEMY_BOSS | FLAG_ENEMY | FLAG_ACTIVE   
     db 11 * 8 ; y 
     db 12 * 8 ; x
@@ -301,12 +349,42 @@ Level2PowerUpData::
 .endPowerUp2
 
 Level3PowerUpData::
-    db 4 ; number of powerups in level
-.powerUpOne
+    db 7 ; number of powerups in level
+.powerUpOne ; middle left, speed
+    db TYPE_SPEED_POWERUP | FLAG_ACTIVE
+    db 12 * 8 ; y 
+    db 8 * 8 ; x
+    db SPEED_POWERUP_SPRITE_ID
+.powerUpTwo ; health, top middle
     db TYPE_HEALTH_POWERUP | FLAG_ACTIVE
-    db 20 * 8 ; y 
-    db 7 * 8 ; x
+    db 2 * 8 ; y 
+    db 16 * 8 ; x
     db HEART_POWERUP_SPRITE_ID
+.powerUpThree ; middle, middle, time, after the squid
+    db TYPE_TIME_POWERUP | FLAG_ACTIVE
+    db 16 * 8 ; y 
+    db 15 * 8 ; x
+    db TIME_POWERUP_SPRITE_ID
+.powerUpFour ; very bottom right
+    db TYPE_TIME_POWERUP | FLAG_ACTIVE
+    db 29 * 8 ; y 
+    db 30 * 8 ; x
+    db TIME_POWERUP_SPRITE_ID
+.powerUpFive ; near the puffle fish
+    db TYPE_INVINCIBILITY_POWERUP | FLAG_ACTIVE
+    db 11 * 8 ; y 
+    db 21 * 8 ; x
+    db INVINCIBILITY_POWERUP_SPRITE_ID
+.powerUpSix ; top right
+    db TYPE_HEALTH_POWERUP | FLAG_ACTIVE
+    db 5 * 8 ; y 
+    db 29 * 8 ; x
+    db HEART_POWERUP_SPRITE_ID
+.powerUpSeven ; top right
+    db TYPE_DAMAGE_POWERUP | FLAG_ACTIVE
+    db 18 * 8 ; y 
+    db 25 * 8 ; x
+    db DAMAGE_POWERUP_SPRITE_ID
 .endPowerUp3
 
 Level4PowerUpData::
