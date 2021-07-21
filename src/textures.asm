@@ -268,311 +268,311 @@ EnemyBAnimation::
 .upAnimation:: ; up and down has the same frames
     ; Frame 1
     db $26
-    db OAMF_PAL0 | OAMF_YFLIP
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
     db $26
-    db OAMF_PAL0 | OAMF_YFLIP | OAMF_XFLIP
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_XFLIP | OAMF_PRI
 
     ; Frame 2
     db $28
-    db OAMF_PAL0 | OAMF_YFLIP
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
     db $28
-    db OAMF_PAL0 | OAMF_YFLIP | OAMF_XFLIP
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_XFLIP | OAMF_PRI
 .downAnimation:: ; up and down has the same frames
     ; Frame 1
     db $26
-    db OAMF_PAL0
+    db OAMF_PAL0 | OAMF_PRI
     db $26
-    db OAMF_PAL0 | OAMF_XFLIP
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
 
     ; Frame 2
     db $28
-    db OAMF_PAL0
+    db OAMF_PAL0 | OAMF_PRI
     db $28
-    db OAMF_PAL0 | OAMF_XFLIP
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
 .rightAnimation::
     ; Frame 1
     db $2E
-    db OAMF_PAL0
+    db OAMF_PAL0 | OAMF_PRI
     db $30
-    db OAMF_PAL0
+    db OAMF_PAL0 | OAMF_PRI
 
     ; Frame 2
     db $32
-    db OAMF_PAL0
+    db OAMF_PAL0 | OAMF_PRI
     db $34
-    db OAMF_PAL0
+    db OAMF_PAL0 | OAMF_PRI
 .leftAnimation::
     ; Frame 1
     db $30
-    db OAMF_PAL0 | OAMF_XFLIP
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
     db $2E
-    db OAMF_PAL0 | OAMF_XFLIP
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
 
     ; Frame 2
     db $34
-    db OAMF_PAL0 | OAMF_XFLIP
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
     db $32
-    db OAMF_PAL0 | OAMF_XFLIP
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
 .attackUpAnimation:: ; up and down same animation
     ; Frame 1, up
     db $2C
-    db OAMF_PAL0
+    db OAMF_PAL0 | OAMF_PRI
     db $2C
-    db OAMF_PAL0 | OAMF_XFLIP
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
 
     ; Frame 2, right
     db $2A
-    db OAMF_PAL0
+    db OAMF_PAL0 | OAMF_PRI
     db $2A
-    db OAMF_PAL0 | OAMF_XFLIP
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
 
 .attackRightAnimation::
     ; Frame 2, right
     db $2A
-    db OAMF_PAL0
+    db OAMF_PAL0 | OAMF_PRI
     db $2A
-    db OAMF_PAL0 | OAMF_XFLIP
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
     
     ; Frame 1, up
     db $2C
-    db OAMF_PAL0
+    db OAMF_PAL0 | OAMF_PRI
     db $2C
-    db OAMF_PAL0 | OAMF_XFLIP
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
 .hideInShellUpAnimation::
     ; Frame 1
     db $36
-    db OAMF_PAL0 | OAMF_YFLIP
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
     db $36
-    db OAMF_PAL0 | OAMF_YFLIP | OAMF_XFLIP
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_XFLIP | OAMF_PRI
 
     ; Frame 2
     db $38
-    db OAMF_PAL0 | OAMF_YFLIP
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
     db $38
-    db OAMF_PAL0 | OAMF_YFLIP | OAMF_XFLIP
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_XFLIP | OAMF_PRI
 .hideInShellDownAnimation::
     ; Frame 1
     db $36
-    db OAMF_PAL0
+    db OAMF_PAL0 | OAMF_PRI
     db $36
-    db OAMF_PAL0 | OAMF_XFLIP
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
 
     ; Frame 2
     db $38
-    db OAMF_PAL0
+    db OAMF_PAL0 | OAMF_PRI
     db $38
-    db OAMF_PAL0 | OAMF_XFLIP
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
 .hideInShellRightAnimation::
     ; Frame 1
     db $3A
-    db OAMF_PAL0
+    db OAMF_PAL0 | OAMF_PRI
     db $3C
-    db OAMF_PAL0 
+    db OAMF_PAL0 | OAMF_PRI
 
     ; Frame 2
     db $3E
-    db OAMF_PAL0
+    db OAMF_PAL0 | OAMF_PRI
     db $40
-    db OAMF_PAL0 
+    db OAMF_PAL0 | OAMF_PRI
 .hideInShellLeftAnimation::
     ; Frame 1
     db $3C
-    db OAMF_PAL0 | OAMF_XFLIP
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
     db $3A
-    db OAMF_PAL0 | OAMF_XFLIP
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
 
     ; Frame 2
     db $40
-    db OAMF_PAL0 | OAMF_XFLIP
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
     db $3E
-    db OAMF_PAL0 | OAMF_XFLIP
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
 
 /* Animation, sprite IDs for the enemy C*/
 EnemyCAnimation::
 .upAnimation:: 
     ; Frame 1
     db $58
-    db OAMF_PAL0 | OAMF_YFLIP
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
     db $5A
-    db OAMF_PAL0 | OAMF_YFLIP
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
 
     ; Frame 2
     db $5C
-    db OAMF_PAL0 | OAMF_YFLIP
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
     db $5E
-    db OAMF_PAL0 | OAMF_YFLIP
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
 .downAnimation:: 
     ; Frame 1
     db $58
-    db OAMF_PAL0 
+    db OAMF_PAL0 | OAMF_PRI
     db $5A
-    db OAMF_PAL0 
+    db OAMF_PAL0 | OAMF_PRI
 
     ; Frame 2
     db $5C
-    db OAMF_PAL0
+    db OAMF_PAL0 | OAMF_PRI
     db $5E
-    db OAMF_PAL0
+    db OAMF_PAL0 | OAMF_PRI
 .rightAnimation::
     ; Frame 1
     db $6C
-    db OAMF_PAL0
+    db OAMF_PAL0 | OAMF_PRI
     db $6E
-    db OAMF_PAL0
+    db OAMF_PAL0 | OAMF_PRI
 
     ; Frame 2
     db $70
-    db OAMF_PAL0
+    db OAMF_PAL0 | OAMF_PRI
     db $72
-    db OAMF_PAL0
+    db OAMF_PAL0 | OAMF_PRI
 .leftAnimation::
     ; Frame 1
     db $6E
-    db OAMF_PAL0 | OAMF_XFLIP
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
     db $6C
-    db OAMF_PAL0 | OAMF_XFLIP
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
 
     ; Frame 2
     db $72
-    db OAMF_PAL0 | OAMF_XFLIP
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
     db $70
-    db OAMF_PAL0 | OAMF_XFLIP
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
 .attackUpAnimation::
     ; Frame 1
     db $60
-    db OAMF_PAL0 | OAMF_YFLIP
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
     db $62
-    db OAMF_PAL0 | OAMF_YFLIP
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
 
     ; Frame 2
     db $64
-    db OAMF_PAL0 | OAMF_YFLIP
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
     db $66
-    db OAMF_PAL0 | OAMF_YFLIP
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
 
     ; Frame 3
     db $60
-    db OAMF_PAL0 | OAMF_YFLIP
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
     db $62
-    db OAMF_PAL0 | OAMF_YFLIP
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
 
     ; Frame 4, SHOOT
     db $68
-    db OAMF_PAL0 | OAMF_YFLIP
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
     db $6A
-    db OAMF_PAL0 | OAMF_YFLIP
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
 
     ; Frame 2
     db $64
-    db OAMF_PAL0 | OAMF_YFLIP
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
     db $66
-    db OAMF_PAL0 | OAMF_YFLIP
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
 
     ; Frame 2
     db $60
-    db OAMF_PAL0 | OAMF_YFLIP
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
     db $62
-    db OAMF_PAL0 | OAMF_YFLIP
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
 .attackDownAnimation::
     ; Frame 1
     db $60
-    db OAMF_PAL0 
+    db OAMF_PAL0 | OAMF_PRI
     db $62
-    db OAMF_PAL0 
+    db OAMF_PAL0 | OAMF_PRI
 
     ; Frame 2
     db $64
-    db OAMF_PAL0 
+    db OAMF_PAL0 | OAMF_PRI
     db $66
-    db OAMF_PAL0 
+    db OAMF_PAL0 | OAMF_PRI
 
     ; Frame 3
     db $60
-    db OAMF_PAL0 
+    db OAMF_PAL0 | OAMF_PRI
     db $62
-    db OAMF_PAL0 
+    db OAMF_PAL0 | OAMF_PRI
 
     ; Frame 4, SHOOT
     db $68
-    db OAMF_PAL0 
+    db OAMF_PAL0 | OAMF_PRI
     db $6A
-    db OAMF_PAL0 
+    db OAMF_PAL0 | OAMF_PRI
 
     ; Frame 2
     db $64
-    db OAMF_PAL0 
+    db OAMF_PAL0 | OAMF_PRI
     db $66
-    db OAMF_PAL0 
+    db OAMF_PAL0 | OAMF_PRI
 
     ; Frame 2
     db $60
-    db OAMF_PAL0 
+    db OAMF_PAL0 | OAMF_PRI
     db $62
-    db OAMF_PAL0 
+    db OAMF_PAL0 | OAMF_PRI
 .attackRightAnimation::
     ; Frame 1
     db $74
-    db OAMF_PAL0
+    db OAMF_PAL0 | OAMF_PRI
     db $76
-    db OAMF_PAL0
+    db OAMF_PAL0 | OAMF_PRI
 
     db $78
-    db OAMF_PAL0
+    db OAMF_PAL0 | OAMF_PRI
     db $7A
-    db OAMF_PAL0
+    db OAMF_PAL0 | OAMF_PRI
 
     db $74
-    db OAMF_PAL0
+    db OAMF_PAL0 | OAMF_PRI
     db $76
-    db OAMF_PAL0
+    db OAMF_PAL0 | OAMF_PRI
 
     ; Frame 4, SHOOT
     db $7C
-    db OAMF_PAL0
+    db OAMF_PAL0 | OAMF_PRI
     db $7E
-    db OAMF_PAL0
+    db OAMF_PAL0 | OAMF_PRI
 
     db $78
-    db OAMF_PAL0
+    db OAMF_PAL0 | OAMF_PRI
     db $7A
-    db OAMF_PAL0
+    db OAMF_PAL0 | OAMF_PRI
 
     db $74
-    db OAMF_PAL0
+    db OAMF_PAL0 | OAMF_PRI
     db $76
-    db OAMF_PAL0
+    db OAMF_PAL0 | OAMF_PRI
 .attackLeftAnimation::
     ; Frame 1 
     db $76
-    db OAMF_PAL0 | OAMF_XFLIP
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
     db $74
-    db OAMF_PAL0 | OAMF_XFLIP
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
 
     db $7A
-    db OAMF_PAL0 | OAMF_XFLIP
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
     db $78
-    db OAMF_PAL0 | OAMF_XFLIP
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
 
     db $76
-    db OAMF_PAL0 | OAMF_XFLIP
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
     db $74
-    db OAMF_PAL0 | OAMF_XFLIP
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
 
     ; Frame 4, SHOOT
     db $7E
-    db OAMF_PAL0 | OAMF_XFLIP  
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
     db $7C
-    db OAMF_PAL0 | OAMF_XFLIP
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
 
     db $7A
-    db OAMF_PAL0 | OAMF_XFLIP
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
     db $78
-    db OAMF_PAL0 | OAMF_XFLIP
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
 
     db $76
-    db OAMF_PAL0 | OAMF_XFLIP
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
     db $74
-    db OAMF_PAL0 | OAMF_XFLIP
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
 
 /* Animation for enemy D */
 EnemyDAnimation::

@@ -105,14 +105,14 @@ InitStage0::
 
 InitStage1::
     ; Set Map Size
-    ld a, HIGH($00A8)
+    ld a, HIGH(LEVEL1_MAP_SIZE_Y)
     ld [wMapSizeY], a
-    ld a, LOW($00A8)
+    ld a, LOW(LEVEL1_MAP_SIZE_Y)
     ld [wMapSizeY+1], a
 
-    ld a, HIGH($00C8)
+    ld a, HIGH(LEVEL1_MAP_SIZE_X)
     ld [wMapSizeX], a
-    ld a, LOW($00C8)
+    ld a, LOW(LEVEL1_MAP_SIZE_X)
     ld [wMapSizeX+1], a
 
     ; Copy tile map into VRAM.
@@ -121,29 +121,115 @@ InitStage1::
     mem_copy wGameLevelTileMap, _SCRN0, wGameLevelTileMap.end-wGameLevelTileMap
 
     ; Initialise Player
-    ; TEMP: Temporary code.
-    set_romx_bank BANK(Sprites)
-    call InitialisePlayer
-    call UpdatePlayerShadowOAM
-
-    xor a
-    ld [wBossStateTracker], a
-    set_romx_bank BANK(Stage0EnemyData)
-    ld bc, StageXXEnemyData
+    set_romx_bank BANK(Stage1PlayerData)
+    ld bc, Stage1EnemyData
     call InitEnemiesAndPlaceOnMap
-    ld bc, Level0PowerUpData
+    ld bc, Level1PowerUpData
     call InitPowerupsAndPlaceOnMap
     call InitParticleEffects
+
+    ld hl, Stage1PlayerData
+    call InitialisePlayer
+    set_romx_bank BANK(Sprites)
+    call UpdatePlayerShadowOAM
+
+    ;xor a
+    ;ld [wBossStateTracker], a
 
     ret
 
 InitStage2::
+    ; Set Map Size
+    ld a, HIGH(LEVEL2_MAP_SIZE_Y)
+    ld [wMapSizeY], a
+    ld a, LOW(LEVEL2_MAP_SIZE_Y)
+    ld [wMapSizeY+1], a
+
+    ld a, HIGH(LEVEL2_MAP_SIZE_X)
+    ld [wMapSizeX], a
+    ld a, LOW(LEVEL2_MAP_SIZE_X)
+    ld [wMapSizeX+1], a
+
+    ; Copy tile map into VRAM.
+    set_romx_bank BANK(Stage2TileMap)
+    mem_copy Stage2TileMap, wGameLevelTileMap, Stage2TileMap.end-Stage2TileMap
+    mem_copy wGameLevelTileMap, _SCRN0, wGameLevelTileMap.end-wGameLevelTileMap
+
+    ; Initialise Player
+    set_romx_bank BANK(Stage1PlayerData)
+    ld bc, Stage2EnemyData
+    call InitEnemiesAndPlaceOnMap
+    ld bc, Level2PowerUpData
+    call InitPowerupsAndPlaceOnMap
+    call InitParticleEffects
+
+    ld hl, Stage2PlayerData
+    call InitialisePlayer
+    set_romx_bank BANK(Sprites)
+    call UpdatePlayerShadowOAM
+
     ret
 
 InitStage3::
+    ; Set Map Size
+    ld a, HIGH(LEVEL3_MAP_SIZE_Y)
+    ld [wMapSizeY], a
+    ld a, LOW(LEVEL3_MAP_SIZE_Y)
+    ld [wMapSizeY+1], a
+
+    ld a, HIGH(LEVEL3_MAP_SIZE_X)
+    ld [wMapSizeX], a
+    ld a, LOW(LEVEL3_MAP_SIZE_X)
+    ld [wMapSizeX+1], a
+
+    ; Copy tile map into VRAM.
+    set_romx_bank BANK(Stage3TileMap)
+    mem_copy Stage3TileMap, wGameLevelTileMap, Stage3TileMap.end-Stage3TileMap
+    mem_copy wGameLevelTileMap, _SCRN0, wGameLevelTileMap.end-wGameLevelTileMap
+
+    set_romx_bank BANK(Stage1PlayerData)
+    ld bc, Stage3EnemyData
+    call InitEnemiesAndPlaceOnMap
+    ld bc, Level3PowerUpData
+    call InitPowerupsAndPlaceOnMap
+    call InitParticleEffects
+
+    ; Initialise Player
+    ld hl, Stage3PlayerData
+    call InitialisePlayer
+    set_romx_bank BANK(Sprites)
+    call UpdatePlayerShadowOAM
     ret
 
 InitStage4::
+    ; Set Map Size
+    ld a, HIGH(LEVEL4_MAP_SIZE_Y)
+    ld [wMapSizeY], a
+    ld a, LOW(LEVEL4_MAP_SIZE_Y)
+    ld [wMapSizeY+1], a
+
+    ld a, HIGH(LEVEL4_MAP_SIZE_X)
+    ld [wMapSizeX], a
+    ld a, LOW(LEVEL4_MAP_SIZE_X)
+    ld [wMapSizeX+1], a
+
+    ; Copy tile map into VRAM.
+    set_romx_bank BANK(Stage4TileMap)
+    mem_copy Stage4TileMap, wGameLevelTileMap, Stage4TileMap.end-Stage4TileMap
+    mem_copy wGameLevelTileMap, _SCRN0, wGameLevelTileMap.end-wGameLevelTileMap
+
+    set_romx_bank BANK(Stage1PlayerData)
+    ld bc, Stage4EnemyData
+    call InitEnemiesAndPlaceOnMap
+    ld bc, Level4PowerUpData
+    call InitPowerupsAndPlaceOnMap
+    call InitParticleEffects
+
+    ; Initialise Player
+    ld hl, Stage4PlayerData
+    call InitialisePlayer
+    set_romx_bank BANK(Sprites)
+    call UpdatePlayerShadowOAM
     ret
 
 InitStage5::
