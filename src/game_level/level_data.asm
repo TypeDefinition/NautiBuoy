@@ -272,11 +272,31 @@ Level1PowerUpData::
 .endPowerUp1
 
 Level2PowerUpData::
-    db 4 ; number of powerups in level
-.powerUpOne
-    db TYPE_HEALTH_POWERUP | FLAG_ACTIVE
+    db 5 ; number of powerups in level
+.powerUpOne ; beside the starting puffer fish
+    db TYPE_INVINCIBILITY_POWERUP | FLAG_ACTIVE
+    db 13 * 8 ; y 
+    db 5 * 8 ; x
+    db INVINCIBILITY_POWERUP_SPRITE_ID
+.powerUpTwo ; ay the very bottom
+    db TYPE_TIME_POWERUP | FLAG_ACTIVE
+    db 24 * 8 ; y 
+    db 22 * 8 ; x
+    db TIME_POWERUP_SPRITE_ID
+.powerUpThree ; at the turtle area on the right
+    db TYPE_DAMAGE_POWERUP | FLAG_ACTIVE
     db 15 * 8 ; y 
-    db 9 * 8 ; x
+    db 29 * 8 ; x
+    db DAMAGE_POWERUP_SPRITE_ID
+.powerUpFour ; at the very top right
+    db TYPE_TIME_POWERUP | FLAG_ACTIVE
+    db 2 * 8 ; y 
+    db 23 * 8 ; x
+    db TIME_POWERUP_SPRITE_ID
+.powerUpFive ; at the top
+    db TYPE_HEALTH_POWERUP | FLAG_ACTIVE
+    db 4 * 8 ; y 
+    db 13 * 8 ; x
     db HEART_POWERUP_SPRITE_ID
 .endPowerUp2
 

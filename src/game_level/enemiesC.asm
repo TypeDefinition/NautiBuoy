@@ -9,7 +9,7 @@ SECTION "Enemy C", ROM0
 */
 UpdateEnemyC::
     push hl ; PUSH HL = enemy starting address 
-    ;call EnemyBounceOnWallMovement
+    call EnemyBounceOnWallMovement
 
     ; update the frames
     pop hl  ; POP HL = enemy starting address 
