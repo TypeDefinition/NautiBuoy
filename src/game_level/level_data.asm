@@ -47,7 +47,7 @@ Stage0EnemyData::
     db 10 * 8 ; x
     db DIR_DOWN
     db ENEMY_TYPEA_HEALTH
-    dw VELOCITY_VSLOW ; cpu allocate and auto store in little endian
+    dw ENEMY_TYPEA_VELOCITY ; cpu allocate and auto store in little endian
     db ENEMY_TYPEA_WALK_FRAMES
 .enemyTwo ; on the right, not moving
     db TYPE_ENEMYA | FLAG_ENEMY | FLAG_ACTIVE   
@@ -55,7 +55,7 @@ Stage0EnemyData::
     db 17 * 8 ; x
     db DIR_DOWN
     db ENEMY_TYPEA_HEALTH
-    dw VELOCITY_VSLOW ; cpu allocate and auto store in little endian
+    dw ENEMY_TYPEA_VELOCITY ; cpu allocate and auto store in little endian
     db ENEMY_TYPEA_WALK_FRAMES
 .enemyThree ; very right, moving up and down
     db TYPE_ENEMYA | FLAG_ENEMY | FLAG_ACTIVE   
@@ -63,7 +63,7 @@ Stage0EnemyData::
     db 22 * 8 ; x
     db DIR_UP
     db ENEMY_TYPEA_HEALTH
-    dw VELOCITY_VSLOW ; cpu allocate and auto store in little endian
+    dw ENEMY_TYPEA_VELOCITY ; cpu allocate and auto store in little endian
     db ENEMY_TYPEA_WALK_FRAMES
 .enemyFour ; at the water area
     db TYPE_ENEMYA | FLAG_ENEMY | FLAG_ACTIVE   
@@ -71,7 +71,7 @@ Stage0EnemyData::
     db 24 * 8 ; x
     db DIR_DOWN
     db ENEMY_TYPEA_HEALTH
-    dw VELOCITY_VSLOW ; cpu allocate and auto store in little endian
+    dw ENEMY_TYPEA_VELOCITY ; cpu allocate and auto store in little endian
     db ENEMY_TYPEA_WALK_FRAMES
 .enemyFive ; ON THE very top, moving
     db TYPE_ENEMYA | FLAG_ENEMY | FLAG_ACTIVE   
@@ -79,7 +79,7 @@ Stage0EnemyData::
     db 2 * 8 ; x
     db DIR_LEFT
     db ENEMY_TYPEA_HEALTH
-    dw VELOCITY_VSLOW ; cpu allocate and auto store in little endian
+    dw ENEMY_TYPEA_VELOCITY ; cpu allocate and auto store in little endian
     db ENEMY_TYPEA_WALK_FRAMES
 .endStage0EnemyData:
 
@@ -91,7 +91,7 @@ Stage1EnemyData::
     db 2 * 8 ; x
     db DIR_RIGHT
     db ENEMY_TYPEA_HEALTH
-    dw VELOCITY_VSLOW ; cpu allocate and auto store in little endian
+    dw ENEMY_TYPEA_VELOCITY ; cpu allocate and auto store in little endian
     db ENEMY_TYPEA_WALK_FRAMES
 .enemyTwo ; turtle in the middle
     db TYPE_ENEMYB | FLAG_ENEMY | FLAG_ACTIVE   
@@ -99,7 +99,7 @@ Stage1EnemyData::
     db 15 * 8 ; x
     db DIR_RIGHT
     db ENEMY_TYPEB_HEALTH
-    dw VELOCITY_VSLOW ; cpu allocate and auto store in little endian
+    dw ENEMY_TYPEB_VELOCITY ; cpu allocate and auto store in little endian
     db ENEMY_TYPEB_WALK_MAX_FRAMES
 .enemyThree ; very top
     db TYPE_ENEMYB | FLAG_ENEMY | FLAG_ACTIVE
@@ -107,7 +107,7 @@ Stage1EnemyData::
     db 2 * 8 ; x
     db DIR_RIGHT
     db ENEMY_TYPEB_HEALTH
-    dw VELOCITY_VSLOW ; cpu allocate and auto store in little endian
+    dw ENEMY_TYPEB_VELOCITY ; cpu allocate and auto store in little endian
     db ENEMY_TYPEB_WALK_MAX_FRAMES
 .enemyFour ; squid, little bit on the top right, not moving
     db TYPE_ENEMYA | FLAG_ENEMY | FLAG_ACTIVE   
@@ -115,7 +115,7 @@ Stage1EnemyData::
     db 21 * 8 ; x
     db DIR_DOWN
     db ENEMY_TYPEA_HEALTH
-    dw VELOCITY_VSLOW ; cpu allocate and auto store in little endian
+    dw ENEMY_TYPEA_VELOCITY ; cpu allocate and auto store in little endian
     db ENEMY_TYPEA_WALK_FRAMES
 .enemyFive ; squid, little bit on the top, moving
     db TYPE_ENEMYA | FLAG_ENEMY | FLAG_ACTIVE   
@@ -123,7 +123,7 @@ Stage1EnemyData::
     db 16 * 8 ; x
     db DIR_RIGHT
     db ENEMY_TYPEA_HEALTH
-    dw VELOCITY_VSLOW ; cpu allocate and auto store in little endian
+    dw ENEMY_TYPEA_VELOCITY ; cpu allocate and auto store in little endian
     db ENEMY_TYPEA_WALK_FRAMES
 .enemySix ; turtle, on the right corner
     db TYPE_ENEMYB | FLAG_ENEMY | FLAG_ACTIVE   
@@ -131,7 +131,7 @@ Stage1EnemyData::
     db 26 * 8 ; x
     db DIR_UP
     db ENEMY_TYPEB_HEALTH
-    dw VELOCITY_VSLOW ; cpu allocate and auto store in little endian
+    dw ENEMY_TYPEB_VELOCITY ; cpu allocate and auto store in little endian
     db ENEMY_TYPEB_WALK_MAX_FRAMES
 .enemySeven ; squid, bottom right corner
     db TYPE_ENEMYA | FLAG_ENEMY | FLAG_ACTIVE   
@@ -139,7 +139,7 @@ Stage1EnemyData::
     db 19 * 8 ; x
     db DIR_UP
     db ENEMY_TYPEA_HEALTH
-    dw VELOCITY_VSLOW ; cpu allocate and auto store in little endian
+    dw ENEMY_TYPEA_VELOCITY ; cpu allocate and auto store in little endian
     db ENEMY_TYPEA_WALK_FRAMES
 .endStage1EnemyData:
 
@@ -151,7 +151,7 @@ Stage2EnemyData::
     db 4 * 8 ; x
     db DIR_RIGHT | SHOOT_DIR_UP | SHOOT_DIR_DOWN | SHOOT_DIR_RIGHT | SHOOT_DIR_LEFT
     db ENEMY_TYPEC_HEALTH
-    dw VELOCITY_VSLOW ; cpu allocate and auto store in little endian
+    dw ENEMY_TYPEC_VELOCITY ; cpu allocate and auto store in little endian
     db ENEMY_TYPEC_NORMAL_STATE_MAX_FRAME
 .enemyTwo ; right
     db TYPE_ENEMYC | FLAG_ENEMY | FLAG_ACTIVE   
@@ -159,7 +159,7 @@ Stage2EnemyData::
     db 24 * 8 ; x
     db DIR_UP | SHOOT_DIR_UP | SHOOT_DIR_DOWN | SHOOT_DIR_RIGHT | SHOOT_DIR_LEFT
     db ENEMY_TYPEC_HEALTH
-    dw VELOCITY_VSLOW ; cpu allocate and auto store in little endian
+    dw ENEMY_TYPEC_VELOCITY ; cpu allocate and auto store in little endian
     db ENEMY_TYPEC_NORMAL_STATE_MAX_FRAME
 .enemyThree ; very right
     db TYPE_ENEMYB | FLAG_ENEMY | FLAG_ACTIVE   
@@ -167,7 +167,7 @@ Stage2EnemyData::
     db 27 * 8 ; x
     db DIR_UP
     db ENEMY_TYPEB_HEALTH
-    dw VELOCITY_VSLOW ; cpu allocate and auto store in little endian
+    dw ENEMY_TYPEB_VELOCITY ; cpu allocate and auto store in little endian
     db ENEMY_TYPEB_WALK_MAX_FRAMES
 .enemyFour ; very top
     db TYPE_ENEMYB | FLAG_ENEMY | FLAG_ACTIVE   
@@ -175,7 +175,7 @@ Stage2EnemyData::
     db 2 * 8 ; x
     db DIR_RIGHT
     db ENEMY_TYPEB_HEALTH
-    dw VELOCITY_VSLOW ; cpu allocate and auto store in little endian
+    dw ENEMY_TYPEB_VELOCITY ; cpu allocate and auto store in little endian
     db ENEMY_TYPEB_WALK_MAX_FRAMES
 .enemyFive ; bottom, squid, not moving
     db TYPE_ENEMYA | FLAG_ENEMY | FLAG_ACTIVE   
@@ -183,7 +183,7 @@ Stage2EnemyData::
     db 19 * 8 ; x
     db DIR_DOWN
     db ENEMY_TYPEA_HEALTH
-    dw VELOCITY_VSLOW ; cpu allocate and auto store in little endian
+    dw ENEMY_TYPEA_VELOCITY ; cpu allocate and auto store in little endian
     db ENEMY_TYPEA_WALK_FRAMES
 .endStage2EnemyData:
 
