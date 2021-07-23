@@ -38,6 +38,10 @@ Stage4PlayerData::
     db 4 * 8 ; spawn x pos
     db 3 ; starting health for level
 
+StageXXPlayerData::
+    db 23 * 8 ; spawn y pos
+    db 3 * 8 ; spawn x pos
+    db 3 ; starting health for level
 
 Stage0EnemyData::
     db 5 ; number of enemies in level
@@ -300,8 +304,8 @@ StageXXEnemyData::
     db 1 ; number of enemies in level
 .enemyOne ; at the
     db TYPE_ENEMY_BOSS | FLAG_ENEMY | FLAG_ACTIVE   
-    db 11 * 8 ; y 
-    db 12 * 8 ; x
+    db 8 * 8 ; y 
+    db 16 * 8 ; x
     db DIR_LEFT | SHOOT_DIR_DOWN | SHOOT_DIR_RIGHT | SHOOT_DIR_UP | SHOOT_DIR_LEFT
     db ENEMY_BOSS_HEALTH
     dw VELOCITY_VSLOW ; cpu allocate and auto store in little endian
@@ -469,12 +473,42 @@ Level4PowerUpData::
     db TIME_POWERUP_SPRITE_ID
 .endPowerUp4
 
-Level5PowerUpData::
-    db 4 ; number of powerups in level
+LevelXXPowerUpData::
+    db 7 ; number of powerups in level
 .powerUpOne
     db TYPE_HEALTH_POWERUP | FLAG_ACTIVE
-    db 15 * 8 ; y 
-    db 9 * 8 ; x
+    db 2 * 8 ; y 
+    db 2 * 8 ; x
     db HEART_POWERUP_SPRITE_ID
+.powerUpTwo
+    db TYPE_SPEED_POWERUP | FLAG_ACTIVE
+    db 19 * 8 ; y 
+    db 21 * 8 ; x
+    db SPEED_POWERUP_SPRITE_ID
+.powerUpThree
+    db TYPE_DAMAGE_POWERUP | FLAG_ACTIVE
+    db 4 * 8 ; y 
+    db 20 * 8 ; x
+    db DAMAGE_POWERUP_SPRITE_ID
+.powerUpFour
+    db TYPE_INVINCIBILITY_POWERUP | FLAG_ACTIVE
+    db 10 * 8 ; y 
+    db 12 * 8 ; x
+    db INVINCIBILITY_POWERUP_SPRITE_ID
+.powerUpFive
+    db TYPE_HEALTH_POWERUP | FLAG_ACTIVE
+    db 17 * 8 ; y 
+    db 5 * 8 ; x
+    db HEART_POWERUP_SPRITE_ID
+.powerUpSix
+    db TYPE_DAMAGE_POWERUP | FLAG_ACTIVE
+    db 12 * 8 ; y 
+    db 18 * 8 ; x
+    db DAMAGE_POWERUP_SPRITE_ID
+.powerUpSeven
+    db TYPE_SPEED_POWERUP | FLAG_ACTIVE
+    db 19 * 8 ; y 
+    db 10 * 8 ; x
+    db SPEED_POWERUP_SPRITE_ID
 .endPowerUp5
 
