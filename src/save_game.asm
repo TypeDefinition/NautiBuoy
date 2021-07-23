@@ -112,10 +112,6 @@ GenerateDefaultSave:
     ld a, STAGE_UNLOCKED_NOT_CLEARED
     ld [sSaveData], a
 
-    ; TEMP Unlock Stage 1 for Angie to test.
-    ld a, STAGE_UNLOCKED_NOT_CLEARED
-    ld [sSaveData+4], a
-
     call GenerateChecksum
     ret
 
