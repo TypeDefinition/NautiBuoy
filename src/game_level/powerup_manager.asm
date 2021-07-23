@@ -153,7 +153,13 @@ PowerUpCollisionBehaviour:
 
     ld a, [wGameTimer + 1]
     add a, TIMER_POWER_UP_INC_AMT
+    daa
     ld [wGameTimer + 1], a
+
+    ld a, [wGameTimer]
+    adc a, $00
+    daa
+    ld [wGameTimer], a
 
     jr .end
 .speedPowerup
