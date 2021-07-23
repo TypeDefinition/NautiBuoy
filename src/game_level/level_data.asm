@@ -34,8 +34,8 @@ Stage3PlayerData::
     db 3 ; starting health for level
 
 Stage4PlayerData::
-    db 20 * 8 ; spawn y pos
-    db 3 * 8 ; spawn x pos
+    db 28 * 8 ; spawn y pos
+    db 4 * 8 ; spawn x pos
     db 3 ; starting health for level
 
 
@@ -240,7 +240,55 @@ Stage3EnemyData::
 .endStage3EnemyData:
 
 Stage4EnemyData::
-    db 1 ; number of enemies in level
+    db 6 ; number of enemies in level
+.enemyOne ; top left stingray
+    db TYPE_ENEMYD | FLAG_ENEMY | FLAG_ACTIVE   
+    db 3 * 8 ; y 
+    db 2 * 8 ; x
+    db DIR_DOWN 
+    db ENEMY_TYPED_HEALTH
+    dw ENEMY_TYPED_VELOCITY ; cpu allocate and auto store in little endian
+    db ENEMY_TYPED_ANIMATION_FRAMES
+.enemyTwo ; right stingray
+    db TYPE_ENEMYD | FLAG_ENEMY | FLAG_ACTIVE   
+    db 10 * 8 ; y 
+    db 28 * 8 ; x
+    db DIR_RIGHT 
+    db ENEMY_TYPED_HEALTH
+    dw ENEMY_TYPED_VELOCITY ; cpu allocate and auto store in little endian
+    db ENEMY_TYPED_ANIMATION_FRAMES
+.enemyThree ; bottom squid, not moving
+    db TYPE_ENEMYA | FLAG_ENEMY | FLAG_ACTIVE   
+    db 19 * 8 ; y 
+    db 19 * 8 ; x
+    db DIR_DOWN 
+    db ENEMY_TYPEA_HEALTH
+    dw ENEMY_TYPEA_VELOCITY ; cpu allocate and auto store in little endian
+    db ENEMY_TYPEA_WALK_FRAMES
+.enemyFour ; puffer fish middle
+    db TYPE_ENEMYC | FLAG_ENEMY | FLAG_ACTIVE   
+    db 13 * 8 ; y 
+    db 6 * 8 ; x
+    db DIR_DOWN 
+    db ENEMY_TYPEC_HEALTH
+    dw ENEMY_TYPEC_VELOCITY ; cpu allocate and auto store in little endian
+    db ENEMY_TYPEC_NORMAL_STATE_MAX_FRAME
+.enemyFive ; squid moving, above
+    db TYPE_ENEMYA | FLAG_ENEMY | FLAG_ACTIVE   
+    db 6 * 8 ; y 
+    db 19 * 8 ; x
+    db DIR_RIGHT
+    db ENEMY_TYPEA_HEALTH
+    dw ENEMY_TYPEA_VELOCITY ; cpu allocate and auto store in little endian
+    db ENEMY_TYPEA_WALK_FRAMES
+.enemySix ; turtle left
+    db TYPE_ENEMYB | FLAG_ENEMY | FLAG_ACTIVE   
+    db 22 * 8 ; y 
+    db 27 * 8 ; x
+    db DIR_UP
+    db ENEMY_TYPEB_HEALTH
+    dw ENEMY_TYPEB_VELOCITY ; cpu allocate and auto store in little endian
+    db ENEMY_TYPEB_WALK_MAX_FRAMES
 .endStage4EnemyData:
 
 Stage5EnemyData::
@@ -388,12 +436,37 @@ Level3PowerUpData::
 .endPowerUp3
 
 Level4PowerUpData::
-    db 4 ; number of powerups in level
-.powerUpOne
+    db 6 ; number of powerups in level
+.powerUpOne ; near the puffer fish
+    db TYPE_SPEED_POWERUP | FLAG_ACTIVE
+    db 16 * 8 ; y 
+    db 10 * 8 ; x
+    db SPEED_POWERUP_SPRITE_ID
+.powerUpTwo ; near left stingray
     db TYPE_HEALTH_POWERUP | FLAG_ACTIVE
-    db 15 * 8 ; y 
-    db 9 * 8 ; x
+    db 5 * 8 ; y 
+    db 12 * 8 ; x
     db HEART_POWERUP_SPRITE_ID
+.powerUpThree ; very top right
+    db TYPE_INVINCIBILITY_POWERUP | FLAG_ACTIVE
+    db 2 * 8 ; y 
+    db 28 * 8 ; x
+    db INVINCIBILITY_POWERUP_SPRITE_ID
+.powerUpFour ; near right stingray
+    db TYPE_DAMAGE_POWERUP | FLAG_ACTIVE
+    db 9 * 8 ; y 
+    db 30 * 8 ; x
+    db DAMAGE_POWERUP_SPRITE_ID
+.powerUpFive ; near turtle
+    db TYPE_HEALTH_POWERUP | FLAG_ACTIVE
+    db 21 * 8 ; y 
+    db 28 * 8 ; x
+    db HEART_POWERUP_SPRITE_ID
+.powerUpSix ; inside with moving squid
+    db TYPE_TIME_POWERUP | FLAG_ACTIVE
+    db 8 * 8 ; y 
+    db 20 * 8 ; x
+    db TIME_POWERUP_SPRITE_ID
 .endPowerUp4
 
 Level5PowerUpData::
