@@ -39,7 +39,9 @@ BulletDestroyTile:
     push af
     cp a, l
     ld a, EMPTY_TILE_VALUE
+    call c, ExplosionSFX
     call c, SetGameLevelTile
+    
     pop af
     ret
 

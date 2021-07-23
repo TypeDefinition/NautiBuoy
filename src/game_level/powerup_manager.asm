@@ -185,6 +185,7 @@ PowerUpCollisionBehaviour:
 .end
     xor a
     ld [hl], a ; make the powerup inactive
+    call TakePowerUpSFX
 
     ret
 

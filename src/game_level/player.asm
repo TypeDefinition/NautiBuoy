@@ -359,6 +359,7 @@ PlayerIsHit::
     ret
 
 .dead
+    call PlayerDeathSFX
     ld a, LOSE_REASON_HP
     ld [wLoseReason], a
     ld hl, JumpLoadLoseScreen

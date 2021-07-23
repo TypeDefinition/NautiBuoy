@@ -747,6 +747,7 @@ HitEnemy::
 
 .continueUpdate
     call SpawnParticleEffect
+    call EnemyDeathSFX
     call UpdateEnemyCounterUI
     ret
     
