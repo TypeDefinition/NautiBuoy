@@ -148,7 +148,7 @@ Stage1EnemyData::
 .endStage1EnemyData:
 
 Stage2EnemyData::
-    db 6 ; number of enemies in level
+    db 5 ; number of enemies in level
 .enemyOne ; in the middle at the start
     db TYPE_ENEMYC | FLAG_ENEMY | FLAG_ACTIVE   
     db 11 * 8 ; y 
@@ -273,7 +273,7 @@ Stage4EnemyData::
     db TYPE_ENEMYC | FLAG_ENEMY | FLAG_ACTIVE   
     db 13 * 8 ; y 
     db 6 * 8 ; x
-    db DIR_DOWN 
+    db DIR_RIGHT
     db ENEMY_TYPEC_HEALTH
     dw ENEMY_TYPEC_VELOCITY ; cpu allocate and auto store in little endian
     db ENEMY_TYPEC_NORMAL_STATE_MAX_FRAME
