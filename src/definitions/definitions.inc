@@ -6,7 +6,7 @@ DEF DEFINITIONS_INC EQU 1
 /*************************************************Stage*************************************************/
 DEF MAX_MAP_SIZE EQU $0100
 
-DEF MAX_STAGES EQU 8
+DEF MAX_STAGES EQU 6
 
 DEF STAGE_LOCKED EQU $00
 DEF STAGE_UNLOCKED_NOT_CLEARED EQU $01

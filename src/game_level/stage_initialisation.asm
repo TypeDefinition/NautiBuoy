@@ -9,48 +9,36 @@ wSelectedStage::
 SECTION "Stage Initialisation", ROM0
 StageParam::
     ; Stage 0
-    db "00"     ; 2-Byte stage name.
+    db "01"     ; 2-Byte stage name.
     dw_BE $0120 ; Stage Time in BCD format. (Yes this is in Big Endian.)
     dw_BE $0050 ; Time (in BCD) to get 2 Stars. (Player gets 1 star as long as they complete the stage.)
     dw_BE $0090 ; Time (in BCD) to get 3 Stars.
 
     ; Stage 1
-    db "01"
-    dw_BE $0120
-    dw_BE $0050
-    dw_BE $0090
-    
-    ; Stage 2
     db "02"
     dw_BE $0120
     dw_BE $0050
     dw_BE $0090
     
-    ; Stage 3
+    ; Stage 2
     db "03"
     dw_BE $0120
     dw_BE $0050
     dw_BE $0090
     
-    ; Stage 4
+    ; Stage 3
     db "04"
     dw_BE $0120
     dw_BE $0050
     dw_BE $0090
     
-    ; Stage 5
+    ; Stage 4
     db "05"
     dw_BE $0120
     dw_BE $0050
     dw_BE $0090
     
-    ; Stage 6
-    db "06"
-    dw_BE $0120
-    dw_BE $0050
-    dw_BE $0090
-    
-    ; Stage 7
+    ; Stage 5
     db "XX"
     dw_BE $0120
     dw_BE $0050
