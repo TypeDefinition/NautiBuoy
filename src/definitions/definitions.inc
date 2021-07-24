@@ -254,7 +254,7 @@ DEF ENEMY_TYPED_VELOCITY EQU VELOCITY_SLOW
 
 /*************************************************Map Size*************************************************/
 DEF LEVEL0_MAP_SIZE_Y EQU $00B8
-DEF LEVEL0_MAP_SIZE_X EQU $00D0
+DEF LEVEL0_MAP_SIZE_X EQU $00D8
 
 DEF LEVEL1_MAP_SIZE_Y EQU $00D8
 DEF LEVEL1_MAP_SIZE_X EQU $00E8

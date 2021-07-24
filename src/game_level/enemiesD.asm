@@ -36,6 +36,9 @@ UpdateEnemyD::
     pop hl ; POP HL = enemy address
     push hl ; PUSH HL = enemy address
 
+    xor a
+    ld b, a
+    ld c, a
     call CheckEnemyInScreen
     and a
     pop hl ; POP HL = enemy address

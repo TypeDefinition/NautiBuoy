@@ -273,7 +273,7 @@ Stage4EnemyData::
     db TYPE_ENEMYC | FLAG_ENEMY | FLAG_ACTIVE   
     db 13 * 8 ; y 
     db 6 * 8 ; x
-    db DIR_RIGHT
+    db DIR_RIGHT | SHOOT_DIR_UP | SHOOT_DIR_DOWN | SHOOT_DIR_RIGHT | SHOOT_DIR_LEFT
     db ENEMY_TYPEC_HEALTH
     dw ENEMY_TYPEC_VELOCITY ; cpu allocate and auto store in little endian
     db ENEMY_TYPEC_NORMAL_STATE_MAX_FRAME

@@ -815,7 +815,10 @@ PlayerGetsHitEnemyBehavior::
     ret
 
 /*  Checks if enemy is on screen 
-    hl - enemy address
+    Parameters
+        - hl - enemy address
+        - b, y offset
+        - c, x offset
     Return value: 
     - a = 0/1 for false and true
     - hl = pos X address
@@ -835,13 +838,18 @@ CheckEnemyInScreen::
     inc hl ; offset address to get posY
 
     ld a, [hli] ; get enemy pos Y
-    add a, SCREEN_UPPER_OFFSET_Y
+    add a, b
     sub a, d ; enemy y pos - camera pos y
     jr c, .endCheck
 
 .checkWithinYAxis
-    cp a, VIEWPORT_SIZE_Y + SCREEN_UPPER_OFFSET_Y * 1 ; check if enemy pos is within y screen pos
-    jr nc, .endCheck
+    ld d, a
+    ld a, b
+    add a, a 
+    add a, VIEWPORT_SIZE_Y ; b * 2 + VIEWPORT_SIZE_Y
+
+    cp a, d ; check if enemy pos is within y screen pos
+    jr c, .endCheck
 
 .checkXOffset
     ld a, [wShadowSCData + 1] ; get screen pos x
@@ -851,13 +859,18 @@ CheckEnemyInScreen::
     inc hl ; offset address to get posX
 
     ld a, [hl]
-    add a, SCREEN_LEFT_OFFSET_X
+    add a, c
     sub a, d ; enemy x pos - camera pos x
     jr c, .endCheck
 
 .checkWithinXAxis
-    cp a, VIEWPORT_SIZE_X + SCREEN_LEFT_OFFSET_X * 2
-    jr nc, .endCheck
+    ld d, a
+    ld a, b
+    add a, a 
+    add a, VIEWPORT_SIZE_X ; b * 2 + VIEWPORT_SIZE_X
+
+    cp a, d
+    jr c, .endCheck
 
     ld e, 1 ; is within screen
 

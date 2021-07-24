@@ -197,6 +197,8 @@ InitEnemyBSprite:
     call UpdateEnemyEffects
     pop hl
 
+    ld b, SCREEN_UPPER_OFFSET_Y
+    ld c, SCREEN_LEFT_OFFSET_X
     call CheckEnemyInScreen
     and a
     jr z, .end
