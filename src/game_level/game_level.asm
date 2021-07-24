@@ -178,14 +178,20 @@ UpdateGameLevel:
     call ResetShadowOAM
 
     ; insert game logic here and update shadow OAM data
-    call UpdateGameLevelTimer ; update timer
     call UpdateParticleEffect
+    call UpdateGameLevelTimer ; update timer
+
+    ld a, [wPlayer_HP]
+    and a, a
+    jr z, .updateRest
     
+.updatePlayer
     call UpdatePlayerMovement
     call UpdatePlayerAttack
     call UpdatePlayerCamera
     call UpdatePlayerShadowOAM
 
+.updateRest
     call UpdateAllEnemies    
     call UpdateBullets
     call UpdatePowerUpShadowOAM
@@ -339,17 +345,12 @@ UpdateEndGameTimer::
     and a, a 
     jr z, .playerWon
 
-.playerLost
-    ;call SaveCurrentScore
-    ;
-    ;; Unlock next stage.
-    ;ld a, [wSelectedStage]
-    ;inc a
-    ;ld [wRWIndex], a
-    ;call UnlockStage
-;
-    ;ld hl, JumpLoadWinScreen
-    ;call SetProgramLoopCallback
+.playerLost ; player lost all health
+    ld a, LOSE_REASON_HP
+    ld [wLoseReason], a
+    ld hl, JumpLoadLoseScreen
+    call SetProgramLoopCallback
+    ret
 
 .playerWon ; all enemies defeated
     call SaveCurrentScore

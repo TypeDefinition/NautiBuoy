@@ -313,6 +313,7 @@ UpdatePlayerAttack::
     WARNING: this is assuming health < 127. Want to prevent underflow, we defined bit 7 to be for -ve
 */
 PlayerIsHit::
+.checkHealth
     ld a, [wPlayer_HP]
 
     ; deduct health 
@@ -320,9 +321,25 @@ PlayerIsHit::
     ld [wPlayer_HP], a
 
     call UpdatePlayerHPUI
-
     and a ; check health <= 0
-    jr z, .dead
+    jr nz, .particleEffect
+
+    call PlayerDeathSFX
+    ld a, GAME_END
+    ld [wGameEnd], a
+
+.particleEffect
+    ld b, TYPE_PARTICLE_POWER_KILL_ENEMY
+    ld c, PARTICLE_KILL_PLAYER_ALIVE_TIME
+
+    ld a, [wPlayer_PosY]
+    ld d, a
+    ld a, [wPlayer_PosX]
+    ld e, a
+
+    push hl ; PUSH hl 
+    call SpawnParticleEffect
+    pop hl ; POP hl, im not sure, if i dont put this here everything just dies?
 
 .damageEffect ; not dead, set damage flicker effect and teleport to spawn    
     ld a, DAMAGE_INVINCIBILITY_EFFECT
@@ -358,13 +375,6 @@ PlayerIsHit::
     call PlayerGetsHitEnemyBehavior ; update enemy behavior for getting hit
     ret
 
-.dead
-    call PlayerDeathSFX
-    ld a, LOSE_REASON_HP
-    ld [wLoseReason], a
-    ld hl, JumpLoadLoseScreen
-    call SetProgramLoopCallback
-    ret
 
 /*  Player check collision with enemy sprites */
 PlayerSpriteCollisionCheck:
