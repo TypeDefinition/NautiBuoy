@@ -121,9 +121,6 @@ InitStage1::
     set_romx_bank BANK(Sprites)
     call UpdatePlayerShadowOAM
 
-    ;xor a
-    ;ld [wBossStateTracker], a
-
     ret
 
 InitStage2::
@@ -253,10 +250,4 @@ InitStage5::
     set_romx_bank BANK(Sprites)
     call UpdatePlayerShadowOAM
     
-    ret
-
-InitStage6::
-    ret
-
-InitStage7::
     ret

@@ -87,10 +87,6 @@ InitStage:
     jp z, InitStage4
     dec a
     jp z, InitStage5
-    dec a
-    jp z, InitStage6
-    dec a
-    jp z, InitStage7
 
     ; Default
     jp InitStage0
