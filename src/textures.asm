@@ -163,7 +163,7 @@ PlayerAnimation::
 
 /* Animation, sprite IDs for the enemy*/
 EnemyAAnimation::
-.upAnimation:: ; up and down has the same frames
+.upAnimation:: 
     ; Frame 1
     db $10
     db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
@@ -175,7 +175,7 @@ EnemyAAnimation::
     db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
     db $16
     db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
-.downAnimation:: ; up and down has the same frames
+.downAnimation 
     ; Frame 1
     db $10
     db OAMF_PAL0 | OAMF_PRI
@@ -187,19 +187,7 @@ EnemyAAnimation::
     db OAMF_PAL0 | OAMF_PRI
     db $16
     db OAMF_PAL0 | OAMF_PRI
-.rightAnimation::
-    ; Frame 1
-    db $1C
-    db OAMF_PAL0 | OAMF_PRI
-    db $1E
-    db OAMF_PAL0 | OAMF_PRI
-
-    ; Frame 2
-    db $20
-    db OAMF_PAL0 | OAMF_PRI
-    db $22
-    db OAMF_PAL0 | OAMF_PRI
-.leftAnimation::
+.leftAnimation
     ; Frame 1
     db $1E
     db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
@@ -211,6 +199,18 @@ EnemyAAnimation::
     db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
     db $20
     db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
+.rightAnimation
+    ; Frame 1
+    db $1C
+    db OAMF_PAL0 | OAMF_PRI
+    db $1E
+    db OAMF_PAL0 | OAMF_PRI
+
+    ; Frame 2
+    db $20
+    db OAMF_PAL0 | OAMF_PRI
+    db $22
+    db OAMF_PAL0 | OAMF_PRI
 .attackUpAnimation::
     ; Frame 1
     db $18
@@ -223,7 +223,7 @@ EnemyAAnimation::
     db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
     db $16
     db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
-.attackDownAnimation::
+.attackDownAnimation
     ; Frame 1
     db $18
     db OAMF_PAL0 | OAMF_PRI
@@ -235,21 +235,7 @@ EnemyAAnimation::
     db OAMF_PAL0 | OAMF_PRI
     db $16
     db OAMF_PAL0 | OAMF_PRI
-
-.attackRightAnimation::
-    ; Frame 1
-    db $1C
-    db OAMF_PAL0 | OAMF_PRI
-    db $24
-    db OAMF_PAL0 | OAMF_PRI
-
-    ; Frame 2
-    db $20
-    db OAMF_PAL0 | OAMF_PRI
-    db $22
-    db OAMF_PAL0 | OAMF_PRI
-
-.attackLeftAnimation::
+.attackLeftAnimation
     ; Frame 1
     db $24
     db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
@@ -261,6 +247,18 @@ EnemyAAnimation::
     db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
     db $20
     db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
+.attackRightAnimation
+    ; Frame 1
+    db $1C
+    db OAMF_PAL0 | OAMF_PRI
+    db $24
+    db OAMF_PAL0 | OAMF_PRI
+
+    ; Frame 2
+    db $20
+    db OAMF_PAL0 | OAMF_PRI
+    db $22
+    db OAMF_PAL0 | OAMF_PRI
 
 
 /* Enemy B sprite animation */
