@@ -27,6 +27,12 @@ wMapSizeX::
 wShadowSCData::
     ds 2 ; y pos, then x pos
 
+wEndTimer::
+    ds 2 ; after x number of frames go to win screen/lose screen, little endian, first is fraction, second int
+
+wGameEnd::
+    ds 1 
+
 SECTION "Game Level", ROM0
 ; Global Jumps
 JumpLoadGameLevel::
@@ -49,6 +55,9 @@ InitStageParam:
     ; Set Game Timer Frac
     xor a
     ld [wGameTimerFrac], a
+    ld [wEndTimer], a
+    ld [wEndTimer + 1], a
+    ld [wGameEnd], a
 
     call GetSelectedStageParamAddr
     inc hl
@@ -266,6 +275,10 @@ SetGameLevelTile::
     ret
 
 UpdateGameLevelTimer:
+    ld a, [wGameEnd]
+    and a, a
+    jr nz, UpdateEndGameTimer
+
     ; Update timer
     ld a, [wGameTimerFrac]
     add a, GAME_TIMER_INCREMENT
@@ -306,6 +319,52 @@ UpdateGameLevelTimer:
 
 .end
     ret
+
+/*  Update the end game timer */
+UpdateEndGameTimer::
+    ld a, [wEndTimer]
+    add a, GAME_TIMER_INCREMENT
+    ld [wEndTimer], a
+    ret nc
+
+    ld a, [wEndTimer + 1]
+    inc a ; add carry
+    ld [wEndTimer + 1], a
+
+    cp a, GAME_END_TIME
+    ret nz
+
+    ; check how the game ended, whether enemies all died or player died
+    ld a, [wCurrLevelEnemiesNo]
+    and a, a 
+    jr z, .playerWon
+
+.playerLost
+    ;call SaveCurrentScore
+    ;
+    ;; Unlock next stage.
+    ;ld a, [wSelectedStage]
+    ;inc a
+    ;ld [wRWIndex], a
+    ;call UnlockStage
+;
+    ;ld hl, JumpLoadWinScreen
+    ;call SetProgramLoopCallback
+
+.playerWon ; all enemies defeated
+    call SaveCurrentScore
+    
+    ; Unlock next stage.
+    ld a, [wSelectedStage]
+    inc a
+    ld [wRWIndex], a
+    call UnlockStage
+
+    ld hl, JumpLoadWinScreen
+    call SetProgramLoopCallback
+
+    ret
+
 
 PauseGame::
     ; Set STAT interrupt flags.

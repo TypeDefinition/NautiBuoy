@@ -726,9 +726,13 @@ HitEnemy::
     ; reduce enemy counter by 1
     ld a, [wCurrLevelEnemiesNo]
     dec a
-    jr z, .win
+    jr nz, .spawnEffects
     ld [wCurrLevelEnemiesNo], a
 
+    ld a, GAME_END
+    ld [wGameEnd], a
+
+.spawnEffects
     ; spawn particle effects
     inc hl
     ld a, [hli] ; get y pos
@@ -753,19 +757,6 @@ HitEnemy::
     call SpawnParticleEffect
     call EnemyDeathSFX
     call UpdateEnemyCounterUI
-    ret
-    
-.win ; If win, go to win screen.
-    call SaveCurrentScore
-    
-    ; Unlock next stage.
-    ld a, [wSelectedStage]
-    inc a
-    ld [wRWIndex], a
-    call UnlockStage
-
-    ld hl, JumpLoadWinScreen
-    call SetProgramLoopCallback
 
 .end
     ret

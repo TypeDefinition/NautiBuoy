@@ -271,6 +271,9 @@ DEF LEVEL4_MAP_SIZE_X EQU $0100
 DEF LEVELXX_MAP_SIZE_Y EQU $00D0
 DEF LEVELXX_MAP_SIZE_X EQU $00D0
 
+/*************************************************Game Win/Lose States*************************************************/
+DEF GAME_END EQU 1
+DEF GAME_END_TIME EQU 2
 
 INCLUDE "./src/definitions/tile_definitions.inc"
 
