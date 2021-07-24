@@ -189,7 +189,7 @@ DEF TIMER_POWER_UP_INC_AMT EQU 10 ; in seconds
 /*************************************************Collision*************************************************/
 DEF PLAYER_COLLIDER_SIZE EQU $08
 DEF PLAYER_ENEMY_COLLIDER_SIZE EQU $04
-DEF ENEMY_COLLIDER_SIZE EQU $00
+DEF ENEMY_COLLIDER_SIZE EQU $01
 DEF BOSS_COLLIDER_SIZE EQU $10
 DEF ENEMY_BULLET_COLLIDER_SIZE EQU $08 ; hit box for enemy vs bullet
 DEF BOSS_ENEMY_COLLIDER_SIZE EQU $10
