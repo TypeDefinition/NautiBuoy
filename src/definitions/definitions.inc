@@ -41,10 +41,11 @@ DEF PLAYER_WALK_FRAMES EQU 2
 
 /*************************************************Enemies*************************************************/
 DEF TYPE_ENEMYA EQU 0  ; bit 2, 3 & 4, %000 000 00
-DEF TYPE_ENEMYB EQU 4  ; bit 2, 3 & 4, %000 001 00
-DEF TYPE_ENEMYC EQU 8  ; bit 2, 3 & 4, %000 010 00
-DEF TYPE_ENEMYD EQU 12 ; bit 2, 3 & 4, %000 011 00
-DEF TYPE_ENEMY_BOSS EQU 16 ; bit 2, 3 & 4, %000 100 00
+DEF TYPE_ENEMYA_MOV EQU 4 ; bit 2, 3 & 4, %000 001 00
+DEF TYPE_ENEMYB EQU 8 ; bit 2, 3 & 4, %000 010 00
+DEF TYPE_ENEMYC EQU 12 ; bit 2, 3 & 4, %000 011 00
+DEF TYPE_ENEMYD EQU 16 ; bit 2, 3 & 4, %000 100 00
+DEF TYPE_ENEMY_BOSS EQU 20 ; bit 2, 3 & 4, %000 101 00
 
 DEF ENEMY_BULLET_NUM EQU 10
 

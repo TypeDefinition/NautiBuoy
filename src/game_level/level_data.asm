@@ -49,7 +49,7 @@ Stage0EnemyData::
     db TYPE_ENEMYA | FLAG_ENEMY | FLAG_ACTIVE   
     db 7 * 8 ; y 
     db 10 * 8 ; x
-    db DIR_DOWN
+    db DIR_UP
     db ENEMY_TYPEA_HEALTH
     dw ENEMY_TYPEA_VELOCITY ; cpu allocate and auto store in little endian
     db ENEMY_TYPEA_WALK_FRAMES
@@ -57,12 +57,12 @@ Stage0EnemyData::
     db TYPE_ENEMYA | FLAG_ENEMY | FLAG_ACTIVE   
     db 12 * 8 ; y 
     db 17 * 8 ; x
-    db DIR_DOWN
+    db DIR_UP
     db ENEMY_TYPEA_HEALTH
     dw ENEMY_TYPEA_VELOCITY ; cpu allocate and auto store in little endian
     db ENEMY_TYPEA_WALK_FRAMES
 .enemyThree ; very right, moving up and down
-    db TYPE_ENEMYA | FLAG_ENEMY | FLAG_ACTIVE   
+    db TYPE_ENEMYA_MOV | FLAG_ENEMY | FLAG_ACTIVE   
     db 12 * 8 ; y 
     db 22 * 8 ; x
     db DIR_UP
@@ -73,15 +73,15 @@ Stage0EnemyData::
     db TYPE_ENEMYA | FLAG_ENEMY | FLAG_ACTIVE   
     db 2 * 8 ; y 
     db 24 * 8 ; x
-    db DIR_DOWN
+    db DIR_UP
     db ENEMY_TYPEA_HEALTH
     dw ENEMY_TYPEA_VELOCITY ; cpu allocate and auto store in little endian
     db ENEMY_TYPEA_WALK_FRAMES
 .enemyFive ; ON THE very top, moving
-    db TYPE_ENEMYA | FLAG_ENEMY | FLAG_ACTIVE   
+    db TYPE_ENEMYA_MOV | FLAG_ENEMY | FLAG_ACTIVE   
     db 2 * 8 ; y 
     db 2 * 8 ; x
-    db DIR_LEFT
+    db DIR_RIGHT
     db ENEMY_TYPEA_HEALTH
     dw ENEMY_TYPEA_VELOCITY ; cpu allocate and auto store in little endian
     db ENEMY_TYPEA_WALK_FRAMES
@@ -93,7 +93,7 @@ Stage1EnemyData::
     db TYPE_ENEMYA | FLAG_ENEMY | FLAG_ACTIVE   
     db 12 * 8 ; y 
     db 2 * 8 ; x
-    db DIR_RIGHT
+    db DIR_LEFT
     db ENEMY_TYPEA_HEALTH
     dw ENEMY_TYPEA_VELOCITY ; cpu allocate and auto store in little endian
     db ENEMY_TYPEA_WALK_FRAMES
@@ -117,15 +117,15 @@ Stage1EnemyData::
     db TYPE_ENEMYA | FLAG_ENEMY | FLAG_ACTIVE   
     db 7 * 8 ; y 
     db 21 * 8 ; x
-    db DIR_DOWN
+    db DIR_UP
     db ENEMY_TYPEA_HEALTH
     dw ENEMY_TYPEA_VELOCITY ; cpu allocate and auto store in little endian
     db ENEMY_TYPEA_WALK_FRAMES
 .enemyFive ; squid, little bit on the top, moving
-    db TYPE_ENEMYA | FLAG_ENEMY | FLAG_ACTIVE   
+    db TYPE_ENEMYA_MOV | FLAG_ENEMY | FLAG_ACTIVE   
     db 2 * 8 ; y 
     db 16 * 8 ; x
-    db DIR_RIGHT
+    db DIR_LEFT
     db ENEMY_TYPEA_HEALTH
     dw ENEMY_TYPEA_VELOCITY ; cpu allocate and auto store in little endian
     db ENEMY_TYPEA_WALK_FRAMES
@@ -141,7 +141,7 @@ Stage1EnemyData::
     db TYPE_ENEMYA | FLAG_ENEMY | FLAG_ACTIVE   
     db 21 * 8 ; y 
     db 19 * 8 ; x
-    db DIR_UP
+    db DIR_DOWN
     db ENEMY_TYPEA_HEALTH
     dw ENEMY_TYPEA_VELOCITY ; cpu allocate and auto store in little endian
     db ENEMY_TYPEA_WALK_FRAMES
@@ -185,7 +185,7 @@ Stage2EnemyData::
     db TYPE_ENEMYA | FLAG_ENEMY | FLAG_ACTIVE   
     db 16 * 8 ; y 
     db 19 * 8 ; x
-    db DIR_DOWN
+    db DIR_UP
     db ENEMY_TYPEA_HEALTH
     dw ENEMY_TYPEA_VELOCITY ; cpu allocate and auto store in little endian
     db ENEMY_TYPEA_WALK_FRAMES
@@ -229,7 +229,7 @@ Stage3EnemyData::
     db TYPE_ENEMYA | FLAG_ENEMY | FLAG_ACTIVE   
     db 19 * 8 ; y 
     db 10 * 8 ; x
-    db DIR_LEFT
+    db DIR_RIGHT
     db ENEMY_TYPEA_HEALTH
     dw ENEMY_TYPEA_VELOCITY ; cpu allocate and auto store in little endian
     db ENEMY_TYPEA_WALK_FRAMES
@@ -237,7 +237,7 @@ Stage3EnemyData::
     db TYPE_ENEMYA | FLAG_ENEMY | FLAG_ACTIVE   
     db 29 * 8 ; y 
     db 28 * 8 ; x
-    db DIR_UP
+    db DIR_DOWN
     db ENEMY_TYPEA_HEALTH
     dw ENEMY_TYPEA_VELOCITY ; cpu allocate and auto store in little endian
     db ENEMY_TYPEA_WALK_FRAMES
@@ -265,7 +265,7 @@ Stage4EnemyData::
     db TYPE_ENEMYA | FLAG_ENEMY | FLAG_ACTIVE   
     db 19 * 8 ; y 
     db 19 * 8 ; x
-    db DIR_DOWN 
+    db DIR_UP 
     db ENEMY_TYPEA_HEALTH
     dw ENEMY_TYPEA_VELOCITY ; cpu allocate and auto store in little endian
     db ENEMY_TYPEA_WALK_FRAMES
@@ -278,10 +278,10 @@ Stage4EnemyData::
     dw ENEMY_TYPEC_VELOCITY ; cpu allocate and auto store in little endian
     db ENEMY_TYPEC_NORMAL_STATE_MAX_FRAME
 .enemyFive ; squid moving, above
-    db TYPE_ENEMYA | FLAG_ENEMY | FLAG_ACTIVE   
+    db TYPE_ENEMYA_MOV | FLAG_ENEMY | FLAG_ACTIVE   
     db 6 * 8 ; y 
     db 19 * 8 ; x
-    db DIR_RIGHT
+    db DIR_LEFT
     db ENEMY_TYPEA_HEALTH
     dw ENEMY_TYPEA_VELOCITY ; cpu allocate and auto store in little endian
     db ENEMY_TYPEA_WALK_FRAMES

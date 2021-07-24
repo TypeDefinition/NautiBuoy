@@ -122,10 +122,12 @@ UpdateAllEnemies::
 
 .updateEnemy
     and a, BIT_MASK_TYPE ; get the type only
+    jr z, .updateEnemyA
 
 .enemyTypeA ; turret
-    cp a, TYPE_ENEMYA
+    cp a, TYPE_ENEMYA_MOV
     jr nz, .enemyTypeB
+.updateEnemyA
     call UpdateEnemyA ; call correct update for enemy
     jr .nextLoop
 .enemyTypeB ; turtle
@@ -246,10 +248,12 @@ EnemyShoot::
     ; check what projectile type it should be
     ld a, [de] ; get flags
     and a, BIT_MASK_TYPE
+    jr z, .inkType
 
 .checkType
-    cp a, TYPE_ENEMYA ; check if the squid
+    cp a, TYPE_ENEMYA_MOV ; check if the squid
     jr nz, .spikeBullet
+.inkType
     ld a, TYPE_BULLET_INK
     jr .initProjectile
     

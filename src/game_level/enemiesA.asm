@@ -9,13 +9,23 @@ INCLUDE "./src/include/entities.inc"
         - mostly based on animation
     Parameters:
     - hl: the starting address of the enemy 
+    - a : enemy type
 */
 UpdateEnemyA::
     push hl ; PUSH hl = enemy address
 
+    cp a, TYPE_ENEMYA_MOV
+    jr nz, .checkShoot
+
+    push hl ; PUSH hl = enemy address
+    call EnemyBounceOnWallMovement
+    pop hl ; POP hl = enemy address
+
+.checkShoot
     ld de, Character_Direction
     add hl, de ; get direction
     ld a, [hli]
+    xor a, %00000001 ; invert last bit, get opposite direction for shooting
     ld c, a ; c = direction
 
     inc hl

@@ -166,64 +166,54 @@ EnemyAAnimation::
 .upAnimation:: 
     ; Frame 1
     db $10
-    db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
+    db OAMF_PAL0 | OAMF_PRI
     db $12
-    db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
+    db OAMF_PAL0 | OAMF_PRI
 
     ; Frame 2
     db $14
-    db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
+    db OAMF_PAL0 | OAMF_PRI
     db $16
-    db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
+    db OAMF_PAL0 | OAMF_PRI
 .downAnimation 
     ; Frame 1
     db $10
-    db OAMF_PAL0 | OAMF_PRI
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
     db $12
-    db OAMF_PAL0 | OAMF_PRI
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
 
     ; Frame 2
     db $14
-    db OAMF_PAL0 | OAMF_PRI
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
     db $16
-    db OAMF_PAL0 | OAMF_PRI
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
+
 .leftAnimation
     ; Frame 1
-    db $1E
-    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
     db $1C
-    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
+    db OAMF_PAL0 | OAMF_PRI
+    db $1E
+    db OAMF_PAL0 | OAMF_PRI
 
     ; Frame 2
-    db $22
-    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
     db $20
-    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
+    db OAMF_PAL0 | OAMF_PRI
+    db $22
+    db OAMF_PAL0 | OAMF_PRI
 .rightAnimation
     ; Frame 1
-    db $1C
-    db OAMF_PAL0 | OAMF_PRI
     db $1E
-    db OAMF_PAL0 | OAMF_PRI
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
+    db $1C
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
 
     ; Frame 2
-    db $20
-    db OAMF_PAL0 | OAMF_PRI
     db $22
-    db OAMF_PAL0 | OAMF_PRI
-.attackUpAnimation::
-    ; Frame 1
-    db $18
-    db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
-    db $1A
-    db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
+    db $20
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
 
-    ; Frame 2
-    db $14
-    db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
-    db $16
-    db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
-.attackDownAnimation
+.attackUpAnimation::
     ; Frame 1
     db $18
     db OAMF_PAL0 | OAMF_PRI
@@ -235,31 +225,42 @@ EnemyAAnimation::
     db OAMF_PAL0 | OAMF_PRI
     db $16
     db OAMF_PAL0 | OAMF_PRI
+.attackDownAnimation
+    ; Frame 1
+    db $18
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
+    db $1A
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
+
+    ; Frame 2
+    db $14
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
+    db $16
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
 .attackLeftAnimation
     ; Frame 1
-    db $24
-    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
     db $1C
-    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
+    db OAMF_PAL0 | OAMF_PRI
+    db $24
+    db OAMF_PAL0 | OAMF_PRI
 
     ; Frame 2
-    db $22
-    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
     db $20
-    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
+    db OAMF_PAL0 | OAMF_PRI
+    db $22
+    db OAMF_PAL0 | OAMF_PRI
 .attackRightAnimation
     ; Frame 1
-    db $1C
-    db OAMF_PAL0 | OAMF_PRI
     db $24
-    db OAMF_PAL0 | OAMF_PRI
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
+    db $1C
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
 
     ; Frame 2
-    db $20
-    db OAMF_PAL0 | OAMF_PRI
     db $22
-    db OAMF_PAL0 | OAMF_PRI
-
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
+    db $20
+    db OAMF_PAL0 | OAMF_XFLIP | OAMF_PRI
 
 /* Enemy B sprite animation */
 EnemyBAnimation::
