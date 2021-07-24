@@ -25,11 +25,10 @@ UpdateEnemyA::
     ld a, [hl] ; first part of updateFrameCounter
     add a, ENEMY_TYPEA_ANIMATION_UPDATE_SPEED
     ld [hli], a ; store the new value
-    ld a, [hl] ; a = int part of updateFrameCounter
-    ld d, a ; d = int part of updateFrameCounter
     jr nc, .endUpdateEnemyA
 
     ; update frames
+    ld a, [hl] ; a = int part of updateFrameCounter
     inc a ; add the carry
 
     cp a, ENEMY_TYPEA_ATTACK_FRAME ; check if shoot
@@ -46,21 +45,21 @@ UpdateEnemyA::
 .attackFinish
     ; a = int part of updateFrameCounter, hl = updateFrameCounter address
     ld d, a ; reg d = int part of updateFrameCounter
-    push hl ; PUSH HL = updateFrameCounter address
+    
     inc hl
-    push hl ; PUSH HL = curr animation frame address
-
     cp a, ENEMY_TYPEA_ATTACK_STATE_FRAME ; check if go attack state
     jr nz, .updateAnimationFrames
 
-    ; reach attack state, update variables
+    ; reach attack state, reset variables
     ld a, -1
     ld [hli], a ; currFrame = -1
     ld a, ENEMY_TYPEA_ATTACK_ANIM_MAX_FRAMES
     ld [hl], a ; init max frame to be the attack frames
 
+    dec hl 
+
 .updateAnimationFrames
-    pop hl ; POP hl = curr animation frame address
+    ; hl = curr animation frame address, d = int part of updateFrameCounter
     ld a, [hli] ; get curr animation frame
     inc a ; go next frame
     ld b, a ; b stores curr frame
@@ -81,19 +80,19 @@ UpdateEnemyA::
     ld d, 0 ; int part of updateFrameCounter = 0
 
 .continueAnimation ; store the relevant animation info
-    ; d = updateFrameCounter, b = currFrame
-    pop hl ; POP hl = updateFrameCounter address
-    ld a, d 
-    ld [hli], a ; store updateFrameCounter
-
+    ; hl = max frames address, d = updateFrameCounter, b = currFrame
+    dec hl
     ld a, b
     ld [hl], a ; store curr frame
+
+    dec hl 
+    ld a, d 
+    ld [hl], a ; store updateFrameCounter
 
 .endUpdateEnemyA
     pop hl ; POP hl = enemy address
     
     call InitEnemyASprite
-
     ret
 
 
