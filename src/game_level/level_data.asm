@@ -115,8 +115,8 @@ Stage1EnemyData::
     db ENEMY_TYPEB_WALK_MAX_FRAMES
 .enemyFour ; squid, little bit on the top right, not moving
     db TYPE_ENEMYA | FLAG_ENEMY | FLAG_ACTIVE   
-    db 7 * 8 ; y 
-    db 21 * 8 ; x
+    db 6 * 8 ; y 
+    db 22 * 8 ; x
     db DIR_UP
     db ENEMY_TYPEA_HEALTH
     dw ENEMY_TYPEA_VELOCITY ; cpu allocate and auto store in little endian
@@ -414,7 +414,7 @@ Level3PowerUpData::
     db HEART_POWERUP_SPRITE_ID
 .powerUpThree ; middle, middle, time, after the squid
     db TYPE_TIME_POWERUP | FLAG_ACTIVE
-    db 16 * 8 ; y 
+    db 15 * 8 ; y 
     db 15 * 8 ; x
     db TIME_POWERUP_SPRITE_ID
 .powerUpFour ; very bottom right

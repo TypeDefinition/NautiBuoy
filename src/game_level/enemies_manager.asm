@@ -726,8 +726,8 @@ HitEnemy::
     ; reduce enemy counter by 1
     ld a, [wCurrLevelEnemiesNo]
     dec a
-    jr nz, .spawnEffects
     ld [wCurrLevelEnemiesNo], a
+    jr nz, .spawnEffects
 
     ld a, GAME_END
     ld [wGameEnd], a
