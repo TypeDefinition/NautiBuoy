@@ -373,6 +373,7 @@ PlayerIsHit::
     or a, FLICKER_EFFECT_FLAG ; add flicker effect
     ld [wPlayer_Flags], a 
 
+    call DisableSpeedPowerUpUI
     call PlayerGetsHitEnemyBehavior ; update enemy behavior for getting hit
     ret
 
