@@ -677,3 +677,38 @@ BossCheckHealth::
     ld [hl], a ; reset update frame counter
 
     ret
+
+/*  Reset the boss spawn position
+    Parameters:
+        - hl, enemy address
+    registers changed:
+        - hl
+        - de
+        - af
+*/
+ResetBossLocation::
+    push hl ; PUSH HL = enemy address
+
+    ; get spawn position
+    ld de, Character_SpawnPosition
+    add hl, de
+    ld a, [hli] 
+    ld d, a
+    ld a, [hl]
+    ld e, a
+
+    ; d = spawn pos y, e = spawn pos x
+    pop hl ; POP HL = enemy address
+
+    inc hl
+    inc hl
+
+    ld a, d
+    ld [hli], a ; update pos Y
+    inc hl 
+    inc hl
+
+    ld a, e
+    ld [hl], a ; update pos x
+
+    ret
