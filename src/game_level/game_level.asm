@@ -98,7 +98,7 @@ InitStage:
     jp z, InitStage5
 
     ; Default
-    jp InitStage0
+    jp InitStage5
 
 LoadGameLevel:
     di ; Disable Interrupts
