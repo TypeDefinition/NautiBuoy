@@ -314,17 +314,18 @@ UpdatePlayerAttack::
 */
 PlayerIsHit::
 .checkHealth
+    call PlayerDeathSFX
+    
     ld a, [wPlayer_HP]
 
     ; deduct health 
     dec a
     ld [wPlayer_HP], a
-
+    
     call UpdatePlayerHPUI
     and a ; check health <= 0
     jr nz, .particleEffect
 
-    call PlayerDeathSFX
     ld a, GAME_END
     ld [wGameEnd], a
 

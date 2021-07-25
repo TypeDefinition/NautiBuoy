@@ -11,38 +11,38 @@ StageParam::
     ; Stage 0
     db "01"     ; 2-Byte stage name.
     dw_BE $0120 ; Stage Time in BCD format. (Yes this is in Big Endian.)
-    dw_BE $0050 ; Time (in BCD) to get 2 Stars. (Player gets 1 star as long as they complete the stage.)
+    dw_BE $0070 ; Time (in BCD) to get 2 Stars. (Player gets 1 star as long as they complete the stage.)
     dw_BE $0090 ; Time (in BCD) to get 3 Stars.
 
     ; Stage 1
     db "02"
     dw_BE $0120
-    dw_BE $0050
+    dw_BE $0070
     dw_BE $0090
     
     ; Stage 2
     db "03"
     dw_BE $0120
-    dw_BE $0050
-    dw_BE $0090
+    dw_BE $0070
+    dw_BE $0085
     
     ; Stage 3
     db "04"
     dw_BE $0120
     dw_BE $0050
-    dw_BE $0090
+    dw_BE $0065
     
     ; Stage 4
     db "05"
     dw_BE $0120
-    dw_BE $0050
-    dw_BE $0090
+    dw_BE $0040
+    dw_BE $0060
     
     ; Stage 5
     db "XX"
     dw_BE $0120
-    dw_BE $0050
-    dw_BE $0090
+    dw_BE $0060
+    dw_BE $0075
 
 ; Get the starting address of the selected stage's parameters.
 ; @param [wSelectedStage]
