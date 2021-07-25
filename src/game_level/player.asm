@@ -666,31 +666,31 @@ UpdatePlayerShadowOAM::
     ; a = power up flag
     push af ; PUSH AF = power up flag
 
-    ld a, [wPlayer_Direction]
-
-    ; do a dir check for sprite
-    ASSERT DIR_UP == 0 
-    and a, a ; cp a, 0
-    jr z, .upSprite
-    ASSERT DIR_DOWN == 1
-    dec a
-    jr z, .downSprite
-    ASSERT DIR_LEFT == 2
-    dec a
-    jr z, .leftSprite
-    ASSERT DIR_RIGHT > 2
-
-.rightSprite
-    ld de, PlayerAnimation.rightAnimation
-    jr .endSpriteDir
-.upSprite
     ld de, PlayerAnimation.upAnimation
-    jr .endSpriteDir
-.downSprite
-    ld de, PlayerAnimation.downAnimation
-    jr .endSpriteDir
-.leftSprite
-    ld de, PlayerAnimation.leftAnimation
+
+    ; check if in speed mode
+    ld a, [wPlayerEffects_SpeedPowerUpTimer] 
+    and a, a
+    jr z, .initDirSprite
+
+    ld de, PlayerAnimation.upSpeedAnimation
+
+    cp a, SPEED_POWER_UP_SLOW_ANIM_EFFECT
+    jr nc, .initDirSprite
+    ld de, PlayerAnimation.upSpeedDecAnimation
+
+.initDirSprite
+    ; de = type of animation address
+    ld a, [wPlayer_Direction]
+    sla a 
+    sla a ; dir x 4
+    add a, a ; x 8 
+
+    add a, e
+    ld e, a
+    ld a, d
+    adc a, 0
+    ld d, a
 
 .endSpriteDir
     ld a, [wPlayer_CurrAnimationFrame]

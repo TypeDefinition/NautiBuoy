@@ -16,6 +16,7 @@ Sprites::
     INCBIN "./tile_data/projectiles.2bpp"
     INCBIN "./tile_data/ParticleEffects.2bpp"
     INCBIN "./tile_data/BossEnemy.2bpp"
+    INCBIN "./tile_data/playerSpeedVer.2bpp"
 .end::
 
 ParticleEffectSprites::
@@ -123,7 +124,6 @@ PlayerAnimation::
     db OAMF_PAL0 | OAMF_PRI | OAMF_YFLIP
     db 6
     db OAMF_PAL0 | OAMF_PRI | OAMF_YFLIP
-
 .downAnimation::
     ; Frame 1
     db 0
@@ -136,19 +136,6 @@ PlayerAnimation::
     db OAMF_PAL0 | OAMF_PRI 
     db 6
     db OAMF_PAL0 | OAMF_PRI
-
-.rightAnimation::
-    db 8
-    db OAMF_PAL0 | OAMF_PRI
-    db 10
-    db OAMF_PAL0 | OAMF_PRI
-
-    ; Frame 2
-    db 12
-    db OAMF_PAL0 | OAMF_PRI
-    db 14
-    db OAMF_PAL0 | OAMF_PRI
-
 .leftAnimation::
     db 10
     db OAMF_PAL0 | OAMF_PRI | OAMF_XFLIP
@@ -160,6 +147,111 @@ PlayerAnimation::
     db OAMF_PAL0 | OAMF_PRI | OAMF_XFLIP
     db 12
     db OAMF_PAL0 | OAMF_PRI | OAMF_XFLIP
+.rightAnimation::
+    db 8
+    db OAMF_PAL0 | OAMF_PRI
+    db 10
+    db OAMF_PAL0 | OAMF_PRI
+
+    ; Frame 2
+    db 12
+    db OAMF_PAL0 | OAMF_PRI
+    db 14
+    db OAMF_PAL0 | OAMF_PRI
+.upSpeedAnimation::
+    ; Frame 1
+    db $F0
+    db OAMF_PAL0 | OAMF_PRI | OAMF_YFLIP
+    db $F2
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
+
+    ; Frame 2
+    db $F4
+    db OAMF_PAL0 | OAMF_PRI | OAMF_YFLIP
+    db $F6
+    db OAMF_PAL0 | OAMF_PRI | OAMF_YFLIP
+.downSpeedAnimation::
+    ; Frame 1
+    db $F0
+    db OAMF_PAL0 | OAMF_PRI 
+    db $F2
+    db OAMF_PAL0 | OAMF_PRI
+
+    ; Frame 2
+    db $F4
+    db OAMF_PAL0 | OAMF_PRI 
+    db $F6
+    db OAMF_PAL0 | OAMF_PRI
+.leftSpeedAnimation::
+    db $FA
+    db OAMF_PAL0 | OAMF_PRI | OAMF_XFLIP
+    db $F8
+    db OAMF_PAL0 | OAMF_PRI | OAMF_XFLIP
+
+    ; Frame 2
+    db $FE
+    db OAMF_PAL0 | OAMF_PRI | OAMF_XFLIP
+    db $FC
+    db OAMF_PAL0 | OAMF_PRI | OAMF_XFLIP
+.rightSpeedAnimation::
+    db $F8
+    db OAMF_PAL0 | OAMF_PRI
+    db $FA
+    db OAMF_PAL0 | OAMF_PRI
+
+    ; Frame 2
+    db $FC
+    db OAMF_PAL0 | OAMF_PRI
+    db $FE
+    db OAMF_PAL0 | OAMF_PRI
+    
+.upSpeedDecAnimation::
+    ; Frame 1
+    db 0
+    db OAMF_PAL0 | OAMF_PRI | OAMF_YFLIP
+    db 2
+    db OAMF_PAL0 | OAMF_YFLIP | OAMF_PRI
+
+    ; Frame 2
+    db $F4
+    db OAMF_PAL0 | OAMF_PRI | OAMF_YFLIP
+    db $F6
+    db OAMF_PAL0 | OAMF_PRI | OAMF_YFLIP
+.downSpeedDecAnimation::
+    ; Frame 1
+    db 0
+    db OAMF_PAL0 | OAMF_PRI 
+    db 2
+    db OAMF_PAL0 | OAMF_PRI
+
+    ; Frame 2
+    db $F4
+    db OAMF_PAL0 | OAMF_PRI 
+    db $F6
+    db OAMF_PAL0 | OAMF_PRI
+.leftSpeedDecAnimation::
+    db 10
+    db OAMF_PAL0 | OAMF_PRI | OAMF_XFLIP
+    db 8
+    db OAMF_PAL0 | OAMF_PRI | OAMF_XFLIP
+
+    ; Frame 2
+    db $FE
+    db OAMF_PAL0 | OAMF_PRI | OAMF_XFLIP
+    db $FC
+    db OAMF_PAL0 | OAMF_PRI | OAMF_XFLIP
+.rightSpeedDecAnimation::
+    db 8
+    db OAMF_PAL0 | OAMF_PRI
+    db 10
+    db OAMF_PAL0 | OAMF_PRI
+
+    ; Frame 2
+    db $FC
+    db OAMF_PAL0 | OAMF_PRI
+    db $FE
+    db OAMF_PAL0 | OAMF_PRI
+
 
 /* Animation, sprite IDs for the enemy*/
 EnemyAAnimation::
