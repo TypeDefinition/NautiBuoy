@@ -36,6 +36,9 @@ DEF FIRE_RATE_UPDATE_SPEED EQU 35 ; amt to add to the fraction part
 DEF FIRE_RATE EQU 3 ; amt to hit before can fire again
 DEF PLAYER_ANIMATION_UPDATE_SPEED EQU $10
 
+DEF INPUT_TIME EQU 1
+DEF INPUT_UPDATE_SPEED EQU 150
+
 ; For Animation Frames
 DEF PLAYER_WALK_FRAMES EQU 2
 
