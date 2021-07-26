@@ -51,18 +51,24 @@ Story0::
 .end::
 
 Story1::
+    db "Mei now tightly pressed between the door and Yuzu who continued to let her hands wander, as she began to play with the bottom of Mei's shirt."
+    db "Mei let a loud groan as Yuzu grabbed her firmly, lifting her to straddle her waist to which she responded eagerly, wrapping her legs tightly around the assertive blond."
 .end::
 
 Story2::
+    db "Story Part 3"
 .end::
 
 Story3::
+    db "Story Part 4"
 .end::
 
 Story4::
+    db "Story Part 5"
 .end::
 
 Story5::
+    db "Story Part 6"
 .end::
 
 ; Get the starting address of the selected stage's parameters.

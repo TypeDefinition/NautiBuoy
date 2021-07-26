@@ -3,6 +3,7 @@ INCLUDE "./src/include/util.inc"
 INCLUDE "./src/include/hUGE.inc"
 INCLUDE "./src/definitions/definitions.inc"
 
+; MAX_TEXT_ROWS*MAX_TEXT_COLS MUST BE SMALLER THAN UPDATE_QUEUE_SIZE!
 DEF MAX_TEXT_ROWS EQU 9
 DEF MAX_TEXT_COLS EQU 18
 DEF UTI_TEXT_START EQU 8*32+1
@@ -63,14 +64,27 @@ InitStoryText:
     ld [wRow], a
     ld [wCol], a
 
-    mem_copy Story0, wTextBuffer, Story0.end-Story0
+    ld a, [wSelectedStage]
+/*FOR N, 1, MAX_STAGES
+:   dec a
+    jr nz, :+
+    mem_copy Story{u:N}, wTextBuffer, Story{u:N}.end-Story{u:N}
+    ld a, HIGH(wTextBuffer+(Story{u:N}.end-Story{u:N}))
+    ld [wPointerEnd], a
+    ld a, LOW(wTextBuffer+(Story{u:N}.end-Story{u:N}))
+    ld [wPointerEnd+1], a
+    jp .end
+ENDR*/
+
+    ; Default
+:   mem_copy Story0, wTextBuffer, Story0.end-Story0
     ld a, HIGH(wTextBuffer+(Story0.end-Story0))
     ld [wPointerEnd], a
     ld a, LOW(wTextBuffer+(Story0.end-Story0))
     ld [wPointerEnd+1], a
 
 .end
-:   ret
+    ret
 
 LoadStoryMode:
     di ; Disable Interrupts
@@ -112,6 +126,13 @@ LoadStoryMode:
     ret
 
 UpdateStoryMode:
+    ; Update Sound
+    set_romx_bank BANK(MainMenuBGM)
+    call _hUGE_dosound
+
+    ; Update Input
+    call UpdateInput
+
     ld a, [wPointer]
     ld h, a
     ld a, [wPointer+1]
@@ -122,14 +143,48 @@ UpdateStoryMode:
     ld a, [wPointerEnd+1]
     ld c, a
 
+    ; If wPointer == wPointerEnd && wWordLength == 0, we have reached the end of the story text.
+    ; If we do not check for wWordLength, the last word may not be printed if it is on a new line.
+.checkReachedEnd
     call BCCompareHL
-    jr z, .end
+    jr nz, .checkLastRow
+    ld a, [wWordLength]
+    cp a, $00
+    jr z, .goToGame
 
+    ; If wRow >= MAX_TEXT_ROWS, show the next chunk.
+.checkLastRow
     ld a, [wRow]
     cp a, MAX_TEXT_ROWS
-    jr z, .end
+    jr z, .getNextChunk
 
     call PrintLine
+
+.getNextChunk
+    ld a, [wNewlyInputKeys]
+    bit PADB_A, a
+    jr z, .end
+
+    call ClearChunk
+
+    ; Update wCol & wRow
+    xor a
+    ld [wCol], a
+    ld [wRow], a
+    ; Update wTileIndex
+    ld a, HIGH(UTI_TEXT_START)
+    ld [wTileIndex], a
+    ld a, LOW(UTI_TEXT_START)
+    ld [wTileIndex+1], a
+    jr .end
+
+.goToGame
+    ld a, [wNewlyInputKeys]
+    bit PADB_A, a
+    jr z, .end
+
+    ld hl, JumpLoadGameLevel
+    call SetProgramLoopCallback
 
 .end
     call UpdateBGWindow
@@ -158,12 +213,46 @@ VBlankHandler:
     pop af
     reti
 
-GetNextWord:
+ClearChunk:
+    ld bc, UTI_TEXT_START
+
+    ld d, MAX_TEXT_ROWS
+.outerLoop
+    push bc
+
+    ; Inner Loop Start
+    ld e, MAX_TEXT_COLS
+.innerLoop
+    ld a, " "
+    call QueueBGTile
+    inc bc
+    dec e
+    jr nz, .innerLoop
+    ; Inner Loop End
+
+    pop bc
+
+    ld hl, $0020
+    add hl, bc
+    ld b, h
+    ld c, l
+
+    ; Update VRAM
     push af
     push bc
     push de
     push hl
+    call UpdateBGWindow
+    pop hl
+    pop de
+    pop bc
+    pop af
 
+    dec d
+    jr nz, .outerLoop
+    ret
+
+GetNextWord:
     ; DE = wWordBuffer
     ld de, wWordBuffer
 
@@ -207,27 +296,22 @@ GetNextWord:
     ld a, l
     ld [wPointer+1], a
 
-    pop hl
-    pop de
-    pop bc
-    pop af
     ret
 
 PrintWord:
-    push af
-    push bc
-    push de
-    push hl
-
+    ; hl = wWordBuffer
+    ld hl, wWordBuffer
+    ; d = wWordLength
     ld a, [wWordLength]
     ld d, a
-    ld hl, wWordBuffer
 
+    ; bc = wTileIndex
     ld a, [wTileIndex]
     ld b, a
     ld a, [wTileIndex+1]
     ld c, a
 
+    ; While d != 0
 .loop
     ld a, [hli]
     call QueueBGTile
@@ -235,24 +319,67 @@ PrintWord:
     dec d
     jr nz, .loop
 
+    ; Update wTileIndex
     ld a, b
     ld [wTileIndex], a
     ld a, c
     ld [wTileIndex+1], a
 
+    ; Update wCol
     ld a, [wWordLength]
     ld d, a
     ld a, [wCol]
     add a, d
     ld [wCol], a
 
-    pop hl
-    pop de
-    pop bc
-    pop af
+    ; Set wWordLength = 0. This signals that there is nothing in wWordBuffer to be printed.
+    xor a
+    ld [wWordLength], a
+
     ret
 
 PrintLine:
-    call GetNextWord
+    ; If wWordLength != 0, there was a word that the previous line could not fit.
+    ld a, [wWordLength]
+    cp a, $00
+    jr z, .loop
     call PrintWord
+    ret
+
+.loop
+    ; Get next word, and check if it can still fit on the same line.
+    call GetNextWord
+
+    ld a, [wCol]
+    ld b, a
+    ld a, [wWordLength]
+    add a, b
+    cp a, MAX_TEXT_COLS
+    jr nc, .nextRow
+    call PrintWord
+    jr .loop
+
+    ; Go to next row.
+.nextRow
+    ; Update Col & Row
+    xor a
+    ld [wCol], a
+    ld a, [wRow]
+    inc a
+    ld [wRow], a
+    
+    ; Update Tile Index
+    ld bc, UTI_TEXT_START
+    ld de, $0020
+    ld hl, $0000
+.multHL ; HL *= A
+    add hl, de
+    dec a
+    jr nz, .multHL
+    add hl, bc
+    ld a, h
+    ld [wTileIndex], a
+    ld a, l
+    ld [wTileIndex+1], a
+
     ret
