@@ -20,15 +20,15 @@ StoryModeTileData::
 SECTION "Sprites", ROMX
 Sprites::
     INCBIN "./tile_data/player.2bpp"
-    INCBIN "./tile_data/squidEnemy.2bpp"
-    INCBIN "./tile_data/turtleEnemy.2bpp"
-    INCBIN "./tile_data/ghostEnemy.2bpp"
-    INCBIN "./tile_data/puffleFishEnemy.2bpp"
-    INCBIN "./tile_data/Powerups.2bpp"
+    INCBIN "./tile_data/squid.2bpp"
+    INCBIN "./tile_data/turtle.2bpp"
+    INCBIN "./tile_data/stingray.2bpp"
+    INCBIN "./tile_data/pufferfish.2bpp"
+    INCBIN "./tile_data/powerups.2bpp"
     INCBIN "./tile_data/projectiles.2bpp"
-    INCBIN "./tile_data/ParticleEffects.2bpp"
-    INCBIN "./tile_data/BossEnemy.2bpp"
-    INCBIN "./tile_data/playerSpeedVer.2bpp"
+    INCBIN "./tile_data/explosion.2bpp"
+    INCBIN "./tile_data/hammerhead_shark.2bpp"
+    INCBIN "./tile_data/player_fast.2bpp"
 .end::
 
 ParticleEffectSprites::
