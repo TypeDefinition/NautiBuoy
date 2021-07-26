@@ -85,18 +85,10 @@ InitStageParam:
 
 InitStage:
     ld a, [wSelectedStage]
-
+FOR N, 1, MAX_STAGES
     dec a
-    jp z, InitStage1
-    dec a
-    jp z, InitStage2
-    dec a
-    jp z, InitStage3
-    dec a
-    jp z, InitStage4
-    dec a
-    jp z, InitStage5
-
+    jp z, InitStage{u:N}
+ENDR
     ; Default
     jp InitStage0
 

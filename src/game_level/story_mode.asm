@@ -6,14 +6,16 @@ INCLUDE "./src/definitions/definitions.inc"
 ; MAX_TEXT_ROWS*MAX_TEXT_COLS MUST BE SMALLER THAN UPDATE_QUEUE_SIZE!
 DEF MAX_TEXT_ROWS EQU 9
 DEF MAX_TEXT_COLS EQU 18
+
+; UI Tile Index
 DEF UTI_TEXT_START EQU 8*32+1
 
 SECTION "Story Mode WRAM", WRAM0
 wTextBuffer:
     ds 2048
-wPointer:
+wTextPointer:
     ds 2
-wPointerEnd:
+wTextPointerEnd:
     ds 2
 
 wTileIndex:
@@ -55,9 +57,9 @@ InitStoryText:
     ld [wTileIndex+1], a
 
     ld a, HIGH(wTextBuffer)
-    ld [wPointer], a
+    ld [wTextPointer], a
     ld a, LOW(wTextBuffer)
-    ld [wPointer+1], a
+    ld [wTextPointer+1], a
 
     xor a
     ld [wWordLength], a
@@ -70,18 +72,18 @@ FOR N, 1, MAX_STAGES
     jr nz, :+
     mem_copy Story{u:N}, wTextBuffer, Story{u:N}.end-Story{u:N}
     ld a, HIGH(wTextBuffer+(Story{u:N}.end-Story{u:N}))
-    ld [wPointerEnd], a
+    ld [wTextPointerEnd], a
     ld a, LOW(wTextBuffer+(Story{u:N}.end-Story{u:N}))
-    ld [wPointerEnd+1], a
+    ld [wTextPointerEnd+1], a
     jp .end
 ENDR
 
     ; Default
 :   mem_copy Story0, wTextBuffer, Story0.end-Story0
     ld a, HIGH(wTextBuffer+(Story0.end-Story0))
-    ld [wPointerEnd], a
+    ld [wTextPointerEnd], a
     ld a, LOW(wTextBuffer+(Story0.end-Story0))
-    ld [wPointerEnd+1], a
+    ld [wTextPointerEnd+1], a
 
 .end
     ret
@@ -133,17 +135,17 @@ UpdateStoryMode:
     ; Update Input
     call UpdateInput
 
-    ld a, [wPointer]
+    ld a, [wTextPointer]
     ld h, a
-    ld a, [wPointer+1]
+    ld a, [wTextPointer+1]
     ld l, a
 
-    ld a, [wPointerEnd]
+    ld a, [wTextPointerEnd]
     ld b, a
-    ld a, [wPointerEnd+1]
+    ld a, [wTextPointerEnd+1]
     ld c, a
 
-    ; If wPointer == wPointerEnd && wWordLength == 0, we have reached the end of the story text.
+    ; If wTextPointer == wTextPointerEnd && wWordLength == 0, we have reached the end of the story text.
     ; If we do not check for wWordLength, the last word may not be printed if it is on a new line.
 .checkReachedEnd
     call BCCompareHL
@@ -256,16 +258,16 @@ GetNextWord:
     ; DE = wWordBuffer
     ld de, wWordBuffer
 
-    ; BC = wPointerEnd
-    ld a, [wPointerEnd]
+    ; BC = wTextPointerEnd
+    ld a, [wTextPointerEnd]
     ld b, a
-    ld a, [wPointerEnd+1]
+    ld a, [wTextPointerEnd+1]
     ld c, a
 
-    ; HL = wPointer
-    ld a, [wPointer]
+    ; HL = wTextPointer
+    ld a, [wTextPointer]
     ld h, a
-    ld a, [wPointer+1]
+    ld a, [wTextPointer+1]
     ld l, a
 
     ; Set wWordLength = 0
@@ -290,11 +292,11 @@ GetNextWord:
     jr nz, .loop
 
 .end
-    ; Update wPointer
+    ; Update wTextPointer
     ld a, h
-    ld [wPointer], a
+    ld [wTextPointer], a
     ld a, l
-    ld [wPointer+1], a
+    ld [wTextPointer+1], a
 
     ret
 
