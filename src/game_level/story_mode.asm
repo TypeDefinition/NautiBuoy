@@ -3,22 +3,30 @@ INCLUDE "./src/include/util.inc"
 INCLUDE "./src/include/hUGE.inc"
 INCLUDE "./src/definitions/definitions.inc"
 
-DEF NUM_TEXT_ROWS EQU 6
-DEF NUM_TEXT_COLS EQU 18
-DEF MAX_TEXT_CHUNK EQU NUM_TEXT_ROWS*NUM_TEXT_COLS
+DEF MAX_TEXT_ROWS EQU 9
+DEF MAX_TEXT_COLS EQU 18
 DEF UTI_TEXT_START EQU 8*32+1
 
 SECTION "Story Mode WRAM", WRAM0
-wText:
+wTextBuffer:
     ds 2048
-wCharRemaining:
+wPointer:
     ds 2
-wCurrentCharAddress:
+wPointerEnd:
     ds 2
-wCurrentCharTileIndex:
+
+wTileIndex:
     ds 2
-wCurrentCharCol:
+
+wWordBuffer:
+    ds 64
+wWordLength:
     ds 1
+wRow:
+    ds 1
+wCol:
+    ds 1
+
 
 SECTION "Story Mode", ROM0
 ; Global Jumps
@@ -40,79 +48,26 @@ LCDOn:
     ret
 
 InitStoryText:
-    ld a, HIGH(wText)
-    ld [wCurrentCharAddress], a
-    ld a, LOW(wText)
-    ld [wCurrentCharAddress+1], a
-
     ld a, HIGH(UTI_TEXT_START)
-    ld [wCurrentCharTileIndex], a
+    ld [wTileIndex], a
     ld a, LOW(UTI_TEXT_START)
-    ld [wCurrentCharTileIndex+1], a
+    ld [wTileIndex+1], a
+
+    ld a, HIGH(wTextBuffer)
+    ld [wPointer], a
+    ld a, LOW(wTextBuffer)
+    ld [wPointer+1], a
 
     xor a
-    ld [wCurrentCharCol], a
+    ld [wWordLength], a
+    ld [wRow], a
+    ld [wCol], a
 
-    ld a, [wSelectedStage]
-    ld b, a
-
-    dec b
-    jr nz, :+
-    mem_copy Story1, wText, Story1.end-Story1
-    ld hl, Story1.end-Story1
-    ld a, h
-    ld [wCharRemaining], a
-    ld a, l
-    ld [wCharRemaining+1], a
-    jp .end
-
-:   dec b
-    jr nz, :+
-    mem_copy Story2, wText, Story2.end-Story2
-    ld hl, Story2.end-Story2
-    ld a, h
-    ld [wCharRemaining], a
-    ld a, l
-    ld [wCharRemaining+1], a
-    jp .end
-
-:   dec b
-    jr nz, :+
-    mem_copy Story3, wText, Story3.end-Story3
-    ld hl, Story3.end-Story3
-    ld a, h
-    ld [wCharRemaining], a
-    ld a, l
-    ld [wCharRemaining+1], a
-    jp .end
-
-:   dec b
-    jr nz, :+
-    mem_copy Story4, wText, Story4.end-Story4
-    ld hl, Story4.end-Story4
-    ld a, h
-    ld [wCharRemaining], a
-    ld a, l
-    ld [wCharRemaining+1], a
-    jp .end
-
-:   dec b
-    jr nz, :+
-    mem_copy Story5, wText, Story5.end-Story5
-    ld hl, Story5.end-Story5
-    ld a, h
-    ld [wCharRemaining], a
-    ld a, l
-    ld [wCharRemaining+1], a
-    jp .end
-
-    ; Default
-:   mem_copy Story0, wText, Story0.end-Story0
-    ld hl, Story0.end-Story0
-    ld a, h
-    ld [wCharRemaining], a
-    ld a, l
-    ld [wCharRemaining+1], a
+    mem_copy Story0, wTextBuffer, Story0.end-Story0
+    ld a, HIGH(wTextBuffer+(Story0.end-Story0))
+    ld [wPointerEnd], a
+    ld a, LOW(wTextBuffer+(Story0.end-Story0))
+    ld [wPointerEnd+1], a
 
 .end
 :   ret
@@ -157,66 +112,25 @@ LoadStoryMode:
     ret
 
 UpdateStoryMode:
-    ; Decrement wCharRemaining
-    ld a, [wCharRemaining]
+    ld a, [wPointer]
     ld h, a
-    ld a, [wCharRemaining+1]
+    ld a, [wPointer+1]
     ld l, a
 
-    ld bc, -$0001
-    add hl, bc
-    jr nc, .end
-
-    ld a, h
-    ld [wCharRemaining], a
-    ld a, l
-    ld [wCharRemaining+1], a
-
-    ; Get the current tile index.
-    ld a, [wCurrentCharTileIndex]
+    ld a, [wPointerEnd]
     ld b, a
-    ld a, [wCurrentCharTileIndex+1]
+    ld a, [wPointerEnd+1]
     ld c, a
 
-    ; Get the current character.
-    ld a, [wCurrentCharAddress]
-    ld h, a
-    ld a, [wCurrentCharAddress+1]
-    ld l, a
-    ld a, [hl]
+    call BCCompareHL
+    jr z, .end
 
-    call QueueBGTile
+    ld a, [wRow]
+    cp a, MAX_TEXT_ROWS
+    jr z, .end
 
-    inc hl
-    ld a, h
-    ld [wCurrentCharAddress], a
-    ld a, l
-    ld [wCurrentCharAddress+1], a
+    call PrintLine
 
-    inc bc
-    ld a, b
-    ld [wCurrentCharTileIndex], a
-    ld a, c
-    ld [wCurrentCharTileIndex+1], a
-
-    ; Go To Next Line
-    ld a, [wCurrentCharCol]
-    inc a
-    ld [wCurrentCharCol], a
-
-    cp a, NUM_TEXT_COLS
-    jr nz, .end
-    xor a
-    ld [wCurrentCharCol], a
-    ld h, b
-    ld l, c
-    ld bc, $000E
-    add hl, bc
-    ld a, h
-    ld [wCurrentCharTileIndex], a
-    ld a, l
-    ld [wCurrentCharTileIndex+1], a
-    
 .end
     call UpdateBGWindow
     ret
@@ -243,3 +157,102 @@ VBlankHandler:
 .lagFrame
     pop af
     reti
+
+GetNextWord:
+    push af
+    push bc
+    push de
+    push hl
+
+    ; DE = wWordBuffer
+    ld de, wWordBuffer
+
+    ; BC = wPointerEnd
+    ld a, [wPointerEnd]
+    ld b, a
+    ld a, [wPointerEnd+1]
+    ld c, a
+
+    ; HL = wPointer
+    ld a, [wPointer]
+    ld h, a
+    ld a, [wPointer+1]
+    ld l, a
+
+    ; Set wWordLength = 0
+    xor a
+    ld [wWordLength], a
+
+.loop
+    ; If BC == HL, return.
+    call BCCompareHL
+    jr z, .end
+
+    ; wWordLength += 1
+    ld a, [wWordLength]
+    inc a
+    ld [wWordLength], a
+
+    ; Copy character into wWordBuffer.
+    ld a, [hli]
+    ld [de], a
+    inc de
+    cp a, " "
+    jr nz, .loop
+
+.end
+    ; Update wPointer
+    ld a, h
+    ld [wPointer], a
+    ld a, l
+    ld [wPointer+1], a
+
+    pop hl
+    pop de
+    pop bc
+    pop af
+    ret
+
+PrintWord:
+    push af
+    push bc
+    push de
+    push hl
+
+    ld a, [wWordLength]
+    ld d, a
+    ld hl, wWordBuffer
+
+    ld a, [wTileIndex]
+    ld b, a
+    ld a, [wTileIndex+1]
+    ld c, a
+
+.loop
+    ld a, [hli]
+    call QueueBGTile
+    inc bc
+    dec d
+    jr nz, .loop
+
+    ld a, b
+    ld [wTileIndex], a
+    ld a, c
+    ld [wTileIndex+1], a
+
+    ld a, [wWordLength]
+    ld d, a
+    ld a, [wCol]
+    add a, d
+    ld [wCol], a
+
+    pop hl
+    pop de
+    pop bc
+    pop af
+    ret
+
+PrintLine:
+    call GetNextWord
+    call PrintWord
+    ret

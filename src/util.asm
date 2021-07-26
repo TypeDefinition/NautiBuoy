@@ -43,3 +43,14 @@ CDivD::
     jr nz, :--
 
     ret
+
+; Compare bc & hl.
+; return Z-Flag 1 if equal, else 0.
+; @destroy a
+BCCompareHL::
+    ld a, c
+    cp a, l
+    ret nz
+    ld a, b
+    cp a, h
+    ret
