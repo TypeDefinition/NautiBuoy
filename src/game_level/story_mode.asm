@@ -101,8 +101,8 @@ LoadStoryMode:
     call SetProgramLoopCallback
 
     ; Copy tile data into VRAM.
-    set_romx_bank BANK(TitleScreenTileData)
-    mem_copy TitleScreenTileData, _VRAM9000, TitleScreenTileData.end-TitleScreenTileData
+    set_romx_bank BANK(StoryModeTileData)
+    mem_copy StoryModeTileData, _VRAM9000, StoryModeTileData.end-StoryModeTileData
 
     ; Copy tile map into VRAM.
     set_romx_bank BANK(StoryModeTileMap)

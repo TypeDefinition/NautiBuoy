@@ -9,6 +9,10 @@ TitleScreenTileData::
     INCBIN "./tile_data/title_screen.2bpp" ; INCBIN copies the binary file contents directly into the ROM.
 .end::
 
+StoryModeTileData::
+    INCBIN "./tile_data/story_mode.2bpp" ; INCBIN copies the binary file contents directly into the ROM.
+.end::
+
 SECTION "Sprites", ROMX
 Sprites::
     INCBIN "./tile_data/player.2bpp"
