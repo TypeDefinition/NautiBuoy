@@ -107,6 +107,10 @@ LoadGameLevel:
     set_romx_bank BANK(BGWindowTileData)
     mem_copy BGWindowTileData, _VRAM9000, BGWindowTileData.end-BGWindowTileData
 
+    ; Copy font tile data into VRAM.
+    set_romx_bank BANK(FontTileData)
+    mem_copy FontTileData, _VRAM9200, FontTileData.end-FontTileData
+
     ; Load Sprites into VRAM.
     set_romx_bank BANK(Sprites)
     mem_copy Sprites, _VRAM8000, Sprites.end-Sprites

@@ -104,6 +104,10 @@ LoadStoryMode:
     set_romx_bank BANK(StoryModeTileData)
     mem_copy StoryModeTileData, _VRAM9000, StoryModeTileData.end-StoryModeTileData
 
+    ; Copy font tile data into VRAM.
+    set_romx_bank BANK(FontTileData)
+    mem_copy FontTileData, _VRAM9200, FontTileData.end-FontTileData
+
     ; Copy tile map into VRAM.
     set_romx_bank BANK(StoryModeTileMap)
     mem_copy StoryModeTileMap, _SCRN0, StoryModeTileMap.end-StoryModeTileMap

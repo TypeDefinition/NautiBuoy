@@ -6,6 +6,10 @@ LoadResetScreen:
     set_romx_bank BANK(BGWindowTileData)
     mem_copy BGWindowTileData, _VRAM9000, BGWindowTileData.end-BGWindowTileData
 
+    ; Copy font tile data into VRAM.
+    set_romx_bank BANK(FontTileData)
+    mem_copy FontTileData, _VRAM9200, FontTileData.end-FontTileData
+
     ; Copy tile map into VRAM.
     set_romx_bank BANK(ResetScreenTileMap)
     mem_copy ResetScreenTileMap, _SCRN0, ResetScreenTileMap.end-ResetScreenTileMap

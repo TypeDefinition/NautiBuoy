@@ -1,16 +1,20 @@
 INCLUDE "./src/include/hardware.inc"
 
 SECTION "Background & Window Tiles", ROMX
+FontTileData::
+    INCBIN "./tile_data/font.2bpp"
+.end::
+
 BGWindowTileData::
     INCBIN "./tile_data/background_and_ui.2bpp" ; INCBIN copies the binary file contents directly into the ROM.
 .end::
 
 TitleScreenTileData::
-    INCBIN "./tile_data/title_screen.2bpp" ; INCBIN copies the binary file contents directly into the ROM.
+    INCBIN "./tile_data/title_screen.2bpp"
 .end::
 
 StoryModeTileData::
-    INCBIN "./tile_data/story_mode.2bpp" ; INCBIN copies the binary file contents directly into the ROM.
+    INCBIN "./tile_data/story_mode.2bpp"
 .end::
 
 SECTION "Sprites", ROMX
