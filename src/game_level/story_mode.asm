@@ -65,7 +65,7 @@ InitStoryText:
     ld [wCol], a
 
     ld a, [wSelectedStage]
-/*FOR N, 1, MAX_STAGES
+FOR N, 1, MAX_STAGES
 :   dec a
     jr nz, :+
     mem_copy Story{u:N}, wTextBuffer, Story{u:N}.end-Story{u:N}
@@ -74,7 +74,7 @@ InitStoryText:
     ld a, LOW(wTextBuffer+(Story{u:N}.end-Story{u:N}))
     ld [wPointerEnd+1], a
     jp .end
-ENDR*/
+ENDR
 
     ; Default
 :   mem_copy Story0, wTextBuffer, Story0.end-Story0
@@ -350,9 +350,14 @@ PrintLine:
     ; Get next word, and check if it can still fit on the same line.
     call GetNextWord
 
-    ld a, [wCol]
-    ld b, a
+    ; If next word has length 0, we have reached the end.
     ld a, [wWordLength]
+    ld b, a
+    cp a, $00
+    ret z
+
+    ; If the next word cannot fit on the same line. Go to next line.
+    ld a, [wCol]
     add a, b
     cp a, MAX_TEXT_COLS
     jr nc, .nextRow

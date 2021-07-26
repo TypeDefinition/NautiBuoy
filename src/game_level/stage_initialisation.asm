@@ -56,19 +56,19 @@ Story1::
 .end::
 
 Story2::
-    db "Story Part 3"
+    db "A"
 .end::
 
 Story3::
-    db "Story Part 4"
+    db "A"
 .end::
 
 Story4::
-    db "Story Part 5"
+    db "A"
 .end::
 
 Story5::
-    db "Story Part 6"
+    db "A"
 .end::
 
 ; Get the starting address of the selected stage's parameters.
