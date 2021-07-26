@@ -166,8 +166,9 @@ PowerUpCollisionBehaviour:
     cp a, TYPE_SPEED_POWERUP
     jr nz, .damagePowerup
 
-    ld a, SPEED_POWER_UP_EFFECT
-    ld [wPlayerEffects_SpeedPowerUpTimer], a
+    ld a, [wPlayerEffects_SpeedPowerUpTimer]
+    add a, SPEED_POWER_UP_EFFECT
+    ld [wPlayerEffects_SpeedPowerUpTimer], a ; stack speed powerup
 
     ; init new speed
     ld bc, PLAYER_INCREASED_VELOCITY

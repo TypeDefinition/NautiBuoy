@@ -787,9 +787,16 @@ PlayerGetsHitEnemyBehavior::
 
 .enemyTypeD ; ghost
     cp a, TYPE_ENEMYD
-    jr nz, .nextEnemyLoop
+    jr nz, .bossType
     push hl ; PUSH hl = enemy address
     call ResetEnemyD
+    pop hl ; POP hl = enemy address
+
+.bossType
+    cp a, TYPE_ENEMY_BOSS
+    jr nz, .nextEnemyLoop
+    push hl ; PUSH hl = enemy address
+    call ResetBossLocation
     pop hl ; POP hl = enemy address
 
 .nextEnemyLoop

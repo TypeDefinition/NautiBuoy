@@ -9,7 +9,8 @@ SECTION "Player Data", WRAM0
     dstruct Character, wPlayer
     dstruct PlayerEffects, wPlayerEffects
 wPlayerFireRate:: ds 2 ; first half is fraction, second half is int
-    
+wPlayerInputRate:: ds 2 ; first half is fraction, second half is int
+
 SECTION "Player Camera Data", WRAM0
     dstruct PlayerCamera, wPlayerCamera
 
@@ -109,6 +110,57 @@ InterpolatePlayerPosition::
 
 /* Get User input for moving */
 GetUserInput::
+    ld a, [wNewlyInputKeys] ; if player just click
+
+.faceUp
+    bit PADB_UP, a
+    jr z, .faceDown
+    ld a, DIR_UP
+    ld [wPlayer_Direction], a
+    ld a, INPUT_TIME
+    ld [wPlayerInputRate + 1], a
+    ret
+.faceDown
+    bit PADB_DOWN, a
+    jr z, .faceLeft
+    ld a, DIR_DOWN
+    ld [wPlayer_Direction], a
+    ld a, INPUT_TIME
+    ld [wPlayerInputRate + 1], a
+    ret
+.faceLeft
+    bit PADB_LEFT, a
+    jr z, .faceRight
+    ld a, DIR_LEFT
+    ld [wPlayer_Direction], a
+    ld a, INPUT_TIME
+    ld [wPlayerInputRate + 1], a
+    ret
+.faceRight
+    bit PADB_RIGHT, a
+    jr z, .moveInput
+    ld a, DIR_RIGHT
+    ld [wPlayer_Direction], a
+    ld a, INPUT_TIME
+    ld [wPlayerInputRate + 1], a
+    ret
+
+.moveInput
+    ld a, [wPlayerInputRate + 1]
+    and a, a
+    jr z, .checkMovementInput
+    
+    ld b, a
+    ld a, [wPlayerInputRate]
+    add a, INPUT_UPDATE_SPEED
+    ld [wPlayerInputRate], a
+    
+    ld a, b
+    sbc a, 0
+    ld [wPlayerInputRate + 1], a
+    ret
+
+.checkMovementInput
     ld a, [wCurrentInputKeys]
     ld b, a ; b = Input Key
 
@@ -373,6 +425,7 @@ PlayerIsHit::
     or a, FLICKER_EFFECT_FLAG ; add flicker effect
     ld [wPlayer_Flags], a 
 
+    call DisableSpeedPowerUpUI
     call PlayerGetsHitEnemyBehavior ; update enemy behavior for getting hit
     ret
 
