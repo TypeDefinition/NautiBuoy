@@ -44,6 +44,27 @@ StageParam::
     dw_BE $0060
     dw_BE $0075
 
+Story0::
+    db "Yuzu forcefully pushed Mei against the back of the door, her lips not wasting any time as they smashed against her lover."
+    db "Her hands running up her outer thighs and hips coming to a stop on the small of her back, as she continued to push herself closer into the darker haired girl."
+    db "Their heated, messy kiss not stopping for a moment. She could hear Mei trying to stifle light moans through their kiss as she hastily returned it."
+.end::
+
+Story1::
+.end::
+
+Story2::
+.end::
+
+Story3::
+.end::
+
+Story4::
+.end::
+
+Story5::
+.end::
+
 ; Get the starting address of the selected stage's parameters.
 ; @param [wSelectedStage]
 ; @return hl The starting address of the selected stage's parameters.

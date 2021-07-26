@@ -23,33 +23,6 @@ MemCopy::
 BurnCycles::
     ret
 
-; Multiply the value in the hl register by 8.
-; @param hl The value to multiply by 8.
-; @return hl The multiplication result.
-Mult8::
-REPT 3
-    add hl, hl
-ENDR
-    ret
-
-; Multiply the value in the hl register by 16.
-; @param hl The value to multiply by 16.
-; @return hl The multiplication result.
-Mult16::
-REPT 4
-    add hl, hl
-ENDR
-    ret
-
-; Multiply the value in the hl register by 32.
-; @param hl The value to multiply by 32.
-; @return hl The multiplication result.
-Mult32::
-REPT 5
-    add hl, hl
-ENDR
-    ret
-
 ; Divides c by d.
 ; @param c The dividend.
 ; @param d The denominator.

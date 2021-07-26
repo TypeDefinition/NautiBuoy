@@ -2,6 +2,10 @@ LoadResetScreen:
     di
     call LCDOff
 
+    ; Copy tile data into VRAM.
+    set_romx_bank BANK(BGWindowTileData)
+    mem_copy BGWindowTileData, _VRAM9000, BGWindowTileData.end-BGWindowTileData
+
     ; Copy tile map into VRAM.
     set_romx_bank BANK(ResetScreenTileMap)
     mem_copy ResetScreenTileMap, _SCRN0, ResetScreenTileMap.end-ResetScreenTileMap

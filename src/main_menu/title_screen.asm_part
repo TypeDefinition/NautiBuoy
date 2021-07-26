@@ -2,6 +2,10 @@ LoadTitleScreen:
     di
     call LCDOff
 
+    ; Copy tile data into VRAM.
+    set_romx_bank BANK(TitleScreenTileData)
+    mem_copy TitleScreenTileData, _VRAM9000, TitleScreenTileData.end-TitleScreenTileData
+
     ; Copy tile map into VRAM.
     set_romx_bank BANK(TitleScreenTileMap)
     mem_copy TitleScreenTileMap, _SCRN0, TitleScreenTileMap.end-TitleScreenTileMap

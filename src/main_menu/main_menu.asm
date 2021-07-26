@@ -80,10 +80,6 @@ LoadMainMenu:
     ld l, a
     call SetProgramLoopCallback
 
-    ; Copy tile data into VRAM.
-    set_romx_bank BANK(BGWindowTileData)
-    mem_copy BGWindowTileData, _VRAM9000, BGWindowTileData.end-BGWindowTileData
-
     call LCDOn
 
     ; Set BGM

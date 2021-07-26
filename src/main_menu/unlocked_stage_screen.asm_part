@@ -12,6 +12,10 @@ LoadUnlockedStageScreen:
     ld [rSCY], a
     ld [rSCX], a
 
+    ; Copy tile data into VRAM.
+    set_romx_bank BANK(BGWindowTileData)
+    mem_copy BGWindowTileData, _VRAM9000, BGWindowTileData.end-BGWindowTileData
+
     ; Copy tile map into VRAM.
     set_romx_bank BANK(UnlockedStageTileMap)
     mem_copy UnlockedStageTileMap, _SCRN0, UnlockedStageTileMap.end-UnlockedStageTileMap
@@ -179,7 +183,7 @@ UpdateUnlockedStageScreen:
 .onA
     bit PADB_A, b
     jr z, .onB
-    ld hl, JumpLoadGameLevel
+    ld hl, JumpLoadStoryMode
     call SetProgramLoopCallback
     jr .end
 

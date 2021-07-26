@@ -5,6 +5,10 @@ BGWindowTileData::
     INCBIN "./tile_data/background_and_ui.2bpp" ; INCBIN copies the binary file contents directly into the ROM.
 .end::
 
+TitleScreenTileData::
+    INCBIN "./tile_data/title_screen.2bpp" ; INCBIN copies the binary file contents directly into the ROM.
+.end::
+
 SECTION "Sprites", ROMX
 Sprites::
     INCBIN "./tile_data/player.2bpp"
