@@ -56,19 +56,19 @@ Story1::
 .end::
 
 Story2::
-    db "This cannot be left blank, or a call to memset_small will cause an infinite loop."
+    db "This cannot be left blank, or a call to memcopy will cause an infinite loop."
 .end::
 
 Story3::
-    db "This cannot be left blank, or a call to memset_small will cause an infinite loop."
+    db "This cannot be left blank, or a call to memcopy will cause an infinite loop."
 .end::
 
 Story4::
-    db "This cannot be left blank, or a call to memset_small will cause an infinite loop."
+    db "This cannot be left blank, or a call to memcopy will cause an infinite loop."
 .end::
 
 Story5::
-    db "This cannot be left blank, or a call to memset_small will cause an infinite loop."
+    db "This cannot be left blank, or a call to memcopy will cause an infinite loop."
 .end::
 
 ; Get the starting address of the selected stage's parameters.
