@@ -23,7 +23,7 @@ DEF VIEWPORT_SIZE_X EQU SCRN_X
 DEF SCREEN_UPPER_OFFSET_Y EQU 8
 DEF SCREEN_LEFT_OFFSET_X EQU 8
 
-DEF PAUSE_UI_SIZE_Y EQU 8*5
+DEF PAUSE_UI_SIZE_Y EQU 8*7
 DEF PAUSE_VIEWPORT_SIZE_Y EQU SCRN_Y - PAUSE_UI_SIZE_Y
 
 /*************************************************Player*************************************************/
