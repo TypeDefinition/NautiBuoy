@@ -212,8 +212,22 @@ UpdatePausedGameLevel:
     call UpdateInput
     ld a, [wNewlyInputKeys]
     ld b, a
+.resume
     bit PADB_START, b
-    call nz, ResumeGame
+    jr z, .reset
+    call ResumeGame
+    jr .end
+.reset
+    bit PADB_SELECT, b
+    jr z, .quit
+    ld hl, JumpLoadGameLevel
+    call SetProgramLoopCallback
+.quit
+    bit PADB_B, b
+    jr z, .end
+    ld hl, JumpLoadMainMenu
+    call SetProgramLoopCallback
+.end
     ret
 
 VBlankHandler:
