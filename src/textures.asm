@@ -1,8 +1,12 @@
 INCLUDE "./src/include/hardware.inc"
 
 SECTION "Background & Window Tiles", ROMX
-FontTileData::
+FontTileDataEN::
     INCBIN "./tile_data/font-en.2bpp"
+.end::
+
+FontTileDataJP::
+    INCBIN "./tile_data/font-jp.2bpp"
 .end::
 
 BGWindowTileData::

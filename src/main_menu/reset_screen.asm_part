@@ -6,13 +6,25 @@ LoadResetScreen:
     set_romx_bank BANK(BGWindowTileData)
     mem_copy BGWindowTileData, _VRAM9000, BGWindowTileData.end-BGWindowTileData
 
+    IF DEF(LANGUAGE_EN)
     ; Copy font tile data into VRAM.
-    set_romx_bank BANK(FontTileData)
-    mem_copy FontTileData, _VRAM9200, FontTileData.end-FontTileData
+    set_romx_bank BANK(FontTileDataEN)
+    mem_copy FontTileDataEN, _VRAM9200, FontTileDataEN.end-FontTileDataEN
 
     ; Copy tile map into VRAM.
-    set_romx_bank BANK(ResetScreenTileMap)
-    mem_copy ResetScreenTileMap, _SCRN0, ResetScreenTileMap.end-ResetScreenTileMap
+    set_romx_bank BANK(ResetScreenTileMapEN)
+    mem_copy ResetScreenTileMapEN, _SCRN0, ResetScreenTileMapEN.end-ResetScreenTileMapEN
+    ENDC
+
+    IF DEF(LANGUAGE_JP)
+    ; Copy font tile data into VRAM.
+    set_romx_bank BANK(FontTileDataJP)
+    mem_copy FontTileDataJP, _VRAM9200, FontTileDataJP.end-FontTileDataJP
+
+    ; Copy tile map into VRAM.
+    set_romx_bank BANK(ResetScreenTileMapJP)
+    mem_copy ResetScreenTileMapJP, _SCRN0, ResetScreenTileMapJP.end-ResetScreenTileMapJP
+    ENDC
 
     ld hl, JumpUpdateResetScreen
     call SetProgramLoopCallback

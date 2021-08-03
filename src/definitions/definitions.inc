@@ -3,6 +3,10 @@ INCLUDE "./src/include/hardware.inc"
     IF !DEF(DEFINITIONS_INC)
 DEF DEFINITIONS_INC EQU 1
 
+/*************************************************Language*************************************************/
+DEF LANGUAGE_JP EQU 1
+; DEF LANGUAGE_EN EQU 1
+
 /*************************************************Stage*************************************************/
 DEF MAX_MAP_SIZE EQU $0100
 

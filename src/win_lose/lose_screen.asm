@@ -4,7 +4,8 @@ INCLUDE "./src/include/hUGE.inc"
 INCLUDE "./src/definitions/definitions.inc"
 
 ; UI Tile Index
-DEF UTI_LOSE_REASON EQU $89
+DEF UTI_LOSE_REASON_EN EQU $89
+DEF UTI_LOSE_REASON_JP EQU $82
 
 SECTION "Lose Screen WRAM", WRAM0
 wLoseReason::
@@ -37,31 +38,60 @@ WriteLoseReason:
     jr z, .hp
 .time
     ASSERT LOSE_REASON_TIME == 0
+
+    IF DEF(LANGUAGE_EN)
     ld a, "t"
-    ld [_SCRN0 + UTI_LOSE_REASON], a
+    ld [_SCRN0 + UTI_LOSE_REASON_EN], a
     ld a, "i"
-    ld [_SCRN0 + UTI_LOSE_REASON + 1], a
+    ld [_SCRN0 + UTI_LOSE_REASON_EN + 1], a
     ld a, "m"
-    ld [_SCRN0 + UTI_LOSE_REASON + 2], a
+    ld [_SCRN0 + UTI_LOSE_REASON_EN + 2], a
     ld a, "e"
-    ld [_SCRN0 + UTI_LOSE_REASON + 3], a
+    ld [_SCRN0 + UTI_LOSE_REASON_EN + 3], a
     ld a, "!"
-    ld [_SCRN0 + UTI_LOSE_REASON + 4], a
+    ld [_SCRN0 + UTI_LOSE_REASON_EN + 4], a
+    ENDC
+
+    IF DEF(LANGUAGE_JP)
+    ld a, 76
+    ld [_SCRN0 + UTI_LOSE_REASON_JP], a
+    ld a, 115
+    ld [_SCRN0 + UTI_LOSE_REASON_JP + 1], a
+    ld a, 70
+    ld [_SCRN0 + UTI_LOSE_REASON_JP + 2], a
+    ld a, 110
+    ld [_SCRN0 + UTI_LOSE_REASON_JP + 3], a
+    ENDC
+
     jr .end
+    
 .hp
     ASSERT LOSE_REASON_HP == 1
+
+    IF DEF(LANGUAGE_EN)
     ld a, "l"
-    ld [_SCRN0 + UTI_LOSE_REASON], a
+    ld [_SCRN0 + UTI_LOSE_REASON_EN], a
     ld a, "i"
-    ld [_SCRN0 + UTI_LOSE_REASON + 1], a
+    ld [_SCRN0 + UTI_LOSE_REASON_EN + 1], a
     ld a, "v"
-    ld [_SCRN0 + UTI_LOSE_REASON + 2], a
+    ld [_SCRN0 + UTI_LOSE_REASON_EN + 2], a
     ld a, "e"
-    ld [_SCRN0 + UTI_LOSE_REASON + 3], a
+    ld [_SCRN0 + UTI_LOSE_REASON_EN + 3], a
     ld a, "s"
-    ld [_SCRN0 + UTI_LOSE_REASON + 4], a
+    ld [_SCRN0 + UTI_LOSE_REASON_EN + 4], a
     ld a, "!"
-    ld [_SCRN0 + UTI_LOSE_REASON + 5], a
+    ld [_SCRN0 + UTI_LOSE_REASON_EN + 5], a
+    ENDC
+
+    IF DEF(LANGUAGE_JP)
+    ld a, 66
+    ld [_SCRN0 + UTI_LOSE_REASON_JP], a
+    ld a, 89
+    ld [_SCRN0 + UTI_LOSE_REASON_JP + 1], a
+    ld a, 81
+    ld [_SCRN0 + UTI_LOSE_REASON_JP + 2], a
+    ENDC
+
 .end
     ret
 
@@ -76,9 +106,30 @@ LoadLoseScreen:
     ld hl, JumpUpdateLoseScreen
     call SetProgramLoopCallback
 
+    ; Copy tile data into VRAM.
+    set_romx_bank BANK(BGWindowTileData)
+    mem_copy BGWindowTileData, _VRAM9000, BGWindowTileData.end-BGWindowTileData
+
+    IF DEF(LANGUAGE_EN)
+    ; Copy font tile data into VRAM.
+    set_romx_bank BANK(FontTileDataEN)
+    mem_copy FontTileDataEN, _VRAM9200, FontTileDataEN.end-FontTileDataEN
+
     ; Copy tile map into VRAM.
-    set_romx_bank BANK(LoseScreenTileMap)
-    mem_copy LoseScreenTileMap, _SCRN0, LoseScreenTileMap.end-LoseScreenTileMap
+    set_romx_bank BANK(LoseScreenTileMapEN)
+    mem_copy LoseScreenTileMapEN, _SCRN0, LoseScreenTileMapEN.end-LoseScreenTileMapEN
+    ENDC
+
+    IF DEF(LANGUAGE_JP)
+    ; Copy font tile data into VRAM.
+    set_romx_bank BANK(FontTileDataJP)
+    mem_copy FontTileDataJP, _VRAM9200, FontTileDataJP.end-FontTileDataJP
+
+    ; Copy tile map into VRAM.
+    set_romx_bank BANK(LoseScreenTileMapJP)
+    mem_copy LoseScreenTileMapJP, _SCRN0, LoseScreenTileMapJP.end-LoseScreenTileMapJP
+    ENDC
+
 
     call WriteLoseReason
 

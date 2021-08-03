@@ -36,9 +36,29 @@ LoadWinScreen:
     ld hl, JumpUpdateWinScreen
     call SetProgramLoopCallback
 
+    ; Copy tile data into VRAM.
+    set_romx_bank BANK(BGWindowTileData)
+    mem_copy BGWindowTileData, _VRAM9000, BGWindowTileData.end-BGWindowTileData
+
+    IF DEF(LANGUAGE_EN)
+    ; Copy font tile data into VRAM.
+    set_romx_bank BANK(FontTileDataEN)
+    mem_copy FontTileDataEN, _VRAM9200, FontTileDataEN.end-FontTileDataEN
+
     ; Copy tile map into VRAM.
-    set_romx_bank BANK(WinScreenTileMap)
-    mem_copy WinScreenTileMap, _SCRN0, WinScreenTileMap.end-WinScreenTileMap
+    set_romx_bank BANK(WinScreenTileMapEN)
+    mem_copy WinScreenTileMapEN, _SCRN0, WinScreenTileMapEN.end-WinScreenTileMapEN
+    ENDC
+
+    IF DEF(LANGUAGE_JP)
+    ; Copy font tile data into VRAM.
+    set_romx_bank BANK(FontTileDataJP)
+    mem_copy FontTileDataJP, _VRAM9200, FontTileDataJP.end-FontTileDataJP
+
+    ; Copy tile map into VRAM.
+    set_romx_bank BANK(WinScreenTileMapJP)
+    mem_copy WinScreenTileMapJP, _SCRN0, WinScreenTileMapJP.end-WinScreenTileMapJP
+    ENDC
 
     ; Reset SCY & SCX.
     xor a

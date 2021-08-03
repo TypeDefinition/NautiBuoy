@@ -39,7 +39,7 @@ StageParam::
     dw_BE $0060
     
     ; Stage 5
-    db "XX"
+    db 23, 23
     dw_BE $0120
     dw_BE $0060
     dw_BE $0075
