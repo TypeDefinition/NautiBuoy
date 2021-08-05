@@ -70,20 +70,42 @@ InitStoryText:
 FOR N, 1, MAX_STAGES
 :   dec a
     jr nz, :+
-    mem_copy Story{u:N}, wTextBuffer, Story{u:N}.end-Story{u:N}
-    ld a, HIGH(wTextBuffer+(Story{u:N}.end-Story{u:N}))
+
+
+    IF DEF(LANGUAGE_EN)
+    mem_copy StoryEN{u:N}, wTextBuffer, StoryEN{u:N}.end-StoryEN{u:N}
+    ld a, HIGH(wTextBuffer+(StoryEN{u:N}.end-StoryEN{u:N}))
     ld [wTextPointerEnd], a
-    ld a, LOW(wTextBuffer+(Story{u:N}.end-Story{u:N}))
+    ld a, LOW(wTextBuffer+(StoryEN{u:N}.end-StoryEN{u:N}))
+    ENDC
+
+    IF DEF(LANGUAGE_JP)
+    mem_copy StoryJP{u:N}, wTextBuffer, StoryJP{u:N}.end-StoryJP{u:N}
+    ld a, HIGH(wTextBuffer+(StoryJP{u:N}.end-StoryJP{u:N}))
+    ld [wTextPointerEnd], a
+    ld a, LOW(wTextBuffer+(StoryJP{u:N}.end-StoryJP{u:N}))
+    ENDC
+
     ld [wTextPointerEnd+1], a
     jp .end
 ENDR
 
     ; Default
-:   mem_copy Story0, wTextBuffer, Story0.end-Story0
-    ld a, HIGH(wTextBuffer+(Story0.end-Story0))
+    IF DEF(LANGUAGE_EN)
+:   mem_copy StoryEN0, wTextBuffer, StoryEN0.end-StoryEN0
+    ld a, HIGH(wTextBuffer+(StoryEN0.end-StoryEN0))
     ld [wTextPointerEnd], a
-    ld a, LOW(wTextBuffer+(Story0.end-Story0))
+    ld a, LOW(wTextBuffer+(StoryEN0.end-StoryEN0))
     ld [wTextPointerEnd+1], a
+    ENDC
+
+    IF DEF(LANGUAGE_JP)
+:   mem_copy StoryJP0, wTextBuffer, StoryJP0.end-StoryJP0
+    ld a, HIGH(wTextBuffer+(StoryJP0.end-StoryJP0))
+    ld [wTextPointerEnd], a
+    ld a, LOW(wTextBuffer+(StoryJP0.end-StoryJP0))
+    ld [wTextPointerEnd+1], a
+    ENDC
 
 .end
     ret
@@ -104,9 +126,17 @@ LoadStoryMode:
     set_romx_bank BANK(StoryModeTileData)
     mem_copy StoryModeTileData, _VRAM9000, StoryModeTileData.end-StoryModeTileData
 
+    IF DEF(LANGUAGE_EN)
     ; Copy font tile data into VRAM.
     set_romx_bank BANK(FontTileDataEN)
     mem_copy FontTileDataEN, _VRAM9200, FontTileDataEN.end-FontTileDataEN
+    ENDC
+
+    IF DEF(LANGUAGE_JP)
+    ; Copy font tile data into VRAM.
+    set_romx_bank BANK(FontTileDataJP)
+    mem_copy FontTileDataJP, _VRAM9200, FontTileDataJP.end-FontTileDataJP
+    ENDC
 
     ; Copy tile map into VRAM.
     set_romx_bank BANK(StoryModeTileMap)
