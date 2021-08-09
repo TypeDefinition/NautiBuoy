@@ -18,6 +18,7 @@ Game Boy Documentation: https://gbdev.io/pandocs/
 Game Boy CPU Manual: http://marc.rawer.de/Gameboy/Docs/GBCPUman.pdf
 Game Boy Assembly Programming for the Modern Game Developer: https://github.com/ahrnbom/gbapfomgd
 The Ultimate Game Boy Talk: https://media.ccc.de/v/33c3-8029-the_ultimate_game_boy_talk
+SM83 Instruction Set: https://gbdev.io/gb-opcodes/optables/dark
 
 Developers
 Programmers: Lim En Qi Angie, Lim Ngian Xin Terry
