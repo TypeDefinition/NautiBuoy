@@ -17,3 +17,13 @@ hUGEDriver: https://github.com/SuperDisk/hUGEDriver
 
 Map Editors
 Tiled: https://www.mapeditor.org/
+
+
+Devs
+
+Programmers: Lim En Qi Angie, Lim Ngian Xin Terry
+Artist: Mok Wen Qing
+
+Also many thanks to the wonderful people at
+GBDev Discord Group: https://discordapp.com/invite/tKGMPNr
+Emulicious Discord Group: https://discord.com/invite/YuKjBUF
