@@ -14,7 +14,7 @@ BGWindowTileData::
 .end::
 
 TitleScreenTileData::
-    INCBIN "./tile_data/title_screen.2bpp"
+    INCBIN "./tile_data/MainMenu.2bpp"
 .end::
 
 StoryModeTileData::
