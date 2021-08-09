@@ -18,9 +18,9 @@ TitleScreenTileData::
 .end::
 
 StoryModeTileData::
-    INCBIN "./tile_data/story_mode.2bpp"
+    INCBIN "./tile_data/story.2bpp"
 .end::
-
+    
 SECTION "Sprites", ROMX
 Sprites::
     INCBIN "./tile_data/player.2bpp"

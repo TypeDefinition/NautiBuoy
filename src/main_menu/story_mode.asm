@@ -122,10 +122,6 @@ LoadStoryMode:
     ld hl, JumpUpdateStoryMode
     call SetProgramLoopCallback
 
-    ; Copy tile data into VRAM.
-    set_romx_bank BANK(StoryModeTileData)
-    mem_copy StoryModeTileData, _VRAM9000, StoryModeTileData.end-StoryModeTileData
-
     IF DEF(LANGUAGE_EN)
     ; Copy font tile data into VRAM.
     set_romx_bank BANK(FontTileDataEN)
@@ -137,6 +133,11 @@ LoadStoryMode:
     set_romx_bank BANK(FontTileDataJP)
     mem_copy FontTileDataJP, _VRAM9200, FontTileDataJP.end-FontTileDataJP
     ENDC
+
+    ; Copy tile data into VRAM.
+    set_romx_bank BANK(StoryModeTileData)
+    mem_copy StoryModeTileData, _VRAM8800, StoryModeTileData.end-StoryModeTileData
+
 
     ; Copy tile map into VRAM.
     set_romx_bank BANK(StoryModeTileMap)
