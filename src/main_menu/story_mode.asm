@@ -138,7 +138,6 @@ LoadStoryMode:
     set_romx_bank BANK(StoryModeTileData)
     mem_copy StoryModeTileData, _VRAM8800, StoryModeTileData.end-StoryModeTileData
 
-
     ; Copy tile map into VRAM.
     set_romx_bank BANK(StoryModeTileMap)
     mem_copy StoryModeTileMap, _SCRN0, StoryModeTileMap.end-StoryModeTileMap

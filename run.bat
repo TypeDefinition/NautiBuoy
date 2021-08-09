@@ -1,1 +1,0 @@
-START .\Emulicious\Emulicious.exe .\bin\gbgame.gb

@@ -1,1 +1,0 @@
-java -jar ./Emulicious/Emulicious.jar ./bin/gbgame.gb

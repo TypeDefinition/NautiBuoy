@@ -2,11 +2,11 @@ INCLUDE "./src/include/hardware.inc"
 
 SECTION "Background & Window Tiles", ROMX
 FontTileDataEN::
-    INCBIN "./tile_data/font-en.2bpp"
+    INCBIN "./tile_data/font_en.2bpp"
 .end::
 
 FontTileDataJP::
-    INCBIN "./tile_data/font-jp.2bpp"
+    INCBIN "./tile_data/font_jp.2bpp"
 .end::
 
 BGWindowTileData::
@@ -14,13 +14,13 @@ BGWindowTileData::
 .end::
 
 TitleScreenTileData::
-    INCBIN "./tile_data/MainMenu.2bpp"
+    INCBIN "./tile_data/title_screen.2bpp"
 .end::
 
 StoryModeTileData::
-    INCBIN "./tile_data/story.2bpp"
+    INCBIN "./tile_data/story_mode.2bpp"
 .end::
-    
+
 SECTION "Sprites", ROMX
 Sprites::
     INCBIN "./tile_data/player.2bpp"

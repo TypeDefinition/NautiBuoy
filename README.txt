@@ -1,29 +1,28 @@
-Stuff We Used
-
 Toolchain
 RGBSDS Home Page: https://rgbds.gbdev.io/
 Building RGBDS for Linux: https://rgbds.gbdev.io/install/source
-
-Documentation
-Game Boy Catridge Header Information: https://gbdev.gg8.se/wiki/articles/The_Cartridge_Header
-Game Boy Documentation: https://gbdev.io/pandocs/
 
 Emulators
 Emulicious Home Page: https://emulicious.net/
 BGB Home Page: https://bgb.bircd.org/
 
-Audios
+Audio
 hUGEDriver: https://github.com/SuperDisk/hUGEDriver
 
-Map Editors
+Map Editor
 Tiled: https://www.mapeditor.org/
 
+Documentation
+Game Boy Catridge Header Information: https://gbdev.gg8.se/wiki/articles/The_Cartridge_Header
+Game Boy Documentation: https://gbdev.io/pandocs/
+Game Boy CPU Manual: http://marc.rawer.de/Gameboy/Docs/GBCPUman.pdf
+Game Boy Assembly Programming for the Modern Game Developer: https://github.com/ahrnbom/gbapfomgd
+The Ultimate Game Boy Talk: https://media.ccc.de/v/33c3-8029-the_ultimate_game_boy_talk
 
-Devs
-
+Developers
 Programmers: Lim En Qi Angie, Lim Ngian Xin Terry
 Artist: Mok Wen Qing
 
-Also many thanks to the wonderful people at
+Many thanks to the wonderful people at
 GBDev Discord Group: https://discordapp.com/invite/tKGMPNr
 Emulicious Discord Group: https://discord.com/invite/YuKjBUF

@@ -7,6 +7,6 @@ for /r ".\assets\sprites" %%i in (*.png); do rgbgfx -h -o .\tile_data\%%~ni.2bpp
 for /r ".\src" %%i in (*.asm); do rgbasm -o .\bin-int\%%~ni.o %%i
 
 for /r ".\bin-int" %%i in (*.o); do call set "OBJFiles=%%OBJFiles%% %%~i"
-rgblink -o .\bin\gbgame.gb -n .\bin\gbgame.sym -m .\bin\gbgame.map %OBJFiles%
+rgblink -o .\bin\nauti_buoy.gb -n .\bin\nauti_buoy.sym -m .\bin\nauti_buoy.map %OBJFiles%
 
-rgbfix -f lhg -p 255 .\bin\gbgame.gb
+rgbfix -f lhg -p 255 .\bin\nauti_buoy.gb

@@ -110,25 +110,3 @@ EnemyDeathSFX::
 
     pop af
     ret
-
-PlaceholderSFX0::
-    push af
-    
-    ; Channel 1
-    ld a, %00000111
-    ld [rNR10], a ; Sweep Register
-    
-    ld a, %01001100 
-    ld [rNR11], a ; Set Sound Length/Wave Pattern Duty
-
-    ld a, %11110010
-    ld [rNR12], a ; Volume Envelope
-
-    ld a, $FF
-    ld [rNR13], a ; Frequency Lo
-
-    ld a, %11000110
-    ld [rNR14], a ; Frequency Hi
-
-    pop af
-    ret
