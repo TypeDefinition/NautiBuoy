@@ -8,6 +8,7 @@ BGB Home Page: https://bgb.bircd.org/
 
 Audio
 hUGEDriver: https://github.com/SuperDisk/hUGEDriver
+Free Music: https://github.com/DeerTears/GB-Studio-Community-Assets
 
 Map Editor
 Tiled: https://www.mapeditor.org/
