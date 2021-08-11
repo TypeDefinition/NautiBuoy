@@ -4,8 +4,8 @@ INCLUDE "./src/include/hardware.inc"
 DEF DEFINITIONS_INC EQU 1
 
 /*************************************************Language*************************************************/
-DEF LANGUAGE_JP EQU 1
-; DEF LANGUAGE_EN EQU 1
+;DEF LANGUAGE_JP EQU 1
+ DEF LANGUAGE_EN EQU 1
 
 /*************************************************Stage*************************************************/
 DEF MAX_MAP_SIZE EQU $0100
@@ -200,10 +200,11 @@ DEF TIMER_POWER_UP_INC_AMT EQU 10 ; in seconds
 DEF PLAYER_COLLIDER_SIZE EQU $08
 DEF PLAYER_ENEMY_COLLIDER_SIZE EQU $04
 DEF ENEMY_COLLIDER_SIZE EQU $01
-DEF BOSS_COLLIDER_SIZE EQU $10
+DEF BOSS_COLLIDER_SIZE EQU $08 ; for the boss checking collision with its surroundings
 DEF ENEMY_BULLET_COLLIDER_SIZE EQU $08 ; hit box for enemy vs bullet
-DEF BOSS_ENEMY_COLLIDER_SIZE EQU $10
+DEF BOSS_ENEMY_COLLIDER_SIZE EQU $10 ; other entities interacting with the boss collision
 DEF BULLET_COLLIDER_SIZE EQU $02
+DEF WIND_BULLET_COLLIDER_SIZE EQU $08
 DEF POWERUP_COLLIDER_SIZE EQU $02
 
 ; States

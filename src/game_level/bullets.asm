@@ -526,7 +526,16 @@ BulletSpriteCollisionCheck:
     jr z, .checkCollisionWithEnemy
 
 .checkCollisionWithPlayer ; bullet belongs to enemy
-    ; b = bullet posY, c = bullet pos X
+    ; b = bullet posY, c = bullet pos X, af = bullet flags
+    and a, BIT_MASK_TYPE
+    cp a, TYPE_BULLET_WIND
+    ld h, BULLET_COLLIDER_SIZE
+    jr nz, .checkPlayer
+
+    ld h, WIND_BULLET_COLLIDER_SIZE
+
+.checkPlayer
+    ; b = bullet posY, c = bullet pos X, h = bullet collider size
     ld a, [wPlayer_Flags]
     and a, FLICKER_EFFECT_FLAG ; check if got invincibility frame on
     jr nz, .end
@@ -536,7 +545,6 @@ BulletSpriteCollisionCheck:
     ld a, [wPlayer_PosXInterpolateTarget]
     ld e, a ; d = player pos Y, e = player position X
 
-    ld h, BULLET_COLLIDER_SIZE
     ld l, PLAYER_COLLIDER_SIZE
 
     call SpriteCollisionCheck
