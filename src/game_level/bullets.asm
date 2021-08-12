@@ -83,11 +83,11 @@ BulletTileCollisionCheck:
 
 ; Vertical
 .vertical
-FOR N, 2
+FOR N, 4
 :   push de
 
     ld a, d
-    add a, (-$04+$08*N)
+    add a, (-$0C+$08*N)
     ld d, a
 
     call GetTileIndex
@@ -108,7 +108,7 @@ FOR N, 4
 :   push de
 
     ld a, e
-    add a, (-$04+$08*N)
+    add a, (-$0C+$08*N)
     ld e, a
 
     call GetTileIndex
