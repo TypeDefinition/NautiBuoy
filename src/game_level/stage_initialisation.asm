@@ -46,45 +46,47 @@ StageParam::
 
     IF DEF(LANGUAGE_EN)
 StoryEN0::
-    db "Hello Captain! We are honoured to have you abroad the Nauti Buoy! Our latest state of the art combat submarine. "
-    db "Your mission is to descend into the first level of the sea and investigate some underwater ruins. "
+    db "Hello Captain! We are honoured to have you abroad the Nauti Buoy!                                                                             "
+    db "This our research lab latest state of the art combat submarine.                                                                           "
+    db "Your mission is to descend into the first level of the sea and investigate some underwater ruins.                                         "
     db "Beware, we heard reports of some giant squids living there. Be careful and steadfast captain! What is dead may never die."
 .end::
 
 StoryEN1::
-    db "Congrats on your previous mission! We have reports of another underwater ruins deeper in the sea. You are to head there and check it out. "
+    db "Congrats on your previous mission!                                                                                                              "
+    db "We have reports of another underwater ruins deeper in the sea. You are to head there and check it out.                                      "
     db "We have provided a special torpedo that is able to penetrate through the toughest shell and have scattered them around the site. "
-    db "Godspeed captain!"
+    db "                              Godspeed captain!"
 .end::
 
 StoryEN2::
-    db "Hello captain! We got another mission for you at another underwater ruin site. "
-    db "We have heard reports of much stronger enemies there. "
-    db "Thus, we created an upgrade for the ship that will grant it temperary invincibility. "
-    db "Like the torpedo, we have scattered them around the site. "
+    db "Hello captain! We got another mission for you at another underwater ruin site.                                                               "
+    db "We have heard reports of much stronger enemies there.                                                                                              "
+    db "Thus, we created an upgrade for the ship that will grant it temperary invincibility.                                                      "
+    db "Like the torpedo, we have scattered them around the site.                                                                                     "
     db "Safe journey captain! We look forward to see you and your crew's safely back."
 .end::
 
 StoryEN3::
-    db "Captain! So far, you have done exception work! Here's your next mission. "
-    db "Our scientists are having trouble navigating through the underwater ruins at the deeper depths of the sea. "
-    db "They report being attacked by an extremely fast entity that can travel through walls. "
+    db "Captain! So far, you have done exception work! Here's your next mission.                                                                           "
+    db "Our scientists are having trouble navigating through the underwater ruins at the deeper depths of the sea.         "
+    db "They report being attacked by an extremely fast entity that can travel through walls.                                                      "
     db "We have created a temperary power up that will allow you to at much faster speeds. All the best captain!"
 .end::
 
 StoryEN4::
-    db "Captain, urgent news from the higher ups. "
+    db "Captain, urgent news from the higher ups.                                                                                                       "
     db "After investigating the ruins you have previously cleared, we believe there might be a much more dangerous entity lurking around. "
-    db "One that might even threaten the mainland if not dealt with sooner. "
+    db "One that might even threaten the mainland if not dealt with sooner.                                                            "
     db "You are to eliminate all entities at the next site and do a full scale investigation. "
     db "We look forward to see you and your crew's safely back."
 .end::
 
 StoryEN5::
-    db "Captain! We have reported sightings of the powerful entity. It is reported that it can control electricity. "
-    db "We are dubbing this entity, codename Mjolnir. You are to report to the site and do your best to kill it. We cannot let it live. "
-    db "This mission is of the upmost importance. "
-    db "We wish you well captain. What is dead may never die. But rises again harder and stronger."
+    db "Captain! We have reported sightings of the powerful entity. It is reported that it can control electricity.                     "
+    db "We are dubbing this entity, codename Mjolnir. You are to report to the site and do your best to kill it. We cannot let it live.            "
+    db "This mission is of the upmost importance. We wish you well captain.                                                                         "
+    db "What is dead may never die. But rises again harder and stronger."
 .end::
     ENDC
 
