@@ -492,8 +492,17 @@ UpdateBullets::
     ld a, [hl]
     bit BIT_FLAG_ACTIVE, a ; check if alive
     jp z, .loopEnd
+
+    and a, BIT_MASK_TYPE
+    cp a, TYPE_BULLET_WIND
+    jr nz, .normalBullet
+    call BossBulletTileCollisionCheck
+    jr .afterSpriteCollision
+
+.normalBullet
     call BulletTileCollisionCheck
 
+.afterSpriteCollision
     ld a, [hl]
     bit BIT_FLAG_ACTIVE, a ; check if alive after sprite collision
     jp z, .loopEnd
