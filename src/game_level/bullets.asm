@@ -49,7 +49,7 @@ BulletDestroyTile:
 ; If collided with BULLET_DESTRUCTIBLE_TILES, the tile is destroyed.
 ; If collided with BULLET_COLLIDABLE_TILES, the bullet is destroyed.
 ; @ hl: Bullet Memory Address */
-BulletTileCollisionCheck:
+BossBulletTileCollisionCheck:
     push hl
 
     ld a, [hli] ; get flags
@@ -155,9 +155,7 @@ ENDR
 /* Check for bullet collision with a tile.
 ; If collided with BULLET_DESTRUCTIBLE_TILES, the tile is destroyed.
 ; If collided with BULLET_COLLIDABLE_TILES, the bullet is destroyed.
-; @ hl: Bullet Memory Address
-*/
-/*
+; @ hl: Bullet Memory Address */
 BulletTileCollisionCheck:
     push hl
 
@@ -170,9 +168,12 @@ BulletTileCollisionCheck:
     ld b, POWER_BULLET_DESTRUCTIBLE_TILES ; it is a power bullet
 
 .initInfo
+    ; a = Direction
+    ld a, [hli]
+
+    push af
     ; d = PosY
     ; e = PosX
-    inc hl
     inc hl
     inc hl
 
@@ -185,16 +186,40 @@ BulletTileCollisionCheck:
     ; h = Destroy Bullet Flag.
     ld h, 0
     ld l, b ; l = bullet type
+    pop af
 
-.topLeft
-    push de
+    ; Check if it is a vertical or horizontal bullet.
+    cp a, $02
+    jr c, .horizontal
+
+; Vertical
+.vertical
+FOR N, 2
+:   push de
 
     ld a, d
-    sub a, BULLET_COLLIDER_SIZE
+    add a, (-$04+$08*N)
     ld d, a
 
+    call GetTileIndex
+    call GetGameLevelTileValue
+    call BulletDestroyTile
+
+    pop de
+
+    cp a, BULLET_COLLIDABLE_TILES
+    jr nc, :+
+    inc h
+ENDR
+:   jp .end
+ 
+; Horizontal
+.horizontal
+FOR N, 2
+:   push de
+
     ld a, e
-    sub a, BULLET_COLLIDER_SIZE
+    add a, (-$04+$08*N)
     ld e, a
 
     call GetTileIndex
@@ -204,69 +229,11 @@ BulletTileCollisionCheck:
     pop de
 
     cp a, BULLET_COLLIDABLE_TILES
-    jr nc, .bottomLeft
+    jr nc, :+
     inc h
- .bottomLeft
-    push de
+ENDR
+:
 
-    ld a, d
-    add a, BULLET_COLLIDER_SIZE - 1
-    ld d, a
-
-    ld a, e
-    sub a, BULLET_COLLIDER_SIZE
-    ld e, a
-
-    call GetTileIndex
-    call GetGameLevelTileValue
-    call BulletDestroyTile
-
-    pop de
-
-    cp a, BULLET_COLLIDABLE_TILES
-    jr nc, .topRight
-    inc h
-.topRight
-    push de
-
-    ld a, d
-    sub a, BULLET_COLLIDER_SIZE
-    ld d, a
-
-    ld a, e
-    add a, BULLET_COLLIDER_SIZE - 1
-    ld e, a
-    
-    call GetTileIndex
-    call GetGameLevelTileValue
-    call BulletDestroyTile
-
-    pop de
-
-    cp a, BULLET_COLLIDABLE_TILES
-    jr nc, .bottomRight
-    inc h
-.bottomRight
-    push de
-    
-    ld a, d
-    add a, BULLET_COLLIDER_SIZE - 1
-    ld d, a
-
-    ld a, e
-    add a, BULLET_COLLIDER_SIZE - 1
-    ld e, a
-    
-    call GetTileIndex
-    call GetGameLevelTileValue
-    call BulletDestroyTile
-
-    pop de
-
-    cp a, BULLET_COLLIDABLE_TILES
-    jr nc, .end
-    inc h
-    ; Destroy the bullet if the bullet destoyed flag is set.
 .end
     ld a, h
     and a
@@ -295,8 +262,6 @@ BulletTileCollisionCheck:
 .bulletNotDestroyed
     pop hl
     ret
-*/
-
 
 ; Update Bullet Shadow OAM
 ; @ bc: Bullet Sprite address
