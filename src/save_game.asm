@@ -112,6 +112,10 @@ GenerateDefaultSave:
     ld a, STAGE_UNLOCKED_NOT_CLEARED
     ld [sSaveData], a
 
+    ; TEMP UNLOCK BOSS
+    ld a, STAGE_UNLOCKED_NOT_CLEARED
+    ld [sSaveData+5*4], a
+
     call GenerateChecksum
     ret
 

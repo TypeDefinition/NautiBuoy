@@ -48,8 +48,116 @@ BulletDestroyTile:
 /* Check for bullet collision with a tile.
 ; If collided with BULLET_DESTRUCTIBLE_TILES, the tile is destroyed.
 ; If collided with BULLET_COLLIDABLE_TILES, the bullet is destroyed.
+; @ hl: Bullet Memory Address */
+BulletTileCollisionCheck:
+    push hl
+
+    ld a, [hli] ; get flags
+    and a, BIT_MASK_TYPE
+    ld b, POWER_BULLET_DESTRUCTIBLE_TILES
+
+.initInfo
+    ; a = Direction
+    ld a, [hli]
+
+    push af
+    ; d = PosY
+    ; e = PosX
+    inc hl
+    inc hl
+
+    ld a, [hli]
+    ld d, a
+    inc hl
+    ld a, [hl]
+    ld e, a
+
+    ; h = Destroy Bullet Flag.
+    ld h, 0
+    ld l, b ; l = bullet type
+    pop af
+
+    ; Check if it is a vertical or horizontal bullet.
+    cp a, $02
+    jr c, .horizontal
+
+; Vertical
+.vertical
+FOR N, 2
+:   push de
+
+    ld a, d
+    add a, (-$04+$08*N)
+    ld d, a
+
+    call GetTileIndex
+    call GetGameLevelTileValue
+    call BulletDestroyTile
+
+    pop de
+
+    cp a, BULLET_COLLIDABLE_TILES
+    jr nc, :+
+    inc h
+ENDR
+:   jp .end
+ 
+; Horizontal
+.horizontal
+FOR N, 4
+:   push de
+
+    ld a, e
+    add a, (-$04+$08*N)
+    ld e, a
+
+    call GetTileIndex
+    call GetGameLevelTileValue
+    call BulletDestroyTile
+
+    pop de
+
+    cp a, BULLET_COLLIDABLE_TILES
+    jr nc, :+
+    inc h
+ENDR
+:
+
+.end
+    ld a, h
+    and a
+    jr z, .bulletNotDestroyed
+
+    pop hl
+    ld a, [hl]
+    ld [hl], FLAG_INACTIVE
+
+    and a, BIT_MASK_TYPE ; get type
+
+    ld b, TYPE_PARTICLE_DESTROY_BLOCK
+    ld c, TILE_DESTRUCTION_TIME
+
+    cp a, TYPE_BULLET_POWER_UP
+    jr nz, .spawnParticle
+
+    ld b, TYPE_PARTICLE_DESTROY_POWER_COLLISION
+    
+.spawnParticle
+    push hl
+    call SpawnParticleEffect
+    pop hl
+
+    ret
+.bulletNotDestroyed
+    pop hl
+    ret
+
+/* Check for bullet collision with a tile.
+; If collided with BULLET_DESTRUCTIBLE_TILES, the tile is destroyed.
+; If collided with BULLET_COLLIDABLE_TILES, the bullet is destroyed.
 ; @ hl: Bullet Memory Address
 */
+/*
 BulletTileCollisionCheck:
     push hl
 
@@ -187,6 +295,7 @@ BulletTileCollisionCheck:
 .bulletNotDestroyed
     pop hl
     ret
+*/
 
 
 ; Update Bullet Shadow OAM
