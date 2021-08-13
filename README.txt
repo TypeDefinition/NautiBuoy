@@ -10,6 +10,9 @@ Audio
 hUGEDriver: https://github.com/SuperDisk/hUGEDriver
 Free Music: https://github.com/DeerTears/GB-Studio-Community-Assets
 
+Fonts
+Super Legend Boy: https://www.fontspace.com/super-legend-boy-font-f34010
+
 Map Editor
 Tiled: https://www.mapeditor.org/
 
