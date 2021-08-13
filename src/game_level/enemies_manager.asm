@@ -716,6 +716,8 @@ HitEnemy::
     xor a
     ld [hl], a ; reset the fractional portion
 
+    call EnemyHitSFX
+
     ret
 
 .dead ; dead, turn it inactive

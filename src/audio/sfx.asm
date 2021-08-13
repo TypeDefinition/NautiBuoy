@@ -135,20 +135,20 @@ EnemyHitSFX::
     ret
 
 /* Hit an enemy sound effect */
-BossRamAttack::
+BossRamAttackSFX::
     push af
 
     ; Channel 1
-    ld a, %11100110
+    ld a, %10101110
     ld [rNR10], a ; Sweep Register
     
-    ld a, %10001111
+    ld a, %10001100
     ld [rNR11], a ; Set Sound Length/Wave Pattern Duty
     
     ld a, %11110010
     ld [rNR12], a ; Volume Envelope
     
-    ld a, $22
+    ld a, $00
     ld [rNR13], a ; Frequency Lo
     
     ld a, %11000110
@@ -158,24 +158,64 @@ BossRamAttack::
     ret
 
 /* Hit an enemy sound effect */
-BossBarrageAttack::
+BossBarrageAttackSFX::
     push af
 
     ; Channel 1
-    ld a, %11100110
+    ld a, %11001100
     ld [rNR10], a ; Sweep Register
     
-    ld a, %10001111
+    ld a, %11001111
+    ld [rNR11], a ; Set Sound Length/Wave Pattern Duty
+    
+    ld a, %11010010
+    ld [rNR12], a ; Volume Envelope
+    
+    ld a, $CC
+    ld [rNR13], a ; Frequency Lo
+    
+    ld a, %11000110 ; 11000100
+    ld [rNR14], a ; Frequency Hi
+
+    pop af
+    ret
+
+BossDefaultAttackSFX::
+    push af
+
+    ; Channel 1
+    ld a, %01101110
+    ld [rNR10], a ; Sweep Register
+    
+    ld a, %01000100
     ld [rNR11], a ; Set Sound Length/Wave Pattern Duty
     
     ld a, %11110010
     ld [rNR12], a ; Volume Envelope
     
-    ld a, $22
+    ld a, $10
     ld [rNR13], a ; Frequency Lo
     
     ld a, %11000110
     ld [rNR14], a ; Frequency Hi
 
     pop af
+    ret 
+
+HitTurtleShellSFX::
+    ; Channel 1
+    ld a, %00111100
+    ld [rNR10], a ; Sweep Register
+    
+    ld a, %00000010 
+    ld [rNR11], a ; Set Sound Length/Wave Pattern Duty
+
+    ld a, %11110010
+    ld [rNR12], a ; Volume Envelope
+
+    ld a, $FF
+    ld [rNR13], a ; Frequency Lo
+
+    ld a, %11000111
+    ld [rNR14], a ; Frequency Hi
     ret

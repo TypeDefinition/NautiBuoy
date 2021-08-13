@@ -70,6 +70,7 @@ UpdateEnemyBoss::
     push de ; push de = enemy address
     push hl ; push hl = int part of updateFrameCounter
     call EnemyShoot
+    call BossDefaultAttackSFX
     pop hl ; pop hl = int part of updateFrameCounter
     xor a
 
@@ -116,6 +117,7 @@ UpdateEnemyBoss::
     jr .end
 
 .ram ; charge in one direction at fast speeds
+    call z, BossRamAttackSFX
     call RamMovement
     jr .end
 
@@ -129,6 +131,7 @@ UpdateEnemyBoss::
     push de ; push de = enemy address
     push hl ; push hl = update frame counter address
     call EnemyShootDir
+    call BossBarrageAttackSFX
     pop hl ; pop hl = update frame counter address
 
     ld e, ENEMY_BOSS_BARRAGE_SHOOT_FRAME_RESET
@@ -650,6 +653,10 @@ BossCheckHealth::
     ld a, b
     cp a, ENEMY_BOSS_HEALTH_BERSERK
     ret nc
+
+    ld a, [wBossStateTracker]
+    and a, a
+    ret nz
 
     ld a, ENEMY_BOSS_STATES_CHARGE
     ld [wBossStateTracker], a
