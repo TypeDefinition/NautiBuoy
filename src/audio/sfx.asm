@@ -212,7 +212,7 @@ HitTurtleShellSFX::
     ld a, %00000010 
     ld [rNR11], a ; Set Sound Length/Wave Pattern Duty
 
-    ld a, %11110010
+    ld a, %11000010
     ld [rNR12], a ; Volume Envelope
 
     ld a, $DD
