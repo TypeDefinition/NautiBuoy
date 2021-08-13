@@ -676,6 +676,7 @@ HitEnemy::
     cp a, ENEMY_TYPEB_REST_STATE_FRAME + ENEMY_TYPEB_ATTACK_STATE_FRAME
 
     pop hl ; POP hl = enemy address
+    call nc, HitTurtleShellSFX
     jr nc, .end ; enemy B is in attack mode
 
     push hl ; PUSH hl = enemy address

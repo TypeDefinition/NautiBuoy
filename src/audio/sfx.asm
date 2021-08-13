@@ -203,6 +203,8 @@ BossDefaultAttackSFX::
     ret 
 
 HitTurtleShellSFX::
+    push af
+
     ; Channel 1
     ld a, %00111100
     ld [rNR10], a ; Sweep Register
@@ -213,9 +215,11 @@ HitTurtleShellSFX::
     ld a, %11110010
     ld [rNR12], a ; Volume Envelope
 
-    ld a, $FF
+    ld a, $DD
     ld [rNR13], a ; Frequency Lo
 
     ld a, %11000111
     ld [rNR14], a ; Frequency Hi
+
+    pop af
     ret
