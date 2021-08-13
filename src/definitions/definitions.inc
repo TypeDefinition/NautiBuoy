@@ -30,6 +30,9 @@ DEF SCREEN_LEFT_OFFSET_X EQU 8
 DEF PAUSE_UI_SIZE_Y EQU 8*7
 DEF PAUSE_VIEWPORT_SIZE_Y EQU SCRN_Y - PAUSE_UI_SIZE_Y
 
+/*************************************************Systems*************************************************/
+DEF STACK_SIZE EQU $40 ; abt 64 bytes for the stack
+
 /*************************************************Player*************************************************/
 ; PLAYER Stats
 DEF PLAYER_BULLET_NUMBER EQU 3

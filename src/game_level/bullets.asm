@@ -7,7 +7,7 @@ INCLUDE "./src/include/movement.inc"
 INCLUDE "./src/include/tile_collision.inc"
 
 
-DEF NUM_BULLETS EQU $10
+DEF NUM_BULLETS EQU 13
 
 SECTION "Bullets Data", WRAM0
 wBulletObjects::
@@ -25,9 +25,6 @@ w_BulletObjectPlayerEnd:: ; reserve the first 3 bullets just for the player
     dstruct Bullet, wBullet10
     dstruct Bullet, wBullet11
     dstruct Bullet, wBullet12
-    dstruct Bullet, wBullet13
-    dstruct Bullet, wBullet14
-    dstruct Bullet, wBullet15
 wBulletObjectEnd:
 
 SECTION "Bullets", ROM0

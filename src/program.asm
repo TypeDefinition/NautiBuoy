@@ -67,7 +67,7 @@ SECTION "Entry Point", ROM0[$0100]
 
 SECTION "Program", ROM0
 RunProgram:
-    ld sp, $E000 ; Initialise our stack pointer to the end of WRAM.
+    ld sp, wStackBottom ; Initialise our stack pointer to the end of the allocation of WRAM.
 
     call LCDOff
     call SoundOff
@@ -114,3 +114,8 @@ hVBlankCallback::
 ; Program Loop
 hProgramLoopCallback::
     ds 3 ; Reserve just enough space for a "jp Immd" instruction.
+
+SECTION "Stack", WRAM0
+wStack:
+    ds STACK_SIZE
+wStackBottom:
