@@ -46,7 +46,7 @@ StageParam::
 
     IF DEF(LANGUAGE_EN)
 StoryEN0::
-    db "Hello Captain! We are honoured to have you abroad the Nauti Buoy!                                                                             "
+    db "Hello Captain! We are honoured to have you aboard the Nauti Buoy!                                                                             "
     db "This our research lab latest state of the art combat submarine.                                                                           "
     db "Your mission is to descend into the first level of the sea and investigate some underwater ruins.                                         "
     db "Beware, we heard reports of some giant squids living there. Be careful and steadfast captain! What is dead may never die."
