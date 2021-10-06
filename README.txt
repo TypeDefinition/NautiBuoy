@@ -1,5 +1,5 @@
 Itch.io Page
-https://lapisraider.itch.io/nauti-buoy
+Download Link: https://lapisraider.itch.io/nauti-buoy
 
 Toolchain
 RGBSDS Home Page: https://rgbds.gbdev.io/
