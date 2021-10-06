@@ -1,3 +1,6 @@
+Itch.io Page
+https://lapisraider.itch.io/nauti-buoy
+
 Toolchain
 RGBSDS Home Page: https://rgbds.gbdev.io/
 Building RGBDS for Linux: https://rgbds.gbdev.io/install/source
