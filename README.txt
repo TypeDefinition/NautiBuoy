@@ -28,7 +28,7 @@ The Ultimate Game Boy Talk: https://media.ccc.de/v/33c3-8029-the_ultimate_game_b
 SM83 Instruction Set: https://gbdev.io/gb-opcodes/optables/dark
 
 Developers
-Programmers: Lim En Qi Angie, Lim Ngian Xin Terry
+Programmers: Lim En Qi Angie, Lim Zai Ciu Terri
 Artist: Mok Wen Qing
 
 Many thanks to the wonderful people at
